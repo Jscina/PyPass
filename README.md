@@ -29,3 +29,4 @@ To install (Linux):
                 pip install cryptography PyQt5
        Then execute with the following command inside the directory:
                 python PyPass.py
+If you know how to use the cryptography module you can use the Cypher class I built inside the cyper.py file to regenerate a new key and reencrypt the defaults

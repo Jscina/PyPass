@@ -1,5 +1,7 @@
 from cryptography.fernet import Fernet
-
+#Do Not Edit This Class In Any Way
+#@Author Joshua Scina
+#@Version 1.1
 
 class Cypher:
     def __init__(self):

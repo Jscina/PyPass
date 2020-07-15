@@ -1,6 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from cypher import Cypher
 
+#@Author Joshua Scina
+#@Version 1.1
 
 class Ui_UpdateWindow(object):
     def setup2(self, MainWindow):
@@ -46,6 +48,7 @@ class Ui_UpdateWindow(object):
         self.retranslateUi(MainWindow)
         self.get_current_login()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+    #Gets the current login credentials and prints them
     def get_current_login(self):
         cypher = Cypher()
         with open("login.txt", "rb") as file:
@@ -55,6 +58,7 @@ class Ui_UpdateWindow(object):
         password = cypher.decrypt_phrase(account[1])
         self.current_account_label.setText("Username: " + username + " Password: " + password)
         self.current_account_label.adjustSize()
+    #Changes the login credentials based on the user input
     def update_login(self):
         username_new = self.username.text()
         password_new = self.password.text()

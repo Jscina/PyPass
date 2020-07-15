@@ -14,4 +14,5 @@ echo "" > ..\passwords.txt
 cd ..\
 echo Deleting Unneeded Directory
 rmdir /Q /S %CD%\src
-echo Done
+echo You may delete the install.bat file now
+pause

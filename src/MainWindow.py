@@ -2,7 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from cryptography.fernet import Fernet
 from cypher import Cypher
 from update import *
-
+#@Author Joshua Scina
+#@Version 1.1
 #Do not try to run this file on it's own it will not function properly
 class Ui_MainWindow(object):
     def switch(self):

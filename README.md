@@ -22,11 +22,8 @@ The default login is Username: username Password: password.
 You will be able to change this using a built in function in the application.
 DO NOT DELETE THIS FILE AS YOU WILL NOT BE ABLE TO LOG IN WITHOUT IT!
 
-To install (Linux):
-        
-        Move the all the files from src into the main folder and create two empty text files called usernames.txt and passwords.txt.
-        Run this command:
-                pip install cryptography PyQt5
-       Then execute with the following command inside the directory:
-                python PyPass.py
+To install (Linux/Mac):
+
+        Make sure python is installed
+        Run the install.sh file in your terminal
 If you know how to use the cryptography module you can use the Cypher class I built inside the cyper.py file to regenerate a new key and reencrypt the defaults

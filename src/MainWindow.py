@@ -3,7 +3,7 @@ from cryptography.fernet import Fernet
 from cypher import Cypher
 from update import *
 
-
+#Do not try to run this file on it's own it will not function properly
 class Ui_MainWindow(object):
     def switch(self):
         self.window = QtWidgets.QMainWindow()
@@ -74,6 +74,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.show_users()
+    #This function adds a new account to the list
     def add_user(self):
         cypher = Cypher()
         users = self.usernames.text()
@@ -87,7 +88,7 @@ class Ui_MainWindow(object):
         self.passwords.setText("")
         self.usernames.setText("")
         self.show_users()
-
+    #This function prints the list of accounts on the screen
     def show_users(self):
         cypher = Cypher()
         account_pair = []
@@ -105,7 +106,7 @@ class Ui_MainWindow(object):
             acc += account_pair[index]
             self.acc_list.setText(acc)
             self.update()
-            
+    #This function removes a user from the list then remakes the file         
     def remove_user(self):
         index = int(self.index_input.text())
         with open("usernames.txt", "rb") as file:

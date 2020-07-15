@@ -103,10 +103,12 @@ class Ui_MainWindow(object):
         if len(usernames_list) != 0 and len(passwords_list) != 0:
             for index in range(len(usernames_list)):
                 account_pair.append(str(index) + ": " + cypher.decrypt_phrase(usernames_list[index]) + "     " + cypher.decrypt_phrase(passwords_list[index]) + "\n")
-        for index in range(len(account_pair)):
-            acc += account_pair[index]
-            self.acc_list.setText(acc)
-            self.update()
+            for index in range(len(account_pair)):
+                acc += account_pair[index]
+                self.acc_list.setText(acc)
+        else:
+            self.acc_list.setText("None")
+        self.update()
     #This function removes a user from the list then remakes the file         
     def remove_user(self):
         index = int(self.index_input.text())

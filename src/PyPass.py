@@ -2,6 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from cypher import Cypher
 from MainWindow import *
 
+#Application entry point
+#@Author Joshua Scina
 
 class Ui_LoginWindow(object):
     def switch(self):
@@ -44,7 +46,7 @@ class Ui_LoginWindow(object):
 
         self.retranslateUi(LoginWindow)
         QtCore.QMetaObject.connectSlotsByName(LoginWindow)
-
+    #This funtion checks if the input matches the login.txt file
     def login_to_main(self):
         user_name = self.username.text()
         pass_word = self.password.text()
@@ -72,6 +74,7 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     LoginWindow = QtWidgets.QMainWindow()
+    #Adds the window icon
     icon = QtGui.QIcon()
     icon.addPixmap(QtGui.QPixmap("locked.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)
     LoginWindow.setWindowIcon(icon)

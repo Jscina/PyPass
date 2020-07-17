@@ -23,13 +23,3 @@ You will be able to change this using a built in function in the application.
 DO NOT DELETE THIS FILE AS YOU WILL NOT BE ABLE TO LOG IN WITHOUT IT!
 If you accidentally delete the login/key files they will automatically be regenerated using the default values
 The key file is updated every time you run the application
-
-To install (Mac):
-
-        Make sure python is installed
-        Run the install.sh file in your terminal
-To install (Linux):
-        
-        Take the files from the src directory and place them where you want 
-        To run: 
-        python Pypass.py

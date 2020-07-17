@@ -21,6 +21,8 @@ The login.txt file stores your login for the application.
 The default login is Username: username Password: password.
 You will be able to change this using a built in function in the application.
 DO NOT DELETE THIS FILE AS YOU WILL NOT BE ABLE TO LOG IN WITHOUT IT!
+If you accidentally delete the login/key files they will automatically be regenerated using the default values
+The key file is updated every time you run the application
 
 To install (Mac):
 

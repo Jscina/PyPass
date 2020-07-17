@@ -1,10 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from cryptography.fernet import Fernet
 from cypher import Cypher
-from update import *
-#@Author Joshua Scina
-#@Version 1.1
-#Do not try to run this file on it's own it will not function properly
+from update import Ui_UpdateWindow
+
+# @Author Joshua Scina
+# @Version 1.1
+# Do not try to run this file on it's own it will not function properly
+
+
 class Ui_MainWindow(object):
     def switch(self):
         self.window = QtWidgets.QMainWindow()
@@ -75,71 +78,102 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.show_users()
-    #This function adds a new account to the list
+
+    # This function adds a new account to the list
     def add_user(self):
         cypher = Cypher()
         users = self.usernames.text()
         passwords = self.passwords.text()
-        with open("usernames.txt", "ab") as file:
-            file.write(cypher.encrypt_phrase(users) + b"\n")
-        file.close()
-        with open("passwords.txt", "ab") as file:
-            file.write(cypher.encrypt_phrase(passwords) + b"\n")
-        file.close()
+        try:
+            with open("usernames.txt", "ab") as file:
+                file.write(cypher.encrypt_phrase(users) + b"\n")
+            file.close()
+            with open("passwords.txt", "ab") as file:
+                file.write(cypher.encrypt_phrase(passwords) + b"\n")
+            file.close()
+        except FileNotFoundError:
+            self.fix()
         self.passwords.setText("")
         self.usernames.setText("")
         self.show_users()
-    #This function prints the list of accounts on the screen
+
+    def fix(self):
+        file = open("usernames.txt", "w")
+        file.write("")
+        file.close()
+        file = open("passwords.txt", "w")
+        file.write("")
+        file.close()
+
+    # This function prints the list of accounts on the screen
     def show_users(self):
         cypher = Cypher()
         account_pair = []
         acc = ""
-        with open("usernames.txt", "rb") as file:
-            usernames_list = file.readlines()
-        file.close()
-        with open("passwords.txt", "rb") as file:
-            passwords_list = file.readlines()
-        file.close()
+        try:
+            with open("usernames.txt", "rb") as file:
+                usernames_list = file.readlines()
+            file.close()
+            with open("passwords.txt", "rb") as file:
+                passwords_list = file.readlines()
+            file.close()
+        except FileNotFoundError:
+            self.fix()
+            usernames_list = []
+            passwords_list = []
         if len(usernames_list) != 0 and len(passwords_list) != 0:
             for index in range(len(usernames_list)):
-                account_pair.append(str(index) + ": " + cypher.decrypt_phrase(usernames_list[index]) + "     " + cypher.decrypt_phrase(passwords_list[index]) + "\n")
+                account_pair.append(
+                    str(index)
+                    + ": "
+                    + cypher.decrypt_phrase(usernames_list[index])
+                    + "     "
+                    + cypher.decrypt_phrase(passwords_list[index])
+                    + "\n"
+                )
             for index in range(len(account_pair)):
                 acc += account_pair[index]
                 self.acc_list.setText(acc)
         else:
             self.acc_list.setText("None")
         self.update()
-    #This function removes a user from the list then remakes the file         
+
+    # This function removes a user from the list then remakes the file
     def remove_user(self):
-        index = int(self.index_input.text())
-        with open("usernames.txt", "rb") as file:
-            u_list = file.readlines()
-        file.close() 
-        with open("passwords.txt", "rb") as file:
-            p_list = file.readlines()
-        file.close() 
-        u_list[index] = None
-        u_list.remove(None)
-        p_list[index] = None
-        p_list.remove(None)
-        while u_list.count(b"\n") > 0:
-            u_list.remove(b"\n")
-        while p_list.count(b"\n") > 0:
-            p_list.remove(b"\n")
-        with open("usernames.txt", "wb") as file:
-            file.write(b"") 
-        file.close()   
-        with open("passwords.txt", "wb") as file:
-            file.write(b"")
-        file.close() 
-        with open("usernames.txt", "ab") as file:
-            for index in range(len(u_list)):
-                file.write(u_list[index]) 
-        file.close()     
-        with open("passwords.txt", "ab") as file:
-            for index in range(len(u_list)):
-                file.write(p_list[index])
-        file.close() 
+        try:
+            index = int(self.index_input.text())
+            with open("usernames.txt", "rb") as file:
+                u_list = file.readlines()
+            file.close()
+            with open("passwords.txt", "rb") as file:
+                p_list = file.readlines()
+            file.close()
+            u_list[index] = None
+            u_list.remove(None)
+            p_list[index] = None
+            p_list.remove(None)
+            while u_list.count(b"\n") > 0:
+                u_list.remove(b"\n")
+            while p_list.count(b"\n") > 0:
+                p_list.remove(b"\n")
+            with open("usernames.txt", "wb") as file:
+                file.write(b"")
+            file.close()
+            with open("passwords.txt", "wb") as file:
+                file.write(b"")
+            file.close()
+            with open("usernames.txt", "ab") as file:
+                for index in range(len(u_list)):
+                    file.write(u_list[index])
+            file.close()
+            with open("passwords.txt", "ab") as file:
+                for index in range(len(u_list)):
+                    file.write(p_list[index])
+            file.close()
+        except FileNotFoundError:
+            self.fix()
+        except ValueError:
+            index = 0
         self.index_input.setText("")
         self.show_users()
 
@@ -156,6 +190,7 @@ class Ui_MainWindow(object):
 
     def update(self):
         self.acc_list.adjustSize()
+
 
 if __name__ == "__main__":
     import sys

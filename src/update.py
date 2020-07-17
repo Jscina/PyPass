@@ -1,8 +1,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from cypher import Cypher
 
-#@Author Joshua Scina
-#@Version 1.1
+# @Author Joshua Scina
+# @Version 1.1
+
 
 class Ui_UpdateWindow(object):
     def setup2(self, MainWindow):
@@ -48,27 +49,44 @@ class Ui_UpdateWindow(object):
         self.retranslateUi(MainWindow)
         self.get_current_login()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-    #Gets the current login credentials and prints them
+
+    # Gets the current login credentials and prints them
     def get_current_login(self):
         cypher = Cypher()
-        with open("login.txt", "rb") as file:
-            account = file.readlines()
-        file.close()
-        username = cypher.decrypt_phrase(account[0])
-        password = cypher.decrypt_phrase(account[1])
-        self.current_account_label.setText("Username: " + username + " Password: " + password)
-        self.current_account_label.adjustSize()
-    #Changes the login credentials based on the user input
+        try:
+            with open("login.txt", "rb") as file:
+                account = file.readlines()
+            file.close()
+            username = cypher.decrypt_phrase(account[0])
+            password = cypher.decrypt_phrase(account[1])
+            self.current_account_label.setText(
+                "Username: " + username + " Password: " + password
+            )
+            self.current_account_label.adjustSize()
+        except FileNotFoundError:
+            self.current_account_label.setText("Error login.txt doesn't exist")
+            self.current_account_label.adjustSize()
+
+    # Changes the login credentials based on the user input
     def update_login(self):
         username_new = self.username.text()
         password_new = self.password.text()
         self.username.setText("")
         self.password.setText("")
         cypher = Cypher()
-        with open("login.txt", "wb") as file:
-            file.write(cypher.encrypt_phrase(username_new) + b"\n" + cypher.encrypt_phrase(password_new))
-        file.close()
-        self.get_current_login()
+        try:
+            with open("login.txt", "wb") as file:
+                file.write(
+                    cypher.encrypt_phrase(username_new)
+                    + b"\n"
+                    + cypher.encrypt_phrase(password_new)
+                )
+            file.close()
+            self.get_current_login()
+        except FileNotFoundError:
+            self.current_account_label.setText("Error: login.txt does not exist")
+            self.current_account_label.adjustSize()
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Update Login"))
@@ -76,8 +94,9 @@ class Ui_UpdateWindow(object):
         self.u_label.setText(_translate("MainWindow", "Username:"))
         self.p_label.setText(_translate("MainWindow", "Password:"))
         self.current_login_label.setText(_translate("MainWindow", "Current Login:"))
-        self.current_account_label.setText(_translate("MainWindow", "Username: Password:"))
-    
+        self.current_account_label.setText(
+            _translate("MainWindow", "Username: Password:")
+        )
 
 
 if __name__ == "__main__":

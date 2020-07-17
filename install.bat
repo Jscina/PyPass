@@ -9,8 +9,6 @@ pip -y -q uninstall cryptography PyQt5 pyinstaller
 echo Sorting Files
 move %CD%\locked.ico ..\locked.ico
 move %CD%\dist\PyPass.exe ..\PyPass.exe
-echo "" > ..\usernames.txt
-echo "" > ..\passwords.txt
 cd ..\
 echo Deleting Unneeded Directory
 rmdir /Q /S %CD%\src

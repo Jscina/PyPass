@@ -22,8 +22,12 @@ The default login is Username: username Password: password.
 You will be able to change this using a built in function in the application.
 DO NOT DELETE THIS FILE AS YOU WILL NOT BE ABLE TO LOG IN WITHOUT IT!
 
-To install (Linux/Mac):
+To install (Mac):
 
         Make sure python is installed
         Run the install.sh file in your terminal
-If you know how to use the cryptography module you can use the Cypher class I built inside the cyper.py file to regenerate a new key and reencrypt the defaults
+To install (Linux):
+        
+        Take the files from the src directory and place them where you want 
+        To run: 
+        python Pypass.py

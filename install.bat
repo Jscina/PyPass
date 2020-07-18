@@ -12,6 +12,5 @@ move %CD%\dist\PyPass.exe ..\PyPass.exe
 cd ..\
 echo Deleting Unneeded Directory
 rmdir /Q /S %CD%\src
-del /Q /S install.sh
-echo You may delete the install.bat file now
 pause
+del /Q /S install.bat

@@ -21,5 +21,9 @@ The login.txt file stores your login for the application.
 The default login is Username: username Password: password.
 You will be able to change this using a built in function in the application.
 DO NOT DELETE THIS FILE AS YOU WILL NOT BE ABLE TO LOG IN WITHOUT IT!
-If you accidentally delete the login/key files they will automatically be regenerated using the default values
-The key file is updated every time you run the application
+
+To install (Linux/Mac):
+
+        Make sure python is installed
+        Run the install.sh file in your terminal
+If you know how to use the cryptography module you can use the Cypher class I built inside the cyper.py file to regenerate a new key and reencrypt the defaults

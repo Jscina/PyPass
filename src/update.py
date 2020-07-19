@@ -25,6 +25,12 @@ class Ui_UpdateWindow(object):
         self.update_button.setObjectName("update_button")
         self.update_button.clicked.connect(self.update_login)
 
+        self.done_button = QtWidgets.QPushButton(self.centralwidget)
+        self.done_button.setGeometry(QtCore.QRect(640, 280, 89, 26))
+        self.done_button.setObjectName("done_button")
+        self.done_button.setText("Done")
+        self.done_button.clicked.connect(self.close_window)
+
         self.u_label = QtWidgets.QLabel(self.centralwidget)
         self.u_label.setGeometry(QtCore.QRect(180, 200, 141, 17))
         self.u_label.setObjectName("u_label")
@@ -66,6 +72,10 @@ class Ui_UpdateWindow(object):
         except FileNotFoundError:
             self.current_account_label.setText("Error login.txt doesn't exist")
             self.current_account_label.adjustSize()
+
+    # Closes the current window when clicked
+    def close_window(self):
+        MainWindow.close()
 
     # Changes the login credentials based on the user input
     def update_login(self):

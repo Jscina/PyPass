@@ -1,7 +1,5 @@
 from cryptography.fernet import Fernet
-from cryptography.fernet import InvalidToken
 
-# Do Not Edit This Class In Any Way
 # @Author Joshua Scina
 # @Version 1.1
 
@@ -21,6 +19,7 @@ class Cypher:
                 self.encrypt_phrase(acc[0]) + b"\n" + self.encrypt_phrase(acc[1])
             )
 
+    # Loads the key from the specified file
     def load_key(self):
         try:
             with open("key.key", "rb") as file:

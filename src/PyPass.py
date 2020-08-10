@@ -1,7 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from cypher import Cypher
 import MainWindow
-import license_agreement
 
 # Application entry point
 # @Author Joshua Scina

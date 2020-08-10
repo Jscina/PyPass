@@ -51,17 +51,38 @@ class Ui_MainWindow(object):
         self.u_label.setGeometry(QtCore.QRect(140, 110, 91, 17))
         self.u_label.setObjectName("u_label")
 
-        self.p_label = QtWidgets.QLabel(self.centralwidget)
-        self.p_label.setGeometry(QtCore.QRect(340, 110, 81, 17))
-        self.p_label.setObjectName("p_label")
-
         self.acc_label = QtWidgets.QLabel(self.centralwidget)
         self.acc_label.setGeometry(QtCore.QRect(130, 210, 81, 17))
         self.acc_label.setObjectName("acc_label")
 
-        self.acc_list = QtWidgets.QLabel(self.centralwidget)
-        self.acc_list.setGeometry(QtCore.QRect(120, 240, 191, 16))
+        self.p_label = QtWidgets.QLabel(self.centralwidget)
+        self.p_label.setGeometry(QtCore.QRect(340, 110, 81, 17))
+        self.p_label.setObjectName("p_label")
+
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+        self.scrollArea.setGeometry(QtCore.QRect(80, 240, 271, 261))
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
+
+        self.scrollArea.setSizePolicy(sizePolicy)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 267, 257))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        self.acc_list = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.acc_list.setObjectName("acc_list")
+        
+        self.verticalLayout.addWidget(self.acc_list)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.index_input = QtWidgets.QLineEdit(self.centralwidget)
         self.index_input.setGeometry(QtCore.QRect(370, 220, 113, 26))
@@ -99,6 +120,7 @@ class Ui_MainWindow(object):
         self.usernames.setText("")
         self.show_users()
 
+    # Creates the username and password files if they don't exist
     def fix(self):
         file = open("usernames.txt", "w")
         file.write("")
@@ -201,9 +223,12 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
+    
+    # Adds the icon
     icon = QtGui.QIcon()
     icon.addPixmap(QtGui.QPixmap("locked.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)
     MainWindow.setWindowIcon(icon)
+
     ui = Ui_MainWindow()
     ui.setup(MainWindow)
     MainWindow.show()

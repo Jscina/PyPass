@@ -18,7 +18,7 @@ class Ui_LoginWindow(object):
         LoginWindow.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(LoginWindow)
         self.centralwidget.setObjectName("centralwidget")
-        # This function removes a user from the list then remakes the file
+
         self.uname_label = QtWidgets.QLabel(self.centralwidget)
         self.uname_label.setGeometry(QtCore.QRect(230, 220, 81, 17))
         self.uname_label.setObjectName("uname_label")
@@ -53,7 +53,7 @@ class Ui_LoginWindow(object):
     # This funtion checks if the input matches the login.txt file
     def login_to_main(self):
         user_name = self.username.text()
-        pass_word = self.password.text()        
+        pass_word = self.password.text()
         cypher = Cypher()
         try:
             with open("login.txt", "rb") as file:
@@ -69,6 +69,7 @@ class Ui_LoginWindow(object):
             self.username.setText("")
             self.password.setText("")
 
+    # This function craetes the default login if it doesn't exist
     def fix(self):
         cypher = Cypher()
         file = open("login.txt", "wb")
@@ -86,6 +87,7 @@ class Ui_LoginWindow(object):
         self.pword_label.setText(_translate("LoginWindow", "Password:"))
         self.login.setText(_translate("LoginWindow", "Login"))
 
+
 if __name__ == "__main__":
     import sys
 
@@ -95,6 +97,7 @@ if __name__ == "__main__":
     icon = QtGui.QIcon()
     icon.addPixmap(QtGui.QPixmap("locked.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)
     LoginWindow.setWindowIcon(icon)
+
     ui = Ui_LoginWindow()
     ui.setupUi(LoginWindow)
     LoginWindow.show()

@@ -1,16 +1,18 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from cypher import Cypher
-from MainWindow import Ui_MainWindow
+import MainWindow
+import license_agreement
 
 # Application entry point
 # @Author Joshua Scina
 # @Version 2.0
 class Ui_LoginWindow(object):
-    def switch(self):
+    def switch_to_main_window(self):
         self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_MainWindow()
+        self.ui = MainWindow.Ui_MainWindow()
         self.ui.setup(self.window)
         self.window.show()
+        LoginWindow.hide()
 
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
@@ -52,7 +54,7 @@ class Ui_LoginWindow(object):
     # This funtion checks if the input matches the login.txt file
     def login_to_main(self):
         user_name = self.username.text()
-        pass_word = self.password.text()
+        pass_word = self.password.text()        
         cypher = Cypher()
         try:
             with open("login.txt", "rb") as file:
@@ -63,8 +65,7 @@ class Ui_LoginWindow(object):
         if user_name == cypher.decrypt_phrase(
             lines[0]
         ) and pass_word == cypher.decrypt_phrase(lines[1]):
-            self.switch()
-            LoginWindow.hide()
+            self.switch_to_main_window()
         else:
             self.username.setText("")
             self.password.setText("")
@@ -85,7 +86,6 @@ class Ui_LoginWindow(object):
         self.uname_label.setText(_translate("LoginWindow", "Username:"))
         self.pword_label.setText(_translate("LoginWindow", "Password:"))
         self.login.setText(_translate("LoginWindow", "Login"))
-
 
 if __name__ == "__main__":
     import sys

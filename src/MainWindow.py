@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from cryptography.fernet import Fernet
 from cypher import Cypher
-from update import Ui_UpdateWindow
+import update
 
 # @Author Joshua Scina
 # @Version 1.1
@@ -11,13 +11,15 @@ from update import Ui_UpdateWindow
 class Ui_MainWindow(object):
     def switch(self):
         self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_UpdateWindow()
+        self.ui = update.Ui_UpdateWindow()
         self.ui.setup2(self.window)
         self.window.show()
+        self.MainWindow.hide()
 
     def setup(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        self.MainWindow = MainWindow
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 

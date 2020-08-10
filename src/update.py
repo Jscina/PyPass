@@ -1,15 +1,24 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from cypher import Cypher
+import MainWindow
 
 # @Author Joshua Scina
 # @Version 1.1
 
 
 class Ui_UpdateWindow(object):
-    def setup2(self, MainWindow):
-        MainWindow.setObjectName("UpdateWindow")
-        MainWindow.resize(800, 600)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+    def switch(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = MainWindow.Ui_MainWindow()
+        self.ui.setup(self.window)
+        self.window.show()
+        self.UpdateWindow.hide()
+
+    def setup2(self, UpdateWindow):
+        UpdateWindow.setObjectName("UpdateWindow")
+        UpdateWindow.resize(800, 600)
+        self.UpdateWindow = UpdateWindow
+        self.centralwidget = QtWidgets.QWidget(UpdateWindow)
         self.centralwidget.setObjectName("centralwidget")
 
         self.username = QtWidgets.QLineEdit(self.centralwidget)
@@ -25,11 +34,11 @@ class Ui_UpdateWindow(object):
         self.update_button.setObjectName("update_button")
         self.update_button.clicked.connect(self.update_login)
 
-        self.done_button = QtWidgets.QPushButton(self.centralwidget)
-        self.done_button.setGeometry(QtCore.QRect(640, 280, 89, 26))
-        self.done_button.setObjectName("done_button")
-        self.done_button.setText("Done")
-        self.done_button.clicked.connect(self.close_window)
+        self.switch_button = QtWidgets.QPushButton(self.centralwidget)
+        self.switch_button.setGeometry(QtCore.QRect(640, 280, 89, 26))
+        self.switch_button.setObjectName("switch_button")
+        self.switch_button.clicked.connect(self.switch)
+        self.switch_button.setText("Done")
 
         self.u_label = QtWidgets.QLabel(self.centralwidget)
         self.u_label.setGeometry(QtCore.QRect(180, 200, 141, 17))
@@ -47,14 +56,14 @@ class Ui_UpdateWindow(object):
         self.current_account_label.setGeometry(QtCore.QRect(180, 290, 61, 17))
         self.current_account_label.setObjectName("current_account_label")
 
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        UpdateWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(UpdateWindow)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        UpdateWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(UpdateWindow)
         self.get_current_login()
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(UpdateWindow)
 
     # Gets the current login credentials and prints them
     def get_current_login(self):
@@ -72,10 +81,6 @@ class Ui_UpdateWindow(object):
         except FileNotFoundError:
             self.current_account_label.setText("Error login.txt doesn't exist")
             self.current_account_label.adjustSize()
-
-    # Closes the current window when clicked
-    def close_window(self):
-        MainWindow.close()
 
     # Changes the login credentials based on the user input
     def update_login(self):
@@ -97,15 +102,15 @@ class Ui_UpdateWindow(object):
             self.current_account_label.setText("Error: login.txt does not exist")
             self.current_account_label.adjustSize()
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, UpdateWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Update Login"))
-        self.update_button.setText(_translate("MainWindow", "Update"))
-        self.u_label.setText(_translate("MainWindow", "Username:"))
-        self.p_label.setText(_translate("MainWindow", "Password:"))
-        self.current_login_label.setText(_translate("MainWindow", "Current Login:"))
+        UpdateWindow.setWindowTitle(_translate("UpdateWindow", "Update Login"))
+        self.update_button.setText(_translate("UpdateWindow", "Update"))
+        self.u_label.setText(_translate("UpdateWindow", "Username:"))
+        self.p_label.setText(_translate("UpdateWindow", "Password:"))
+        self.current_login_label.setText(_translate("UpdateWindow", "Current Login:"))
         self.current_account_label.setText(
-            _translate("MainWindow", "Username: Password:")
+            _translate("UpdateWindow", "Username: Password:")
         )
 
 
@@ -113,11 +118,11 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
+    UpdateWindow = QtWidgets.QMainWindow()
     icon = QtGui.QIcon()
     icon.addPixmap(QtGui.QPixmap("locked.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)
-    MainWindow.setWindowIcon(icon)
+    UpdateWindow.setWindowIcon(icon)
     ui = Ui_UpdateWindow()
-    ui.setup2(MainWindow)
-    MainWindow.show()
+    ui.setup2(UpdateWindow)
+    UpdateWindow.show()
     sys.exit(app.exec_())

@@ -176,6 +176,8 @@ class Ui_MainWindow(object):
             self.fix()
         except ValueError:
             index = 0
+        except IndexError:
+            self.index_input.setText("")
         self.index_input.setText("")
         self.show_users()
 

@@ -5,13 +5,9 @@ Simple password manager written in python using PyQt5
 
 
 To install (Windows):
- Download python from www.python.org/downloads
+ Download 7zip from https://www.7-zip.org/download.html
         
-        Install python and make sure to check the add to path option
-        Run the install.bat file included
-        You can either leave python installed or unistall it after you run the batch file
-        The batch file auto downloads all the required modules and generates the exe file
-        Once it finishes that it deletes the unneeded files and uninstalls the modules
+        Run the .exe file and extract to preferred location
         
 It will create two new files: usernames.txt and passwords.txt
 These are where the encrypted usernames/passwords are stored.

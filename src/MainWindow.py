@@ -37,7 +37,7 @@ class Ui_MainWindow(object):
         self.add_button.clicked.connect(self.add_user)
 
         self.update_button = QtWidgets.QPushButton(self.centralwidget)
-        self.update_button.setGeometry(520, 260, 89, 26)
+        self.update_button.setGeometry(500, 260, 131, 26)
         self.update_button.setObjectName("update_button")
         self.update_button.setText("Update Login")
         self.update_button.clicked.connect(self.switch)

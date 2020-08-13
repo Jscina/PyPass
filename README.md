@@ -4,9 +4,7 @@ Simple password manager written in python using PyQt5
 
 
 
-To install (Windows):
- Download 7zip from https://www.7-zip.org/a/7z1900-x64.exe
-        
+To install (Windows):        
         Run the .exe file and extract to preferred location
         
 It will create two new files: usernames.txt and passwords.txt

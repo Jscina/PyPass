@@ -34,7 +34,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="update_button">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -99,8 +99,20 @@
      <string>TextLabel</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="done">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>260</y>
+      <width>89</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Done</string>
+    </property>
+   </widget>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

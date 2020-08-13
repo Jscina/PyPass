@@ -60,4 +60,3 @@ class Cypher:
         cypher = Fernet(self.load_key())
         decrypted = cypher.decrypt(phrase)
         return decrypted.decode()
-

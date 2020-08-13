@@ -62,7 +62,9 @@ class Ui_MainWindow(object):
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
         self.scrollArea.setGeometry(QtCore.QRect(80, 240, 271, 261))
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
@@ -80,7 +82,7 @@ class Ui_MainWindow(object):
 
         self.acc_list = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.acc_list.setObjectName("acc_list")
-        
+
         self.verticalLayout.addWidget(self.acc_list)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -223,7 +225,7 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    
+
     # Adds the icon
     icon = QtGui.QIcon()
     icon.addPixmap(QtGui.QPixmap("locked.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)

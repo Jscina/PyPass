@@ -5,7 +5,7 @@ import MainWindow
 
 # Application entry point
 # @Author Joshua Scina
-# @Version 2.0
+# @Version 1.6
 class Ui_LoginWindow(object):
     def switch_to_main_window(self):
         self.window = QtWidgets.QMainWindow()

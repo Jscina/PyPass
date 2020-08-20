@@ -7,7 +7,7 @@ import update
 
 
 # @Author Joshua Scina
-# @Version 1.1
+# @Version 1.6
 # Do not try to run this file on it's own it will not function properly
 
 

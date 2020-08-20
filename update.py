@@ -4,7 +4,7 @@ from cypher import Cypher
 import MainWindow
 
 # @Author Joshua Scina
-# @Version 1.1
+# @Version 1.6
 
 
 class Ui_UpdateWindow(object):

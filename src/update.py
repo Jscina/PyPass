@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QIcon
 from cypher import Cypher
 import MainWindow
 
@@ -17,7 +18,9 @@ class Ui_UpdateWindow(object):
     def setup2(self, UpdateWindow):
         UpdateWindow.setObjectName("UpdateWindow")
         UpdateWindow.resize(800, 600)
+        UpdateWindow.setWindowIcon(QIcon("locked.ico"))
         self.UpdateWindow = UpdateWindow
+
         self.centralwidget = QtWidgets.QWidget(UpdateWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -119,9 +122,6 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     UpdateWindow = QtWidgets.QMainWindow()
-    icon = QtGui.QIcon()
-    icon.addPixmap(QtGui.QPixmap("locked.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)
-    UpdateWindow.setWindowIcon(icon)
     ui = Ui_UpdateWindow()
     ui.setup2(UpdateWindow)
     UpdateWindow.show()

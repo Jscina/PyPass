@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QIcon
 from cypher import Cypher
 import MainWindow
 
@@ -16,6 +17,8 @@ class Ui_LoginWindow(object):
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
         LoginWindow.resize(800, 600)
+        LoginWindow.setWindowIcon(QIcon("locked.ico"))
+
         self.centralwidget = QtWidgets.QWidget(LoginWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -39,6 +42,7 @@ class Ui_LoginWindow(object):
         self.password = QtWidgets.QLineEdit(self.centralwidget)
         self.password.setGeometry(QtCore.QRect(390, 250, 113, 26))
         self.password.setObjectName("password")
+        self.password.setEchoMode(QtWidgets.QLineEdit.Password)
 
         LoginWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(LoginWindow)
@@ -93,11 +97,6 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     LoginWindow = QtWidgets.QMainWindow()
-    # Adds the window icon
-    icon = QtGui.QIcon()
-    icon.addPixmap(QtGui.QPixmap("locked.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)
-    LoginWindow.setWindowIcon(icon)
-
     ui = Ui_LoginWindow()
     ui.setupUi(LoginWindow)
     LoginWindow.show()

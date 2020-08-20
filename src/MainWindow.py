@@ -1,7 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QDate, Qt
 from cryptography.fernet import Fernet
 from cypher import Cypher
 import update
+
 
 # @Author Joshua Scina
 # @Version 1.1
@@ -19,6 +22,8 @@ class Ui_MainWindow(object):
     def setup(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        MainWindow.setWindowIcon(QIcon("locked.ico"))
+
         self.MainWindow = MainWindow
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -112,25 +117,34 @@ class Ui_MainWindow(object):
         try:
             with open("usernames.txt", "ab") as file:
                 file.write(cypher.encrypt_phrase(users) + b"\n")
-            file.close()
+
             with open("passwords.txt", "ab") as file:
                 file.write(cypher.encrypt_phrase(passwords) + b"\n")
-            file.close()
+
+            with open("date-added.txt", "a") as file:
+                file.write(self.getDate() + "\n")
+
         except FileNotFoundError:
             self.fix()
+
         self.passwords.setText("")
         self.usernames.setText("")
         self.show_users()
 
+    # Gets today's date
+    def getDate(self):
+        today = QDate.currentDate()
+        date = today.toString(Qt.DefaultLocaleLongDate)
+        return date
+
     # Creates the username and password files if they don't exist
     def fix(self):
-        file = open("usernames.txt", "w")
-        file.write("")
-        file.close()
-        file = open("passwords.txt", "w")
-        file.write("")
-        file.close()
-
+        with open("usernames.txt", "wb") as file:
+            file.write(b"")
+        with open("passwords.txt", "wb") as file:
+            file.write(b"")
+        with open("date-added.txt", "w") as file:
+            file.write("")
     # This function prints the list of accounts on the screen
     def show_users(self):
         cypher = Cypher()
@@ -139,14 +153,18 @@ class Ui_MainWindow(object):
         try:
             with open("usernames.txt", "rb") as file:
                 usernames_list = file.readlines()
-            file.close()
+
             with open("passwords.txt", "rb") as file:
                 passwords_list = file.readlines()
-            file.close()
+
+            with open("date-added.txt", "r") as file:
+                date_list = file.readlines()
+
         except FileNotFoundError:
             self.fix()
             usernames_list = []
             passwords_list = []
+
         if len(usernames_list) != 0 and len(passwords_list) != 0:
             for index in range(len(usernames_list)):
                 account_pair.append(
@@ -155,6 +173,8 @@ class Ui_MainWindow(object):
                     + cypher.decrypt_phrase(usernames_list[index])
                     + "     "
                     + cypher.decrypt_phrase(passwords_list[index])
+                    + "     " 
+                    + date_list[index] 
                     + "\n"
                 )
             for index in range(len(account_pair)):
@@ -168,34 +188,56 @@ class Ui_MainWindow(object):
     def remove_user(self):
         try:
             index = int(self.index_input.text())
+
             with open("usernames.txt", "rb") as file:
                 u_list = file.readlines()
-            file.close()
+
             with open("passwords.txt", "rb") as file:
                 p_list = file.readlines()
-            file.close()
+
+            with open("date-added.txt", "r") as file:
+                d_list = file.readlines()
+            # Remove the index specified
             u_list[index] = None
             u_list.remove(None)
+
             p_list[index] = None
             p_list.remove(None)
+
+            d_list[index] = None
+            d_list.remove(None)
+
+            # Remove all line formatting
             while u_list.count(b"\n") > 0:
                 u_list.remove(b"\n")
+
             while p_list.count(b"\n") > 0:
                 p_list.remove(b"\n")
+
+            while d_list.count("\n") > 0:
+                d_list.remove("\n")
+            # Empty the files
             with open("usernames.txt", "wb") as file:
                 file.write(b"")
-            file.close()
+
             with open("passwords.txt", "wb") as file:
                 file.write(b"")
-            file.close()
+
+            with open("date-added.txt", "w") as file:
+                file.write("")
+            # Rewrite the files with the new list
             with open("usernames.txt", "ab") as file:
                 for index in range(len(u_list)):
                     file.write(u_list[index])
-            file.close()
+        
             with open("passwords.txt", "ab") as file:
                 for index in range(len(u_list)):
                     file.write(p_list[index])
-            file.close()
+
+            with open("date-added.txt", "a") as file:
+                for index in range(len(d_list)):
+                    file.write(d_list[index])
+       
         except FileNotFoundError:
             self.fix()
         except ValueError:
@@ -222,15 +264,8 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-
-    # Adds the icon
-    icon = QtGui.QIcon()
-    icon.addPixmap(QtGui.QPixmap("locked.ico"), QtGui.QIcon.Selected, QtGui.QIcon.On)
-    MainWindow.setWindowIcon(icon)
-
     ui = Ui_MainWindow()
     ui.setup(MainWindow)
     MainWindow.show()

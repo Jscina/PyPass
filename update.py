@@ -4,7 +4,7 @@ from cypher import Cypher
 import MainWindow
 
 # @Author Joshua Scina
-# @Version 1.6
+# @Version 1.6.1
 
 
 class Ui_UpdateWindow(object):
@@ -74,9 +74,9 @@ class Ui_UpdateWindow(object):
         try:
             with open("login.txt", "rb") as file:
                 account = file.readlines()
-            file.close()
-            username = cypher.decrypt_phrase(account[0])
-            password = cypher.decrypt_phrase(account[1])
+
+            username, password = cypher.decrypt_phrase(account[0]), cypher.decrypt_phrase(account[1])
+
             self.current_account_label.setText(
                 "Username: " + username + " Password: " + password
             )
@@ -87,8 +87,7 @@ class Ui_UpdateWindow(object):
 
     # Changes the login credentials based on the user input
     def update_login(self):
-        username_new = self.username.text()
-        password_new = self.password.text()
+        username_new, password_new = self.username.text(), self.password.text()
         self.username.setText("")
         self.password.setText("")
         cypher = Cypher()
@@ -99,7 +98,6 @@ class Ui_UpdateWindow(object):
                     + b"\n"
                     + cypher.encrypt_phrase(password_new)
                 )
-            file.close()
             self.get_current_login()
         except FileNotFoundError:
             self.current_account_label.setText("Error: login.txt does not exist")

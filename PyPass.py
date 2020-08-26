@@ -3,9 +3,9 @@ from PyQt5.QtGui import QIcon
 from cypher import Cypher
 import MainWindow
 
-# Application entry point
+# <-Application entry point->
 # @Author Joshua Scina
-# @Version 1.6
+# @Version 1.6.1
 class Ui_LoginWindow(object):
     def switch_to_main_window(self):
         self.window = QtWidgets.QMainWindow()
@@ -56,13 +56,10 @@ class Ui_LoginWindow(object):
 
     # This funtion checks if the input matches the login.txt file
     def login_to_main(self):
-        user_name = self.username.text()
-        pass_word = self.password.text()
-        cypher = Cypher()
+        user_name, pass_word, cypher = self.username.text(),  self.password.text(), Cypher()
         try:
             with open("login.txt", "rb") as file:
                 lines = file.readlines()
-            file.close()
         except FileNotFoundError:
             self.fix()
         if user_name == cypher.decrypt_phrase(

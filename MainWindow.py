@@ -7,7 +7,7 @@ import update
 
 
 # @Author Joshua Scina
-# @Version 1.6
+# @Version 1.6.1
 # Do not try to run this file on it's own it will not function properly
 
 
@@ -111,9 +111,7 @@ class Ui_MainWindow(object):
 
     # This function adds a new account to the list
     def add_user(self):
-        cypher = Cypher()
-        users = self.usernames.text()
-        passwords = self.passwords.text()
+        cypher, users, passwords= Cypher(), self.usernames.text(), self.passwords.text()
         try:
             with open("usernames.txt", "ab") as file:
                 file.write(cypher.encrypt_phrase(users) + b"\n")
@@ -147,9 +145,7 @@ class Ui_MainWindow(object):
             file.write("")
     # This function prints the list of accounts on the screen
     def show_users(self):
-        cypher = Cypher()
-        account_pair = []
-        acc = ""
+        cypher, account_pair, acc = Cypher(), [], ""
         try:
             with open("usernames.txt", "rb") as file:
                 usernames_list = file.readlines()
@@ -216,6 +212,7 @@ class Ui_MainWindow(object):
 
             while d_list.count("\n") > 0:
                 d_list.remove("\n")
+
             # Empty the files
             with open("usernames.txt", "wb") as file:
                 file.write(b"")
@@ -225,6 +222,7 @@ class Ui_MainWindow(object):
 
             with open("date-added.txt", "w") as file:
                 file.write("")
+
             # Rewrite the files with the new list
             with open("usernames.txt", "ab") as file:
                 for index in range(len(u_list)):
@@ -244,6 +242,7 @@ class Ui_MainWindow(object):
             index = 0
         except IndexError:
             self.index_input.setText("")
+
         self.index_input.setText("")
         self.show_users()
 

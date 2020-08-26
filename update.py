@@ -1,10 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon
 from cypher import Cypher
-import MainWindow
+import MainWindow, sys, qdarkstyle
 
 # @Author Joshua Scina
-# @Version 1.6.1
+# @Version 1.7
 
 
 class Ui_UpdateWindow(object):
@@ -119,6 +119,8 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyle("fusion")
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     UpdateWindow = QtWidgets.QMainWindow()
     ui = Ui_UpdateWindow()
     ui.setup2(UpdateWindow)

@@ -1,11 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon
 from cypher import Cypher
-import MainWindow
+import MainWindow, sys, qdarkstyle
 
 # <-Application entry point->
 # @Author Joshua Scina
-# @Version 1.6.1
+# @Version 1.7
 class Ui_LoginWindow(object):
     def switch_to_main_window(self):
         self.window = QtWidgets.QMainWindow()
@@ -18,7 +18,6 @@ class Ui_LoginWindow(object):
         LoginWindow.setObjectName("LoginWindow")
         LoginWindow.resize(800, 600)
         LoginWindow.setWindowIcon(QIcon("locked.ico"))
-
         self.centralwidget = QtWidgets.QWidget(LoginWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -91,8 +90,9 @@ class Ui_LoginWindow(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyle("fusion")
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     LoginWindow = QtWidgets.QMainWindow()
     ui = Ui_LoginWindow()
     ui.setupUi(LoginWindow)

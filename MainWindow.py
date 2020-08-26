@@ -3,11 +3,12 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QDate, Qt
 from cryptography.fernet import Fernet
 from cypher import Cypher
-import update
+#from Style import MainStyle
+import update, sys, qdarkstyle
 
 
 # @Author Joshua Scina
-# @Version 1.6.1
+# @Version 1.7
 # Do not try to run this file on it's own it will not function properly
 
 
@@ -65,7 +66,7 @@ class Ui_MainWindow(object):
         self.p_label.setObjectName("p_label")
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
-        self.scrollArea.setGeometry(QtCore.QRect(80, 240, 271, 261))
+        self.scrollArea.setGeometry(QtCore.QRect(10, 200, 320, 300))
 
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
@@ -264,6 +265,8 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyle("fusion")
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setup(MainWindow)

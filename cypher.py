@@ -3,7 +3,7 @@ from cryptography.fernet import InvalidToken
 
 # Do Not Edit This Class In Any Way
 # @Author Joshua Scina
-# @Version 1.6.1
+# @Version 1.7
 
 
 class Cypher:

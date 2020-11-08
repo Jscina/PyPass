@@ -1,84 +1,86 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon
-from cypher import Cypher
-import MainWindow, sys, qdarkstyle
+from serial_cypher import File_Manager
+import mainwindow, qdarkstyle
 
-# <-Application entry point->
-# @Author Joshua Scina
-# @Version 1.7
+# @Author: Joshua Scina
+# @Version: 2.0
+
+
 class Ui_LoginWindow(object):
-    def switch_to_main_window(self):
+    # Switch to the Main Window
+    def switch_to_main(self):
         self.window = QtWidgets.QMainWindow()
-        self.ui = MainWindow.Ui_MainWindow()
-        self.ui.setup(self.window)
+        self.ui = mainwindow.Ui_MainWindow()
+        self.ui.setupUi(self.window)
         self.window.show()
-        LoginWindow.hide()
+        self.LoginWindow.hide()
 
+    # Builds the window
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
-        LoginWindow.resize(800, 600)
+        LoginWindow.resize(591, 230)
         LoginWindow.setWindowIcon(QIcon("locked.ico"))
+        self.LoginWindow = LoginWindow
+
         self.centralwidget = QtWidgets.QWidget(LoginWindow)
         self.centralwidget.setObjectName("centralwidget")
 
+        # Label above the username input
         self.uname_label = QtWidgets.QLabel(self.centralwidget)
-        self.uname_label.setGeometry(QtCore.QRect(230, 220, 81, 17))
+        self.uname_label.setGeometry(QtCore.QRect(100, 80, 81, 17))
         self.uname_label.setObjectName("uname_label")
 
+        # Label above the password input
         self.pword_label = QtWidgets.QLabel(self.centralwidget)
-        self.pword_label.setGeometry(QtCore.QRect(390, 220, 81, 17))
+        self.pword_label.setGeometry(QtCore.QRect(260, 80, 91, 17))
         self.pword_label.setObjectName("pword_label")
 
+        # Login button
         self.login = QtWidgets.QPushButton(self.centralwidget)
-        self.login.setGeometry(QtCore.QRect(550, 250, 89, 26))
+        self.login.setGeometry(QtCore.QRect(420, 110, 89, 26))
         self.login.setObjectName("login")
-        self.login.clicked.connect(self.login_to_main)
+        self.login.clicked.connect(self.__login__)
 
+        # Username input
         self.username = QtWidgets.QLineEdit(self.centralwidget)
-        self.username.setGeometry(QtCore.QRect(230, 250, 113, 26))
+        self.username.setGeometry(QtCore.QRect(100, 110, 113, 26))
         self.username.setObjectName("username")
 
+        # Password input
         self.password = QtWidgets.QLineEdit(self.centralwidget)
-        self.password.setGeometry(QtCore.QRect(390, 250, 113, 26))
+        self.password.setGeometry(QtCore.QRect(260, 110, 113, 26))
         self.password.setObjectName("password")
         self.password.setEchoMode(QtWidgets.QLineEdit.Password)
 
         LoginWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(LoginWindow)
-        self.statusbar.setObjectName("statusbar")
-        LoginWindow.setStatusBar(self.statusbar)
-        cyper = Cypher()
-        cyper.gen_files()
 
         self.retranslateUi(LoginWindow)
         QtCore.QMetaObject.connectSlotsByName(LoginWindow)
 
-    # This funtion checks if the input matches the login.txt file
-    def login_to_main(self):
-        user_name, pass_word, cypher = self.username.text(),  self.password.text(), Cypher()
+    # Login method
+    def __login__(self):
+        login = [self.username.text(), self.password.text()]
+        manage = File_Manager()
         try:
+            # Load the login file
             with open("login.txt", "rb") as file:
-                lines = file.readlines()
+                log_user = manage.load(file)
+            # If the input matches what's in the login switch to the main window
+            if manage.decrypt(log_user[0]) == login[0] and manage.decrypt(log_user[1]) == login[1]:
+                self.switch_to_main()
         except FileNotFoundError:
+            # If the files don't exist create them then re-invoke the login method
             self.fix()
-        if user_name == cypher.decrypt_phrase(
-            lines[0]
-        ) and pass_word == cypher.decrypt_phrase(lines[1]):
-            self.switch_to_main_window()
-        else:
-            self.username.setText("")
-            self.password.setText("")
+            self.__login__()
 
-    # This function craetes the default login if it doesn't exist
     def fix(self):
-        cypher = Cypher()
-        file = open("login.txt", "wb")
-        file.write(
-            cypher.encrypt_phrase("usernamee")
-            + b"\n"
-            + cypher.encrypt_phrase("password")
-        )
-        file.close()
+        # Create the login file if it doesn't exist
+        manage = File_Manager()
+        login_default = [manage.encrypt("username"), manage.encrypt("password")]
+
+        with open("login.txt", "wb") as file:
+            manage.dump(login_default, file)
 
     def retranslateUi(self, LoginWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -90,6 +92,7 @@ class Ui_LoginWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("fusion")
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())

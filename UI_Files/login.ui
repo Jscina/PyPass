@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>591</width>
+    <height>230</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QLabel" name="uname_label">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>220</y>
+      <x>100</x>
+      <y>80</y>
       <width>81</width>
       <height>17</height>
      </rect>
@@ -30,8 +30,8 @@
    <widget class="QLabel" name="pword_label">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>220</y>
+      <x>260</x>
+      <y>80</y>
       <width>91</width>
       <height>17</height>
      </rect>
@@ -43,8 +43,8 @@
    <widget class="QPushButton" name="login">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>250</y>
+      <x>420</x>
+      <y>110</y>
       <width>89</width>
       <height>26</height>
      </rect>
@@ -56,8 +56,8 @@
    <widget class="QLineEdit" name="username">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>250</y>
+      <x>100</x>
+      <y>110</y>
       <width>113</width>
       <height>26</height>
      </rect>
@@ -66,15 +66,14 @@
    <widget class="QLineEdit" name="password">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>250</y>
+      <x>260</x>
+      <y>110</y>
       <width>113</width>
       <height>26</height>
      </rect>
     </property>
    </widget>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

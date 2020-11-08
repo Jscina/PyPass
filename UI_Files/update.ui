@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>UpdateWindow</class>
+ <widget class="QMainWindow" name="UpdateWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>647</width>
+    <height>167</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QLineEdit" name="username">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>220</y>
+      <x>50</x>
+      <y>40</y>
       <width>171</width>
       <height>26</height>
      </rect>
@@ -27,8 +27,8 @@
    <widget class="QLineEdit" name="password">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>220</y>
+      <x>270</x>
+      <y>40</y>
       <width>191</width>
       <height>26</height>
      </rect>
@@ -37,8 +37,8 @@
    <widget class="QPushButton" name="update_button">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>220</y>
+      <x>510</x>
+      <y>40</y>
       <width>89</width>
       <height>26</height>
      </rect>
@@ -50,8 +50,8 @@
    <widget class="QLabel" name="u_label">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>200</y>
+      <x>50</x>
+      <y>20</y>
       <width>141</width>
       <height>17</height>
      </rect>
@@ -63,8 +63,8 @@
    <widget class="QLabel" name="p_label">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>200</y>
+      <x>270</x>
+      <y>20</y>
       <width>131</width>
       <height>17</height>
      </rect>
@@ -76,8 +76,8 @@
    <widget class="QLabel" name="current_login_label">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>270</y>
+      <x>50</x>
+      <y>90</y>
       <width>131</width>
       <height>17</height>
      </rect>
@@ -89,8 +89,8 @@
    <widget class="QLabel" name="current_account_label">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>290</y>
+      <x>50</x>
+      <y>110</y>
       <width>61</width>
       <height>17</height>
      </rect>
@@ -102,8 +102,8 @@
    <widget class="QPushButton" name="done">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>260</y>
+      <x>510</x>
+      <y>80</y>
       <width>89</width>
       <height>26</height>
      </rect>

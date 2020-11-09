@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon
 from serial_cypher import File_Manager
-import mainwindow, qdarkstyle
+import mainwindow, qdarkstyle, os
 
 # @Author: Joshua Scina
 # @Version: 2.0
@@ -20,7 +20,8 @@ class Ui_LoginWindow(object):
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
         LoginWindow.resize(591, 230)
-        LoginWindow.setWindowIcon(QIcon("locked.ico"))
+        scriptDir = os.path.dirname(os.path.realpath(__file__))
+        LoginWindow.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'locked.ico'))
         self.LoginWindow = LoginWindow
 
         self.centralwidget = QtWidgets.QWidget(LoginWindow)

@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtGui import QIcon
 from serial_cypher import File_Manager
-import update, qdarkstyle
+import update, qdarkstyle, os
 
 # @Author: Joshua Scina
 # @Version: 2.0
@@ -22,7 +22,8 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(637, 618)
-        MainWindow.setWindowIcon(QIcon("locked.ico"))
+        scriptDir = os.path.dirname(os.path.realpath(__file__))
+        MainWindow.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'locked.ico'))
         self.MainWindow = MainWindow
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)

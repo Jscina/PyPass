@@ -1,5 +1,5 @@
 # PyPass
-Simple password manager written in python using PyQt5
+Simple password manager written in python using PyQt framwork
 
 
 

@@ -178,6 +178,8 @@ class Ui_MainWindow(object):
             else:
                 accounts.append(
                     str(index) +
+                     " Webiste: " +
+                     data[4][index] +
                     " Username: " +
                     self._crypter.decrypt(users[index], keys[index]) +
                     " Password: " +
@@ -209,12 +211,12 @@ class Ui_MainWindow(object):
     def add_user(self):
         data = self._crypter.load_data()
         key = self._crypter.gen_key()
-        user_names, pass_words, keys = list(data[0]), list(data[1]), list(data[2])
         date = datetime.datetime.now()
         data[0].append(self._crypter.encrypt(self.usernames.text(), key))
         data[1].append(self._crypter.encrypt(self.passwords.text(), key))
         data[2].append(key)
         data[3].append(date.strftime("%x"))
+        data[4].append(self.website_input.text())
         self._crypter.dump_data(data)
         self.usernames.clear()
         self.passwords.clear()

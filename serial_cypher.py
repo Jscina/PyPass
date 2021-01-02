@@ -9,7 +9,7 @@ class File_Manager:
     def __init__(self):
         # This key is only used for the default login
         self._master_key = self.gen_key()
-        
+
     # Return the object
     def load(self, file):
         return pickle.load(file)
@@ -29,8 +29,9 @@ class File_Manager:
     # Create base files
 
     def gen_data(self):
-        data = ([self.encrypt("Username", self._master_key)], [
-                self.encrypt("Password", self._master_key)], [self.get_master()], [""])
+        data = ([self.encrypt("Username", self.get_master())],
+                [self.encrypt("Password", self.get_master())],
+                [self.get_master()], [""])
         with open("data.pp", "wb") as file:
             self.dump(data, file)
         del data

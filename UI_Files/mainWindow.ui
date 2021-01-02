@@ -19,41 +19,25 @@ color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="2">
-     <widget class="QLabel" name="p_label">
-      <property name="text">
-       <string>Password:</string>
+    <item row="2" column="3">
+     <widget class="QLineEdit" name="usernames">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+gridline-color: rgb(0, 0, 0);
+background-color: rgb(80, 80, 80);
+border-radius: 5px;</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
-     <spacer name="horizontalSpacer_3">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+    <item row="3" column="5">
+     <widget class="QLabel" name="index_label">
+      <property name="text">
+       <string>Index to Remove:</string>
       </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
+     </widget>
     </item>
-    <item row="3" column="4">
-     <spacer name="horizontalSpacer_6">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="2">
-     <spacer name="verticalSpacer_2">
+    <item row="0" column="0" colspan="8">
+     <spacer name="topSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
@@ -66,45 +50,6 @@ color: rgb(255, 255, 255);</string>
      </spacer>
     </item>
     <item row="2" column="4">
-     <spacer name="horizontalSpacer_5">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="6" column="3">
-     <spacer name="horizontalSpacer_11">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="1" column="0">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="2">
      <widget class="QLineEdit" name="passwords">
       <property name="styleSheet">
        <string notr="true">color: rgb(255, 255, 255);
@@ -117,27 +62,25 @@ border-radius: 5px;</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QLabel" name="acc_label">
+    <item row="1" column="4">
+     <widget class="QLabel" name="p_label">
       <property name="text">
-       <string>Accounts:</string>
+       <string>Password:</string>
       </property>
      </widget>
     </item>
-    <item row="7" column="4">
-     <spacer name="verticalSpacer_5">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
+    <item row="2" column="5">
+     <widget class="QPushButton" name="add_button">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(79, 79, 79);</string>
       </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
+      <property name="text">
+       <string>Add User</string>
       </property>
-     </spacer>
+     </widget>
     </item>
-    <item row="4" column="3">
+    <item row="4" column="5">
      <widget class="QLineEdit" name="index_input">
       <property name="styleSheet">
        <string notr="true">color: rgb(255, 255, 255);
@@ -147,64 +90,32 @@ border-radius: 5px;</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="3">
-     <widget class="QLabel" name="index_label">
+    <item row="1" column="2">
+     <widget class="QLabel" name="label">
       <property name="text">
-       <string>Index to Remove:</string>
+       <string>Website</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="4">
-     <widget class="QPushButton" name="remove_user">
+    <item row="1" column="3">
+     <widget class="QLabel" name="u_label">
+      <property name="text">
+       <string>Username:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="6">
+     <widget class="QPushButton" name="update_login">
       <property name="styleSheet">
        <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(79, 79, 79);</string>
       </property>
       <property name="text">
-       <string>Remove User</string>
+       <string>Update Login</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="1">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="5" column="3">
-     <spacer name="horizontalSpacer_10">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="4" column="1" rowspan="4" colspan="2">
+    <item row="7" column="2" colspan="3">
      <widget class="QListWidget" name="listWidget">
       <property name="movement">
        <enum>QListView::Static</enum>
@@ -219,19 +130,32 @@ background-color: rgb(79, 79, 79);</string>
       </item>
      </widget>
     </item>
-    <item row="2" column="3">
-     <widget class="QPushButton" name="add_button">
+    <item row="4" column="6">
+     <widget class="QPushButton" name="remove_user">
       <property name="styleSheet">
        <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(79, 79, 79);</string>
       </property>
       <property name="text">
-       <string>Add User</string>
+       <string>Remove User</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="usernames">
+    <item row="8" column="0" colspan="8">
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="2">
+     <widget class="QLineEdit" name="lineEdit">
       <property name="styleSheet">
        <string notr="true">color: rgb(255, 255, 255);
 gridline-color: rgb(0, 0, 0);
@@ -240,30 +164,28 @@ border-radius: 5px;</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="4">
-     <widget class="QPushButton" name="remove_all_button">
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(79, 79, 79);</string>
+    <item row="1" column="1" rowspan="7">
+     <spacer name="leftSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="5" column="2">
+     <widget class="QLabel" name="acc_label">
       <property name="text">
-       <string>Remove All</string>
+       <string>Accounts:</string>
       </property>
      </widget>
     </item>
-    <item row="6" column="4">
-     <widget class="QPushButton" name="update_login">
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(79, 79, 79);</string>
-      </property>
-      <property name="text">
-       <string>Update Login</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" rowspan="3">
-     <spacer name="horizontalSpacer_4">
+    <item row="2" column="7" rowspan="6">
+     <spacer name="rightSpacer">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -275,8 +197,8 @@ background-color: rgb(79, 79, 79);</string>
       </property>
      </spacer>
     </item>
-    <item row="6" column="5">
-     <spacer name="horizontalSpacer_9">
+    <item row="2" column="6">
+     <spacer name="add_button_spacer">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -284,104 +206,6 @@ background-color: rgb(79, 79, 79);</string>
        <size>
         <width>40</width>
         <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="4" column="5">
-     <spacer name="horizontalSpacer_12">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="8" column="1">
-     <spacer name="verticalSpacer_4">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="5" column="5">
-     <spacer name="horizontalSpacer_8">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="5">
-     <spacer name="horizontalSpacer_13">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="4" colspan="2">
-     <spacer name="verticalSpacer_3">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLabel" name="u_label">
-      <property name="text">
-       <string>Username:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="5">
-     <spacer name="horizontalSpacer_7">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="8" column="4">
-     <spacer name="verticalSpacer_6">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
        </size>
       </property>
      </spacer>

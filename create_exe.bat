@@ -1,3 +1,3 @@
 @echo off
 pyinstaller -D -w -i=locked.ico PyPass.py
-copy locked.ico dist/PyPass/locked.ico
+copy %CD%\locked.ico %CD%\dist\PyPass\locked.ico

@@ -30,7 +30,7 @@ class File_Manager:
 
     def gen_data(self):
         data = ([self.encrypt("Username", self._master_key)], [
-                self.encrypt("Password", self._master_key)], [self._master_key], [""])
+                self.encrypt("Password", self._master_key)], [self.get_master()], [""])
         with open("data.pp", "wb") as file:
             self.dump(data, file)
         del data

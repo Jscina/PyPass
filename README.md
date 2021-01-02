@@ -10,6 +10,7 @@ To install (Windows):
 
 To Install (From source [Windows]):
 
+        Source will always be more up to date than the release version
         Execute the create_exe.bat file
 
 The default login is:

@@ -7,8 +7,8 @@ import pickle
 
 class File_Manager:
     def __init__(self):
-        # This key is only used for the default login which should be changed immediately
-        self._master_key = b'b3YbIyWBRnou3KRq2-H_v072C_qO53x7x0rsgAm1UyU='
+        # This key is only used for the default login
+        self._master_key = self.gen_key()
         
     # Return the object
     def load(self, file):

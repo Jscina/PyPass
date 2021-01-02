@@ -91,7 +91,7 @@ border-radius: 5px;</string>
      </widget>
     </item>
     <item row="1" column="2">
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="web_label">
       <property name="text">
        <string>Website</string>
       </property>
@@ -155,7 +155,7 @@ background-color: rgb(79, 79, 79);</string>
      </spacer>
     </item>
     <item row="2" column="2">
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QLineEdit" name="website_input">
       <property name="styleSheet">
        <string notr="true">color: rgb(255, 255, 255);
 gridline-color: rgb(0, 0, 0);

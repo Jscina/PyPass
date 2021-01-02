@@ -5,9 +5,12 @@ import PyPass_Main_Window
 
 
 class Ui_LoginWindow(object):
-
     def __init__(self):
         self._crypter = FM()
+        if os.path.exists(os.path.abspath("data.pp")):
+            pass
+        else:
+            self._crypter.gen_data()
 
     def _Main_Window(self):
         self.window = QtWidgets.QMainWindow()
@@ -19,14 +22,15 @@ class Ui_LoginWindow(object):
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
         LoginWindow.resize(591, 194)
-        LoginWindow.setStyleSheet(
-            "background-color: rgb(0, 0, 0);\n""font: 11pt \"Segoe UI\";")
+        LoginWindow.setStyleSheet("background-color: rgb(0, 0, 0);\n"
+                                  "font: 11pt \"Segoe UI\";")
         scriptDir = os.path.dirname(os.path.realpath(__file__))
         LoginWindow.setWindowIcon(QtGui.QIcon(
             scriptDir + os.path.sep + 'locked.ico'))
         self.LoginWindow = LoginWindow
         self.centralwidget = QtWidgets.QWidget(LoginWindow)
         self.centralwidget.setObjectName("centralwidget")
+
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
 
@@ -37,6 +41,7 @@ class Ui_LoginWindow(object):
         self.login.clicked.connect(self._login)
 
         self.gridLayout.addWidget(self.login, 3, 3, 1, 1)
+
         self.username = QtWidgets.QLineEdit(self.centralwidget)
         self.username.setStyleSheet("color: rgb(255, 255, 255);\n"
                                     "gridline-color: rgb(0, 0, 0);\n"
@@ -45,24 +50,11 @@ class Ui_LoginWindow(object):
         self.username.setText("")
         self.username.setObjectName("username")
 
-        if os.path.exists(os.path.abspath("data.pp")):
-            pass
-        else:
-            self._crypter.gen_data()
-
         self.gridLayout.addWidget(self.username, 3, 1, 1, 1)
+
         spacerItem = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem1, 4, 3, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem2, 3, 0, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem3, 0, 2, 1, 1)
+        self.gridLayout.addItem(spacerItem, 3, 0, 1, 1)
 
         self.pword_label = QtWidgets.QLabel(self.centralwidget)
         self.pword_label.setStyleSheet("color: rgb(255, 255, 255);")
@@ -71,23 +63,15 @@ class Ui_LoginWindow(object):
         self.pword_label.setObjectName("pword_label")
 
         self.gridLayout.addWidget(self.pword_label, 2, 2, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.MinimumExpanding)
-        self.gridLayout.addItem(spacerItem4, 4, 1, 1, 1)
 
         self.uname_label = QtWidgets.QLabel(self.centralwidget)
         self.uname_label.setStyleSheet("color: rgb(255, 255, 255);")
+        self.uname_label.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.uname_label.setAlignment(
             QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
         self.uname_label.setObjectName("uname_label")
 
         self.gridLayout.addWidget(self.uname_label, 2, 1, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem5, 0, 3, 1, 1)
-        spacerItem6 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem6, 4, 2, 1, 1)
 
         self.password = QtWidgets.QLineEdit(self.centralwidget)
         self.password.setStyleSheet("color: rgb(255, 255, 255);\n"
@@ -99,9 +83,15 @@ class Ui_LoginWindow(object):
         self.password.setObjectName("password")
 
         self.gridLayout.addWidget(self.password, 3, 2, 1, 1)
-        spacerItem7 = QtWidgets.QSpacerItem(
+        spacerItem1 = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem7, 3, 4, 1, 1)
+        self.gridLayout.addItem(spacerItem1, 3, 4, 1, 1)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem2, 4, 1, 1, 3)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem3, 0, 1, 1, 3)
         LoginWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(LoginWindow)

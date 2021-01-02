@@ -5,6 +5,7 @@ import PyPass_Main_Window as PMW
 import datetime
 
 
+
 class Ui_UpdateWindow(object):
     def __init__(self):
         self._crypter = FM()
@@ -28,8 +29,8 @@ class Ui_UpdateWindow(object):
 
         self.centralwidget = QtWidgets.QWidget(UpdateWindow)
         self.centralwidget.setObjectName("centralwidget")
-
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+
         self.gridLayout.setObjectName("gridLayout")
 
         self.password = QtWidgets.QLineEdit(self.centralwidget)
@@ -38,7 +39,6 @@ class Ui_UpdateWindow(object):
                                     "background-color: rgb(80, 80, 80);\n"
                                     "border-radius: 5px;")
         self.password.setObjectName("password")
-
         self.gridLayout.addWidget(self.password, 3, 3, 1, 1)
 
         self.done = QtWidgets.QPushButton(self.centralwidget)
@@ -55,19 +55,6 @@ class Ui_UpdateWindow(object):
 
         self.gridLayout.addWidget(self.u_label, 2, 1, 1, 1)
 
-        spacerItem = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem, 0, 0, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem1, 5, 0, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem2, 3, 5, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem3, 0, 1, 1, 1)
-
         self.username = QtWidgets.QLineEdit(self.centralwidget)
         self.username.setStyleSheet("color: rgb(255, 255, 255);\n"
                                     "gridline-color: rgb(0, 0, 0);\n"
@@ -76,17 +63,6 @@ class Ui_UpdateWindow(object):
         self.username.setObjectName("username")
 
         self.gridLayout.addWidget(self.username, 3, 1, 1, 1)
-
-        spacerItem4 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem4, 2, 4, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem5, 0, 4, 1, 1)
-        spacerItem6 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-
-        self.gridLayout.addItem(spacerItem6, 5, 5, 1, 1)
 
         self.current_login_label = QtWidgets.QLabel(self.centralwidget)
         self.current_login_label.setStyleSheet("color: rgb(255, 255, 255);")
@@ -99,14 +75,9 @@ class Ui_UpdateWindow(object):
         self.p_label.setObjectName("p_label")
 
         self.gridLayout.addWidget(self.p_label, 2, 3, 1, 1)
-
-        spacerItem7 = QtWidgets.QSpacerItem(
+        spacerItem = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem7, 5, 3, 1, 1)
-        spacerItem8 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-
-        self.gridLayout.addItem(spacerItem8, 2, 5, 1, 1)
+        self.gridLayout.addItem(spacerItem, 5, 3, 1, 1)
 
         self.update_button = QtWidgets.QPushButton(self.centralwidget)
         self.update_button.setStyleSheet("color: rgb(255, 255, 255);\n"
@@ -114,26 +85,29 @@ class Ui_UpdateWindow(object):
         self.update_button.setObjectName("update_button")
         self.update_button.clicked.connect(self.update_login)
 
+
         self.gridLayout.addWidget(self.update_button, 3, 4, 1, 1)
-        spacerItem9 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem9, 0, 3, 1, 1)
-        spacerItem10 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem10, 2, 0, 2, 1)
-        spacerItem11 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem11, 7, 1, 1, 1)
 
         self.current_account_label = QtWidgets.QLabel(self.centralwidget)
         self.current_account_label.setStyleSheet("color: rgb(255, 255, 255);")
         self.current_account_label.setObjectName("current_account_label")
 
         self.gridLayout.addWidget(self.current_account_label, 6, 1, 1, 3)
-
-        spacerItem12 = QtWidgets.QSpacerItem(
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem1, 2, 0, 5, 1)
+        spacerItem2 = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem12, 7, 3, 1, 1)
+        self.gridLayout.addItem(spacerItem2, 7, 1, 1, 4)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem3, 3, 5, 3, 1)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem4, 2, 4, 1, 2)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem5, 0, 1, 1, 4)
         UpdateWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(UpdateWindow)
@@ -143,13 +117,13 @@ class Ui_UpdateWindow(object):
         _translate = QtCore.QCoreApplication.translate
         UpdateWindow.setWindowTitle(_translate("UpdateWindow", "Update Login"))
         self.done.setText(_translate("UpdateWindow", "Done"))
-        self.p_label.setText(_translate("UpdateWindow", "Password:"))
+        self.u_label.setText(_translate("UpdateWindow", "Username:"))
         self.current_login_label.setText(
             _translate("UpdateWindow", "Current Login:"))
+        self.p_label.setText(_translate("UpdateWindow", "Password:"))
+        self.update_button.setText(_translate("UpdateWindow", "Update"))
         self.current_account_label.setText(
             _translate("UpdateWindow", self.show_current()))
-        self.update_button.setText(_translate("UpdateWindow", "Update"))
-        self.u_label.setText(_translate("UpdateWindow", "Username:"))
 
     def show_current(self):
         data = self._crypter.load_data()

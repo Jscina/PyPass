@@ -209,8 +209,7 @@ class Ui_MainWindow(object):
     def add_user(self):
         data = self._crypter.load_data()
         key = self._crypter.gen_key()
-        user_names, pass_words, keys = list(
-            data[0]), list(data[1]), list(data[2])
+        user_names, pass_words, keys = list(data[0]), list(data[1]), list(data[2])
         date = datetime.datetime.now()
         data[0].append(self._crypter.encrypt(self.usernames.text(), key))
         data[1].append(self._crypter.encrypt(self.passwords.text(), key))

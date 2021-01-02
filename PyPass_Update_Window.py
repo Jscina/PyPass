@@ -141,8 +141,8 @@ class Ui_UpdateWindow(object):
         password = self._crypter.encrypt(self.password.text(), key)
         date = datetime.datetime.now()
         data = self._crypter.load_data()
-        data[0][0], data[1][0], data[2][0], data[3][0] = username, password, key, date.strftime(
-            "%x")
+        data[0][0], data[1][0], data[2][0], data[3][0], data[4][0] = username, password, key, date.strftime(
+            "%x"), [""]
         del username, password, key, date
         self.username.clear()
         self.password.clear()

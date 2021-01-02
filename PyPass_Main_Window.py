@@ -178,8 +178,8 @@ class Ui_MainWindow(object):
             else:
                 accounts.append(
                     str(index) +
-                     " Webiste: " +
-                     data[4][index] +
+                    " Webiste: " +
+                    data[4][index] +
                     " Username: " +
                     self._crypter.decrypt(users[index], keys[index]) +
                     " Password: " +
@@ -220,6 +220,7 @@ class Ui_MainWindow(object):
         self._crypter.dump_data(data)
         self.usernames.clear()
         self.passwords.clear()
+        self.website_input.clear()
         self.show_accounts()
 
 

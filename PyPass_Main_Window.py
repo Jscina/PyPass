@@ -174,19 +174,12 @@ class Ui_MainWindow(object):
         users, passes, keys, accounts = data[0], data[1], data[2], list()
 
         for index in range(len(keys)):
+            fuser, fpass, fsite, fdate = self._crypter.decrypt(users[index], keys[index]), self._crypter.decrypt(
+                passes[index], keys[index]), str(data[4][index]), str(data[3][index])
             if index == 0:
                 continue
             else:
-                accounts.append(
-                    str(index) +
-                    " Webiste: " +
-                    data[4][index] +
-                    " Username: " +
-                    self._crypter.decrypt(users[index], keys[index]) +
-                    " Password: " +
-                    self._crypter.decrypt(passes[index], keys[index]) +
-                    " Date Added: " +
-                    str(data[3][index]))
+                accounts.append(f"{index} Webiste: www.{fsite}.com Username: {fuser} Password: {fpass} Date Added: {fdate}")
 
         self.listWidget.clear()
         if len(keys) == 1:

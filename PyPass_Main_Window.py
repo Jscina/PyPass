@@ -100,32 +100,11 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.update_login, 5, 6, 1, 1)
 
         self.listWidget = QtWidgets.QListWidget(self.centralwidget)
-        self.listWidget.setStyleSheet("QScrollBar:vertical {\n"
-                                      "            border: none;\n"
-                                      "            background:black;\n"
-                                      "            width:10px;\n"
-                                      "            margin: 0px 0px 0px 0px;\n"
-                                      "        }\n"
-                                      "        QScrollBar::handle:vertical {\n"
-                                      "            background: rgb(144, 144, 144);\n"
-                                      "            min-height: 0px;\n"
-                                      "        }\n"
-                                      "        QScrollBar::add-line:vertical {\n"
-                                      "            background: rgb(144, 144, 144);\n"
-                                      "            height: 0px;\n"
-                                      "            subcontrol-position: bottom;\n"
-                                      "            subcontrol-origin: margin;\n"
-                                      "        }\n"
-                                      "        QScrollBar::sub-line:vertical {\n"
-                                      "            background: rgb(144, 144, 144);\n"
-                                      "            height: 0 px;\n"
-                                      "            subcontrol-position: top;\n"
-                                      "            subcontrol-origin: margin;\n"
-                                      "        }")
         self.listWidget.setMovement(QtWidgets.QListView.Static)
         self.listWidget.setResizeMode(QtWidgets.QListView.Adjust)
         self.listWidget.setObjectName("listWidget")
         item = "None"
+
         if len(self._crypter.load_data()[0]) > 1:
             self.show_accounts()
             del item

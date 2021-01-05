@@ -1,17 +1,17 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from serial_cypher import File_Manager as FM
+from serial_cypher import File_Manager
 import os
-import PyPass_Update_Window as PUW
+import PyPass_Update_Window
 import datetime
 
 
 class Ui_MainWindow(object):
     def __init__(self):
-        self._crypter = FM()
+        self._crypter = File_Manager()
 
     def _Update_Window(self):
         self.window = QtWidgets.QMainWindow()
-        self.ui = PUW.Ui_UpdateWindow()
+        self.ui = PyPass_Update_Window.Ui_UpdateWindow()
         self.ui.setupUi(self.window)
         self.window.show()
         self.MainWindow.close()

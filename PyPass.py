@@ -1,12 +1,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from serial_cypher import File_Manager as FM
+from serial_cypher import File_Manager
 import os
 import PyPass_Main_Window
 
 
 class Ui_LoginWindow(object):
     def __init__(self):
-        self._crypter = FM()
+        self._crypter = File_Manager()
         if os.path.exists(os.path.abspath("data.pp")):
             pass
         else:

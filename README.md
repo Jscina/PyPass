@@ -11,12 +11,8 @@ To install (Windows):
 To Install (From source [Windows]):
 
         Source will always be more up to date than the release version
-        but requires latest python version installed
-        with the following pip modules:
-        
-                PyQt5
-                Cryptography
-                
+        but requires latest python and 7zip. Both must be added to PATH
+                 
         Execute the create_exe.bat file
 
 The default login is:

@@ -62,6 +62,7 @@ class File_Manager:
         crypto = Fernet(key)
         return crypto.encrypt(phrase.encode())
 
+
     # Decrypt bytes and return it as a string
     def decrypt(self, phrase: bytes, key: bytes):
         crypto = Fernet(key)

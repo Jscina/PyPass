@@ -118,8 +118,7 @@ class Ui_UpdateWindow(object):
         UpdateWindow.setWindowTitle(_translate("UpdateWindow", "Update Login"))
         self.done.setText(_translate("UpdateWindow", "Done"))
         self.u_label.setText(_translate("UpdateWindow", "Username:"))
-        self.current_login_label.setText(
-            _translate("UpdateWindow", "Current Login:"))
+        self.current_login_label.setText(_translate("UpdateWindow", "Current Login:"))
         self.p_label.setText(_translate("UpdateWindow", "Password:"))
         self.update_button.setText(_translate("UpdateWindow", "Update"))
         self.current_account_label.setText(

@@ -41,7 +41,9 @@ class Worker(QThread):
                                 rd /s /q %CD%\\dist \n
                                 del %CD%\\PyPass.spec \n
                                 rd /s /q %CD%\\src \n
-                                move %CD%\\PyPass C:\\PyPass
+                                move %CD%\\PyPass C:\\PyPass\n
+                                del %CD%\\*.vbs\n
+                                del %CD%\\*.bat
                                 """)
             elif count == 80:
                 with open("end.vbs", "w") as file:

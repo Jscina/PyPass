@@ -1,14 +1,21 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
-import Installer, os, time
+import  os, time, subprocess
 
 class Worker(QThread):
     countChanged = pyqtSignal(int)
 
     def run(self):
+        os.chdir(os.curdir)
+        path_start = "install_start.bat"
+        path_end = "install_end.bat"
         count = 0
         while count < 100:
             count += 1
+            if count == 30:
+                subprocess.call(path_start)
+            elif count == 60:
+                subprocess.call(path_end)
             self.countChanged.emit(count)
             time.sleep(0.5)
 
@@ -95,12 +102,9 @@ class Ui_InstallWindow(object):
         self.progress_bar.setValue(value)
 
         if value == 100:
-            self.install_script()
             self.finished_button.show()
             self.progress_label.setText("Done")
 
-    def install_script(self):
-        self.installer = Installer()
 
 
 

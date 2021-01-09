@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import Install_Window
+import Install_Window, os
 
 
 class Ui_LicenseWindow(object):
@@ -24,7 +24,7 @@ class Ui_LicenseWindow(object):
                                     "color: rgb(255, 255, 255);\n")
         self.license_window = LicenseWindow
         scriptDir = os.path.dirname(os.path.realpath(__file__))
-        self.license_window_window.setWindowIcon(QtGui.QIcon(
+        self.license_window.setWindowIcon(QtGui.QIcon(
             scriptDir + os.path.sep + 'locked.ico'))
 
         self.central_widget = QtWidgets.QWidget(LicenseWindow)

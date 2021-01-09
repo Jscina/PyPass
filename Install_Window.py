@@ -1,23 +1,58 @@
+import os
+import subprocess
+import time
+
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
-import  os, time, subprocess
+
 
 class Worker(QThread):
     countChanged = pyqtSignal(int)
 
     def run(self):
         os.chdir(os.curdir)
-        path_start = "install_start.bat"
-        path_end = "install_end.bat"
+        path_start, path_end = "start.vbs", "end.vbs"
         count = 0
         while count < 100:
             count += 1
-            if count == 30:
-                subprocess.call(path_start)
-            elif count == 60:
-                subprocess.call(path_end)
+            if count == 15:
+                with open("install_start.bat", "w") as file:
+                    file.write("""
+                    @echo off\n
+                    %CD%\\python_env\\Scripts\\activate.bat pip install cryptography PyQt5 && pyinstaller -F -w -i=locked.ico %CD%\\src\\PyPass.py && %CD%\\python_env\\Scripts\\deactivate.bat
+                    """)
+            elif count == 35:
+                with open("start.vbs", "w") as file:
+                    file.write("Set WshShell = CreateObject(\"WScript.Shell\")\n")
+                    file.write(f"WshShell.Run chr(34) & \"{os.path.abspath('install_start.bat')}\" & Chr(34), 0\n")
+                    file.write("set WshShell = Nothing\n")
+            elif count == 50:
+                subprocess.call(f"cmd /c {path_start}")
+            elif count == 75:
+                with open("install_end.bat", "w") as file:
+                    file.write("""
+                                @echo off \n
+                                rd /s /q %CD%\\python_env \n
+                                mkdir %CD%\\PyPass \n
+                                copy %CD%\\locked.ico %CD%\\PyPass\\locked.ico \n
+                                copy %CD%\\LICENSE.txt %CD%\\PyPass\\LICENSE.txt \n
+                                rd /s /q %CD%\\build \n
+                                move /y %CD%\\dist\\PyPass.exe %CD%\\PyPass\\PyPass.exe \n
+                                rd /s /q %CD%\\dist \n
+                                del %CD%\\PyPass.spec \n
+                                rd /s /q %CD%\\src \n
+                                move %CD%\\PyPass C:\\PyPass
+                                """)
+            elif count == 80:
+                with open("end.vbs", "w") as file:
+                    file.write("Set WshShell = CreateObject(\"WScript.Shell\")\n")
+                    file.write(f"WshShell.Run chr(34) & \"{os.path.abspath('install_end.bat')}\" & Chr(34), 0\n")
+                    file.write("set WshShell = Nothing\n")
+            elif count == 90:
+                subprocess.call(f"cmd /c {path_end}")
             self.countChanged.emit(count)
             time.sleep(0.5)
+
 
 class Ui_InstallWindow(object):
     def setupUi(self, InstallWindow):
@@ -104,9 +139,6 @@ class Ui_InstallWindow(object):
         if value == 100:
             self.finished_button.show()
             self.progress_label.setText("Done")
-
-
-
 
 
 if __name__ == "__main__":

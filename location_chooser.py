@@ -89,14 +89,14 @@ class Ui_FileLocationWindow(object):
         choice = self.install_location.text()
         self.install_location.clear()
         # If the path exists continue
-        if os.path.exists(choice):
-            self.proceed(choice, True)
+        if os.path.exists(choice.removesuffix("/")):
+            self.proceed(choice.removesuffix("/"), True)
         # If the field is empty continue
         elif choice == "":
             self.proceed("C:/PyPass", True)
         # If the field isn't empty and doesn't exist
         else:
-            self.install_location.setPlaceholderText("Error path doesn't exist: Please try again.")
+            self.install_location.setPlaceholderText(f"Error path doesn't exist: {choice} Default: C:/PyPass Warning: Use / character for paths only!!!")
 
 
 if __name__ == "__main__":

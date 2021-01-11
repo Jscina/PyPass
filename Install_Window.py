@@ -35,7 +35,7 @@ class Worker(QThread):
                        "copy locked.ico PyPass\\locked.ico \n"
                        "copy LICENSE.txt PyPass\\LICENSE.txt \n"
                        "move /y %CD%\\python_env\\Scripts\\dist\\PyPass.exe %CD%\\PyPass\\PyPass.exe \n"
-                       f"move /y %CD%/Pypass {self.location}\n"
+                       f"move /y %CD%/PyPass {self.location}\n"
                        "rd /s /q python_env \n"
                        "del *.bat")
 

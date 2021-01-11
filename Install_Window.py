@@ -11,13 +11,20 @@ class Worker(QThread):
 
     def create_start(self):
         with open("install_start.bat", "w") as file:
-            file.write(
-                "@echo off\n%CD%\\python_env\\Scripts\\activate.bat pip install cryptography PyQt5 && pyinstaller -F -w -i=locked.ico %CD%\\src\\PyPass.py && %CD%\\python_env\\Scripts\\deactivate.bat")
+            file.write("@echo off \n"
+                       "cd %CD%\\python_env-Scripts\n"
+                       "activate.bat && pip install PyQt5 cryptography pyinstaller && pyinstaller -F -w --icon='src\\locked.ico' PyPass.py && exit()")
 
     def create_end(self):
         with open("install_end.bat", "w") as file:
-            file.write(
-                "@echo off \nrd /s /q %CD%\\python_env \nmkdir %CD%\\PyPass \ncopy %CD%\\locked.ico %CD%\\PyPass\\locked.ico \ncopy %CD%\\LICENSE.txt %CD%\\PyPass\\LICENSE.txt \nrd /s /q %CD%\\build \nmove /y %CD%\\dist\\PyPass.exe %CD%\\PyPass\\PyPass.exe \nrd /s /q %CD%\\dist \ndel %CD%\\PyPass.spec \nrd /s /q %CD%\\src \nmove %CD%\\PyPass C:\\PyPass\ndel %CD%\\*.vbs\ndel %CD%\\*.bat")
+            file.write("@echo off \n"
+                       "cd %CD% \n"
+                       "mkdir PyPass \n"
+                       "copy locked.ico PyPass\\locked.ico \n"
+                       "copy LICENSE.txt PyPass\\LICENSE.txt \n"
+                       "move /y python_env\\Scripts\\dist\\PyPass.exe PyPass\\PyPass.exe \n"
+                       "rd /s /q /python_env \n"
+                       "del *.bat")
 
     def run(self):
         os.chdir(os.curdir)

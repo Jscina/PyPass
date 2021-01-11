@@ -1,10 +1,16 @@
+import os
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import Install_Window
-import os
 
+
+# @Version 3.2
+# @Author: Joshua Scina
 
 class Ui_LicenseWindow(object):
+
+    # Switch to main install window
     def proceed(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = Install_Window.Ui_InstallWindow()
@@ -12,9 +18,7 @@ class Ui_LicenseWindow(object):
         self.window.show()
         self.license_window.close()
 
-    def __init__(self):
-        self.gpl = self.get_license()
-
+    # Setup the UI
     def setupUi(self, LicenseWindow):
         LicenseWindow.setObjectName("LicenseWindow")
         LicenseWindow.resize(800, 600)
@@ -39,10 +43,13 @@ class Ui_LicenseWindow(object):
         self.decline_button.clicked.connect(self.decline)
 
         self.gridLayout.addWidget(self.decline_button, 1, 1, 1, 1)
+
+        # Button for agreeing to the license
         self.accept_button = QtWidgets.QPushButton(self.central_widget)
         self.accept_button.setStyleSheet("color: rgb(255, 255, 255);\n"
                                          "background-color: rgb(79, 79, 79);")
         self.accept_button.setObjectName("accept_button")
+        # If accepted run the proceed funtion to continue installation
         self.accept_button.clicked.connect(self.proceed)
 
         self.gridLayout.addWidget(self.accept_button, 1, 2, 1, 1)
@@ -55,6 +62,7 @@ class Ui_LicenseWindow(object):
         self.gridLayout.addWidget(self.listWidget, 0, 0, 1, 4)
 
         LicenseWindow.setCentralWidget(self.central_widget)
+        # Show the license in the list widget
         self.show_license()
         self.listWidget.setItemAlignment(QtCore.Qt.AlignCenter)
 
@@ -70,9 +78,11 @@ class Ui_LicenseWindow(object):
         self.listWidget.setSortingEnabled(False)
         self.listWidget.setSortingEnabled(__sortingEnabled)
 
+    # If the user doesn't agree to the license close the installer
     def decline(self):
         self.license_window.close()
 
+    # Load in the license from the LICENSE.txt file if not found replace with License Missing
     def get_license(self):
         try:
             with open("LICENSE.txt", "r") as file:
@@ -81,8 +91,9 @@ class Ui_LicenseWindow(object):
         except FileNotFoundError:
             return ["License Missing"]
 
+    # Show the license
     def show_license(self):
-        for line in self.gpl:
+        for line in self.get_license():
             item = QtWidgets.QListWidgetItem()
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setText(line)

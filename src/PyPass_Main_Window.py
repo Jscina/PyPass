@@ -7,10 +7,14 @@ import PyPass_Update_Window
 from serial_cypher import File_Manager
 
 
+# @Version: 3.2
+# @ Author: Joshua Scina
+
 class Ui_MainWindow(object):
     def __init__(self):
         self._crypter = File_Manager()
 
+    # Opens update window
     def _Update_Window(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = PyPass_Update_Window.Ui_UpdateWindow()
@@ -24,9 +28,7 @@ class Ui_MainWindow(object):
         MainWindow.setStyleSheet("background-color: rgb(0, 0, 0);\n"
                                  "color: rgb(255, 255, 255);\n"
                                  "font: 11pt \"Segoe UI\";")
-        scriptDir = os.path.dirname(os.path.realpath(__file__))
-        MainWindow.setWindowIcon(QtGui.QIcon(
-            scriptDir + os.path.sep + 'locked.ico'))
+        MainWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
         self.MainWindow = MainWindow
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -35,6 +37,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout.setObjectName("gridLayout")
 
+        # Enter username field
         self.usernames = QtWidgets.QLineEdit(self.centralwidget)
         self.usernames.setStyleSheet("color: rgb(255, 255, 255);\n"
                                      "gridline-color: rgb(0, 0, 0);\n"
@@ -52,6 +55,8 @@ class Ui_MainWindow(object):
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 
         self.gridLayout.addItem(spacerItem, 0, 0, 1, 8)
+
+        # Enter password field
         self.passwords = QtWidgets.QLineEdit(self.centralwidget)
         self.passwords.setStyleSheet("color: rgb(255, 255, 255);\n"
                                      "gridline-color: rgb(0, 0, 0);\n"
@@ -67,6 +72,8 @@ class Ui_MainWindow(object):
         self.p_label.setObjectName("p_label")
 
         self.gridLayout.addWidget(self.p_label, 1, 4, 1, 1)
+
+        # Add account button
         self.add_button = QtWidgets.QPushButton(self.centralwidget)
         self.add_button.setStyleSheet("color: rgb(255, 255, 255);\n"
                                       "background-color: rgb(79, 79, 79);")
@@ -75,6 +82,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.add_button, 2, 5, 1, 1)
 
+        # Input for removing an account
         self.index_input = QtWidgets.QLineEdit(self.centralwidget)
         self.index_input.setStyleSheet("color: rgb(255, 255, 255);\n"
                                        "gridline-color: rgb(0, 0, 0);\n"
@@ -93,6 +101,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.u_label, 1, 3, 1, 1)
 
+        # Calls the _Update_Window() method
         self.update_login = QtWidgets.QPushButton(self.centralwidget)
         self.update_login.setStyleSheet("color: rgb(255, 255, 255);\n"
                                         "background-color: rgb(79, 79, 79);")
@@ -101,12 +110,14 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.update_login, 5, 6, 1, 1)
 
+        # Listwidget for displaying accounts
         self.listWidget = QtWidgets.QListWidget(self.centralwidget)
         self.listWidget.setMovement(QtWidgets.QListView.Static)
         self.listWidget.setResizeMode(QtWidgets.QListView.Adjust)
         self.listWidget.setObjectName("listWidget")
         item = "None"
 
+        # If there aren't any accounts show none else call the show accounts method
         if len(self._crypter.load_data()[0]) > 1:
             self.show_accounts()
             del item
@@ -115,6 +126,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.listWidget, 7, 2, 1, 3)
 
+        # Removes a user from the listwidget and storage file
         self.remove_user = QtWidgets.QPushButton(self.centralwidget)
         self.remove_user.setStyleSheet("color: rgb(255, 255, 255);\n"
                                        "background-color: rgb(79, 79, 79);")
@@ -126,6 +138,7 @@ class Ui_MainWindow(object):
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem1, 8, 0, 1, 8)
 
+        # Lets you enter the website the account is tied to
         self.website_input = QtWidgets.QLineEdit(self.centralwidget)
         self.website_input.setStyleSheet("color: rgb(255, 255, 255);\n"
                                          "gridline-color: rgb(0, 0, 0);\n"
@@ -171,6 +184,7 @@ class Ui_MainWindow(object):
         self.remove_user.setText(_translate("MainWindow", "Remove User"))
         self.acc_label.setText(_translate("MainWindow", "Accounts:"))
 
+    # Load and display accounts
     def show_accounts(self):
         data = self._crypter.load_data()
         users, passes, keys, accounts = data[0], data[1], data[2], list()
@@ -192,6 +206,7 @@ class Ui_MainWindow(object):
             self.listWidget.addItems(accounts)
             del accounts, keys
 
+    # Remove account at the index
     def remove(self):
         try:
             index = int(self.index_input.text())
@@ -207,6 +222,7 @@ class Ui_MainWindow(object):
         except IndexError:
             self.index_input.clear()
 
+    # Add a user to the storage file then show accounts
     def add_user(self):
         data = self._crypter.load_data()
         key = self._crypter.gen_key()

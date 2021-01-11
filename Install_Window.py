@@ -7,7 +7,10 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 import location_chooser
 
+# @Version: 3.2
+# @Author: Joshua Scina
 
+# Runs in the background during installation
 class Worker(QThread):
     countChanged = pyqtSignal(int)
 
@@ -15,6 +18,7 @@ class Worker(QThread):
         super().__init__()
         self.location = location
 
+    # Creates the installation batch file
     def create_install(self):
         path = os.path.abspath("activate.bat")
         with open("install.bat", "w") as file:
@@ -22,6 +26,7 @@ class Worker(QThread):
                        "cd %CD%\\python_env\\Scripts\n"
                        "activate.bat && pyinstaller -F -w --i=src\\locked.ico src\\PyPass.py && exit()")
 
+    # Creates the cleanup batch file
     def create_cleanup(self):
         with open("cleanup.bat", "w") as file:
             file.write("@echo off \n"
@@ -34,6 +39,7 @@ class Worker(QThread):
                        "rd /s /q python_env \n"
                        "del *.bat")
 
+    # Mainloop of background worker
     def run(self):
         count = 0
         while count < 100:
@@ -51,6 +57,7 @@ class Worker(QThread):
                 # Runs the cleanup.bat file
                 Popen("cleanup.bat", cwd=os.getcwd(), shell=False)
             self.countChanged.emit(count)
+            # Wait a second
             time.sleep(1)
 
 
@@ -59,6 +66,7 @@ class Ui_InstallWindow(object):
         self.location = location
         self.show_install = show_install
 
+    # Open the install location chooser
     def proceed(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = location_chooser.Ui_FileLocationWindow()
@@ -71,6 +79,9 @@ class Ui_InstallWindow(object):
         InstallWindow.resize(800, 600)
         InstallWindow.setStyleSheet("color: rgb(255, 255, 255);\n"
                                     "background-color: rgb(0, 0, 0);")
+        font = QtGui.QFont()
+        font.setFamily("Segoe UI")
+        font.setPointSize(12)
         self.install_window = InstallWindow
         self.install_window.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
 
@@ -80,16 +91,19 @@ class Ui_InstallWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
 
+        # This button mirrors the install button but opens the location window
         self.locate_button = QtWidgets.QPushButton(self.centralwidget)
         self.locate_button.setStyleSheet("background-color: rgb(79, 79, 79);")
         self.locate_button.setObjectName("locate_button")
         self.locate_button.clicked.connect(self.proceed)
 
+        # This button allows the install process to start
         self.install_button = QtWidgets.QPushButton(self.centralwidget)
         self.install_button.setStyleSheet("background-color: rgb(79, 79, 79);")
         self.install_button.setObjectName("install_button")
         self.install_button.clicked.connect(self.install)
 
+        # Hide the install button unless location window has been used
         if self.show_install == False:
             self.install_button.hide()
         else:
@@ -107,6 +121,7 @@ class Ui_InstallWindow(object):
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem3, 4, 0, 1, 1)
 
+        # Closes the window when the install is finished
         self.finished_button = QtWidgets.QPushButton(self.centralwidget)
         self.finished_button.setStyleSheet("background-color: rgb(79, 79, 79);")
         self.finished_button.setObjectName("finished_button")
@@ -115,6 +130,7 @@ class Ui_InstallWindow(object):
 
         self.gridLayout.addWidget(self.finished_button, 7, 1, 1, 2)
 
+        # Shows the install progress
         self.progress_bar = QtWidgets.QProgressBar(self.centralwidget)
         self.progress_bar.setStyleSheet("")
         self.progress_bar.setProperty("value", 0)
@@ -144,6 +160,7 @@ class Ui_InstallWindow(object):
         self.finished_button.setText(_translate("InstallWindow", "Done"))
         self.progress_label.setText(_translate("InstallWindow", "Begin Installation"))
 
+    # Sets up the background worker
     def install(self):
         self.install_button.hide()
         self.progress_bar.show()
@@ -152,9 +169,11 @@ class Ui_InstallWindow(object):
         self.runner.countChanged.connect(self.onCountChanged)
         self.runner.start()
 
+    # Closes the window
     def done(self):
         self.install_window.close()
 
+    # Updates the progress bar value
     def onCountChanged(self, value):
         self.progress_bar.setValue(value)
 

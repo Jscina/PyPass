@@ -7,10 +7,15 @@ import PyPass_Main_Window
 from serial_cypher import File_Manager
 
 
+# @Version: 3.2
+# @Author: Joshua Scina
+
+
 class Ui_UpdateWindow(object):
     def __init__(self):
         self._crypter = File_Manager()
 
+    # Reopen Main Window
     def _Main_Window(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = PyPass_Main_Window.Ui_MainWindow()
@@ -23,9 +28,10 @@ class Ui_UpdateWindow(object):
         UpdateWindow.resize(647, 229)
         UpdateWindow.setStyleSheet("background-color: rgb(0, 0, 0);\n"
                                    "font: 11pt \"Segoe UI\";")
-        scriptDir = os.path.dirname(os.path.realpath(__file__))
-        UpdateWindow.setWindowIcon(QtGui.QIcon(
-            scriptDir + os.path.sep + 'locked.ico'))
+        font = QtGui.QFont()
+        font.setFamily("Segoe UI")
+        font.setPointSize(12)
+        UpdateWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
         self.UpdateWindow = UpdateWindow
 
         self.centralwidget = QtWidgets.QWidget(UpdateWindow)
@@ -34,14 +40,17 @@ class Ui_UpdateWindow(object):
 
         self.gridLayout.setObjectName("gridLayout")
 
+        # Enter new password
         self.password = QtWidgets.QLineEdit(self.centralwidget)
         self.password.setStyleSheet("color: rgb(255, 255, 255);\n"
                                     "gridline-color: rgb(0, 0, 0);\n"
                                     "background-color: rgb(80, 80, 80);\n"
                                     "border-radius: 5px;")
         self.password.setObjectName("password")
+        self.password.setEchoMode(QtWidgets.QLineEdit.Password)
         self.gridLayout.addWidget(self.password, 3, 3, 1, 1)
 
+        # Reopens main window
         self.done = QtWidgets.QPushButton(self.centralwidget)
         self.done.setStyleSheet("color: rgb(255, 255, 255);\n"
                                 "background-color: rgb(79, 79, 79);")
@@ -56,6 +65,7 @@ class Ui_UpdateWindow(object):
 
         self.gridLayout.addWidget(self.u_label, 2, 1, 1, 1)
 
+        # Enter new username
         self.username = QtWidgets.QLineEdit(self.centralwidget)
         self.username.setStyleSheet("color: rgb(255, 255, 255);\n"
                                     "gridline-color: rgb(0, 0, 0);\n"
@@ -80,6 +90,7 @@ class Ui_UpdateWindow(object):
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 5, 3, 1, 1)
 
+        # Updates current login
         self.update_button = QtWidgets.QPushButton(self.centralwidget)
         self.update_button.setStyleSheet("color: rgb(255, 255, 255);\n"
                                          "background-color: rgb(79, 79, 79);")
@@ -88,6 +99,7 @@ class Ui_UpdateWindow(object):
 
         self.gridLayout.addWidget(self.update_button, 3, 4, 1, 1)
 
+        # Displays the current login
         self.current_account_label = QtWidgets.QLabel(self.centralwidget)
         self.current_account_label.setStyleSheet("color: rgb(255, 255, 255);")
         self.current_account_label.setObjectName("current_account_label")
@@ -124,6 +136,7 @@ class Ui_UpdateWindow(object):
         self.current_account_label.setText(
             _translate("UpdateWindow", self.show_current()))
 
+    # Shows the current login
     def show_current(self):
         data = self._crypter.load_data()
         username = self._crypter.decrypt(data[0][0], data[2][0])
@@ -134,6 +147,7 @@ class Ui_UpdateWindow(object):
         del data, username, password
         return text
 
+    # Updates the old login with the new one
     def update_login(self):
         key = self._crypter.gen_key()
         username = self._crypter.encrypt(self.username.text(), key)

@@ -5,8 +5,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import PyPass_Main_Window
 from serial_cypher import File_Manager
 
+# @Version: 3.2
+# @Author: Joshua Scina
 
 class Ui_LoginWindow(object):
+    # Checks to make sure the storage file exist if not create it
     def __init__(self):
         self._crypter = File_Manager()
         if os.path.exists(os.path.abspath("data.pp")):
@@ -14,6 +17,7 @@ class Ui_LoginWindow(object):
         else:
             self._crypter.gen_data()
 
+    # Switches to main window after succesful login
     def _Main_Window(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = PyPass_Main_Window.Ui_MainWindow()
@@ -26,9 +30,10 @@ class Ui_LoginWindow(object):
         LoginWindow.resize(591, 194)
         LoginWindow.setStyleSheet("background-color: rgb(0, 0, 0);\n"
                                   "font: 11pt \"Segoe UI\";")
-        scriptDir = os.path.dirname(os.path.realpath(__file__))
-        LoginWindow.setWindowIcon(QtGui.QIcon(
-            scriptDir + os.path.sep + 'locked.ico'))
+        LoginWindow.setWindowIcon(QtGui.QIcon(os.path.abspath('locked.ico')))
+        font = QtGui.QFont()
+        font.setFamily("Segoe UI")
+        font.setPointSize(12)
         self.LoginWindow = LoginWindow
         self.centralwidget = QtWidgets.QWidget(LoginWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -36,6 +41,7 @@ class Ui_LoginWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
 
+        # Login button
         self.login = QtWidgets.QPushButton(self.centralwidget)
         self.login.setStyleSheet("color: rgb(255, 255, 255);\n"
                                  "background-color: rgb(79, 79, 79);")
@@ -44,6 +50,7 @@ class Ui_LoginWindow(object):
 
         self.gridLayout.addWidget(self.login, 3, 3, 1, 1)
 
+        # Enter username field
         self.username = QtWidgets.QLineEdit(self.centralwidget)
         self.username.setStyleSheet("color: rgb(255, 255, 255);\n"
                                     "gridline-color: rgb(0, 0, 0);\n"
@@ -75,6 +82,7 @@ class Ui_LoginWindow(object):
 
         self.gridLayout.addWidget(self.uname_label, 2, 1, 1, 1)
 
+        # Enter password field
         self.password = QtWidgets.QLineEdit(self.centralwidget)
         self.password.setStyleSheet("color: rgb(255, 255, 255);\n"
                                     "gridline-color: rgb(0, 0, 0);\n"

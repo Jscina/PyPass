@@ -13,7 +13,7 @@ class Worker(QThread):
         with open("install_start.bat", "w") as file:
             file.write("@echo off \n"
                        "cd %CD%\\python_env-Scripts\n"
-                       "activate.bat && pip install PyQt5 cryptography pyinstaller && pyinstaller -F -w --icon='src\\locked.ico' PyPass.py && exit()")
+                       "activate.bat && pip install PyQt5 cryptography pyinstaller && pyinstaller -F -w --i='src\\locked.ico' PyPass.py && exit()")
 
     def create_end(self):
         with open("install_end.bat", "w") as file:

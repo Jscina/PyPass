@@ -3,9 +3,8 @@ import pickle
 from cryptography.fernet import Fernet
 
 
+# @Version: 3.2
 # @Author: Joshua Scina
-# @Version: 2.0
-
 
 class File_Manager:
     def __init__(self):

@@ -1,5 +1,7 @@
-from cryptography.fernet import Fernet
 import pickle
+
+from cryptography.fernet import Fernet
+
 
 # @Author: Joshua Scina
 # @Version: 2.0
@@ -17,6 +19,7 @@ class File_Manager:
     # Dump the object
     def dump(self, obj, file):
         pickle.dump(obj, file)
+
     # Return master key
 
     def get_master(self):
@@ -26,14 +29,15 @@ class File_Manager:
     def gen_key(self):
         key = Fernet.generate_key()
         return key
+
     # Create base files
 
     def gen_data(self):
         data = ([self.encrypt("Username", self.get_master())],
                 [self.encrypt("Password", self.get_master())],
                 [self.get_master()],
-                 [""],
-                 [""])
+                [""],
+                [""])
         with open("data.pp", "wb") as file:
             self.dump(data, file)
         del data
@@ -61,7 +65,6 @@ class File_Manager:
     def encrypt(self, phrase: str, key: bytes):
         crypto = Fernet(key)
         return crypto.encrypt(phrase.encode())
-
 
     # Decrypt bytes and return it as a string
     def decrypt(self, phrase: bytes, key: bytes):

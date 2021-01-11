@@ -1,9 +1,9 @@
 import os
 import time
+from subprocess import Popen
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
-from subprocess import Popen
 
 
 class Worker(QThread):

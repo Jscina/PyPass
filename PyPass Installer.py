@@ -1,5 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import Install_Window, os
+
+import Install_Window
+import os
 
 
 class Ui_LicenseWindow(object):
@@ -68,7 +70,6 @@ class Ui_LicenseWindow(object):
         self.listWidget.setSortingEnabled(False)
         self.listWidget.setSortingEnabled(__sortingEnabled)
 
-
     def decline(self):
         self.license_window.close()
 
@@ -86,7 +87,6 @@ class Ui_LicenseWindow(object):
             item.setTextAlignment(QtCore.Qt.AlignCenter)
             item.setText(line)
             self.listWidget.addItem(item)
-
 
 
 if __name__ == "__main__":

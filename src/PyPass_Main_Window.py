@@ -1,8 +1,10 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from serial_cypher import File_Manager
-import os
-import PyPass_Update_Window
 import datetime
+import os
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+import PyPass_Update_Window
+from serial_cypher import File_Manager
 
 
 class Ui_MainWindow(object):
@@ -179,7 +181,8 @@ class Ui_MainWindow(object):
             if index == 0:
                 continue
             else:
-                accounts.append(f"{index} Webiste: www.{str(data[4][index])}.com Username: {fuser} Password: {fpass} Date Added: { str(data[3][index])}")
+                accounts.append(
+                    f"{index} Webiste: www.{str(data[4][index])}.com Username: {fuser} Password: {fpass} Date Added: {str(data[3][index])}")
         del users, passes, data
         self.listWidget.clear()
         if len(keys) == 1:
@@ -222,6 +225,7 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('fusion')
     MainWindow = QtWidgets.QMainWindow()

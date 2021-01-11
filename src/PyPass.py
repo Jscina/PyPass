@@ -1,7 +1,9 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from serial_cypher import File_Manager
 import os
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 import PyPass_Main_Window
+from serial_cypher import File_Manager
 
 
 class Ui_LoginWindow(object):
@@ -113,7 +115,8 @@ class Ui_LoginWindow(object):
         password_list = data[1]
         keys = data[2]
 
-        if username_str == self._crypter.decrypt(username_list[0], keys[0]) and password_str == self._crypter.decrypt(password_list[0], keys[0]):
+        if username_str == self._crypter.decrypt(username_list[0], keys[0]) and password_str == self._crypter.decrypt(
+                password_list[0], keys[0]):
             logged_in = True
             self._Main_Window()
 
@@ -123,6 +126,7 @@ class Ui_LoginWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('fusion')
     LoginWindow = QtWidgets.QMainWindow()

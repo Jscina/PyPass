@@ -1,9 +1,10 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from serial_cypher import File_Manager
-import os
-import PyPass_Main_Window
 import datetime
+import os
 
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+import PyPass_Main_Window
+from serial_cypher import File_Manager
 
 
 class Ui_UpdateWindow(object):
@@ -85,7 +86,6 @@ class Ui_UpdateWindow(object):
         self.update_button.setObjectName("update_button")
         self.update_button.clicked.connect(self.update_login)
 
-
         self.gridLayout.addWidget(self.update_button, 3, 4, 1, 1)
 
         self.current_account_label = QtWidgets.QLabel(self.centralwidget)
@@ -152,6 +152,7 @@ class Ui_UpdateWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('fusion')
     UpdateWindow = QtWidgets.QMainWindow()

@@ -23,9 +23,7 @@ class Ui_LicenseWindow(object):
         LicenseWindow.setStyleSheet("background-color: rgb(0, 0, 0);\n"
                                     "color: rgb(255, 255, 255);\n")
         self.license_window = LicenseWindow
-        scriptDir = os.path.dirname(os.path.realpath(__file__))
-        self.license_window.setWindowIcon(QtGui.QIcon(
-            scriptDir + os.path.sep + 'locked.ico'))
+        self.license_window.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
 
         self.central_widget = QtWidgets.QWidget(LicenseWindow)
         self.central_widget.setObjectName("central_widget")
@@ -63,7 +61,7 @@ class Ui_LicenseWindow(object):
 
     def retranslateUi(self, LicenseWindow):
         _translate = QtCore.QCoreApplication.translate
-        LicenseWindow.setWindowTitle(_translate("LicenseWindow", "MainWindow"))
+        LicenseWindow.setWindowTitle(_translate("LicenseWindow", "License Agreement"))
         self.decline_button.setText(_translate("LicenseWindow", "Decline"))
         self.accept_button.setText(_translate("LicenseWindow", "Accept"))
         __sortingEnabled = self.listWidget.isSortingEnabled()

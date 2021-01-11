@@ -1,59 +1,39 @@
 import os
-import subprocess
 import time
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
+from subprocess import Popen
 
 
 class Worker(QThread):
     countChanged = pyqtSignal(int)
 
+    def create_start(self):
+        with open("install_start.bat", "w") as file:
+            file.write(
+                "@echo off\n%CD%\\python_env\\Scripts\\activate.bat pip install cryptography PyQt5 && pyinstaller -F -w -i=locked.ico %CD%\\src\\PyPass.py && %CD%\\python_env\\Scripts\\deactivate.bat")
+
+    def create_end(self):
+        with open("install_end.bat", "w") as file:
+            file.write(
+                "@echo off \nrd /s /q %CD%\\python_env \nmkdir %CD%\\PyPass \ncopy %CD%\\locked.ico %CD%\\PyPass\\locked.ico \ncopy %CD%\\LICENSE.txt %CD%\\PyPass\\LICENSE.txt \nrd /s /q %CD%\\build \nmove /y %CD%\\dist\\PyPass.exe %CD%\\PyPass\\PyPass.exe \nrd /s /q %CD%\\dist \ndel %CD%\\PyPass.spec \nrd /s /q %CD%\\src \nmove %CD%\\PyPass C:\\PyPass\ndel %CD%\\*.vbs\ndel %CD%\\*.bat")
+
     def run(self):
         os.chdir(os.curdir)
-        path_start, path_end = "start.vbs", "end.vbs"
         count = 0
         while count < 100:
             count += 1
             if count == 15:
-                with open("install_start.bat", "w") as file:
-                    file.write("""
-                    @echo off\n
-                    %CD%\\python_env\\Scripts\\activate.bat pip install cryptography PyQt5 && pyinstaller -F -w -i=locked.ico %CD%\\src\\PyPass.py && %CD%\\python_env\\Scripts\\deactivate.bat
-                    """)
-            elif count == 35:
-                with open("start.vbs", "w") as file:
-                    file.write("Set WshShell = CreateObject(\"WScript.Shell\")\n")
-                    file.write(f"WshShell.Run chr(34) & \"{os.path.abspath('install_start.bat')}\" & Chr(34), 0\n")
-                    file.write("set WshShell = Nothing\n")
-            elif count == 50:
-                subprocess.call(f"cmd /c {path_start}")
+                self.create_start()
+            elif count == 20:
+                Popen("install_start.bat", cwd=os.getcwd(), shell=True)
             elif count == 75:
-                with open("install_end.bat", "w") as file:
-                    file.write("""
-                                @echo off \n
-                                rd /s /q %CD%\\python_env \n
-                                mkdir %CD%\\PyPass \n
-                                copy %CD%\\locked.ico %CD%\\PyPass\\locked.ico \n
-                                copy %CD%\\LICENSE.txt %CD%\\PyPass\\LICENSE.txt \n
-                                rd /s /q %CD%\\build \n
-                                move /y %CD%\\dist\\PyPass.exe %CD%\\PyPass\\PyPass.exe \n
-                                rd /s /q %CD%\\dist \n
-                                del %CD%\\PyPass.spec \n
-                                rd /s /q %CD%\\src \n
-                                move %CD%\\PyPass C:\\PyPass\n
-                                del %CD%\\*.vbs\n
-                                del %CD%\\*.bat
-                                """)
-            elif count == 80:
-                with open("end.vbs", "w") as file:
-                    file.write("Set WshShell = CreateObject(\"WScript.Shell\")\n")
-                    file.write(f"WshShell.Run chr(34) & \"{os.path.abspath('install_end.bat')}\" & Chr(34), 0\n")
-                    file.write("set WshShell = Nothing\n")
-            elif count == 90:
-                subprocess.call(f"cmd /c {path_end}")
+                self.create_end()
+            elif count == 85:
+                Popen("install_end.bat", cwd=os.getcwd(), shell=True)
             self.countChanged.emit(count)
-            time.sleep(0.5)
+            time.sleep(1)
 
 
 class Ui_InstallWindow(object):
@@ -63,9 +43,7 @@ class Ui_InstallWindow(object):
         InstallWindow.setStyleSheet("color: rgb(255, 255, 255);\n"
                                     "background-color: rgb(0, 0, 0);")
         self.install_window = InstallWindow
-        scriptDir = os.path.dirname(os.path.realpath(__file__))
-        self.install_window.setWindowIcon(QtGui.QIcon(
-            scriptDir + os.path.sep + 'locked.ico'))
+        self.install_window.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
 
         self.centralwidget = QtWidgets.QWidget(InstallWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -119,7 +97,7 @@ class Ui_InstallWindow(object):
 
     def retranslateUi(self, InstallWindow):
         _translate = QtCore.QCoreApplication.translate
-        InstallWindow.setWindowTitle(_translate("InstallWindow", "MainWindow"))
+        InstallWindow.setWindowTitle(_translate("InstallWindow", "Install"))
         self.instal_button.setText(_translate("InstallWindow", "Install"))
         self.finished_button.setText(_translate("InstallWindow", "Done"))
         self.progress_label.setText(_translate("InstallWindow", "Begin Installation"))

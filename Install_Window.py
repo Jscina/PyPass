@@ -1,6 +1,6 @@
 import os
 import time
-from subprocess import Popen
+import subprocess
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -18,25 +18,33 @@ class Worker(QThread):
         super().__init__()
         self.location = location
 
-    # Creates the installation batch file
+    def hide_script(self, run_file: str):
+        path = os.path.abspath(run_file)
+        with open("run_script.vbs", "w") as file:
+            file.write("Set WshShell = CreateObject(\"WScript.Shell\")\n"
+                       f"WshShell.Run chr(34) & \"{path}\" & Chr(34), 0\n"
+                       "Set WshShell = Nothing")
+        return path
+
+            # Creates the installation batch file
     def create_install(self):
-        path = os.path.abspath("activate.bat")
         with open("install.bat", "w") as file:
-            file.write("@echo off \n"
+            file.write("@echo off\n"
                        "cd %CD%\\python_env\\Scripts\n"
                        "activate.bat && pyinstaller -F -w --i=src\\locked.ico src\\PyPass.py && exit()")
 
     # Creates the cleanup batch file
     def create_cleanup(self):
         with open("cleanup.bat", "w") as file:
-            file.write("@echo off \n"
-                       "cd %CD% \n"
-                       "mkdir PyPass \n"
-                       "copy locked.ico PyPass\\locked.ico \n"
-                       "copy LICENSE.txt PyPass\\LICENSE.txt \n"
-                       "move /y %CD%\\python_env\\Scripts\\dist\\PyPass.exe %CD%\\PyPass\\PyPass.exe \n"
-                       f"move /y %CD%/PyPass {self.location}\n"
-                       "rd /s /q python_env \n"
+            file.write("@echo off\n"
+                       "cd %CD%\n"
+                       "mkdir PyPass\n"
+                       "copy locked.ico PyPass\\locked.ico\n"
+                       "copy LICENSE.txt PyPass\\LICENSE.txt\n"
+                       "move /y python_env\\Scripts\\dist\\PyPass.exe PyPass\\PyPass.exe\n"
+                       f"move /y PyPass {self.location}\n"
+                       "rd /s /q python_env\n"
+                       "del *.vbs\n"
                        "del *.bat")
 
     # Mainloop of background worker
@@ -48,14 +56,20 @@ class Worker(QThread):
                 # Creates the first batch file to build the exe
                 self.create_install()
             elif count == 20:
-                # Builds the exe
-                Popen("install.bat", cwd=os.getcwd(), shell=False)
+                # Hides the script
+                path = self.hide_script("install.bat")
+            elif count == 25:
+                # Runs the install script in hidden mode
+                subprocess.run(path, shell=False)
             elif count == 75:
                 # Creates the batch cleanup file
                 self.create_cleanup()
             elif count == 85:
+                # Hides the script
+                path = self.hide_script("cleanup.bat")
+            elif count == 90:
                 # Runs the cleanup.bat file
-                Popen("cleanup.bat", cwd=os.getcwd(), shell=False)
+                subprocess.run(path, shell=False)
             self.countChanged.emit(count)
             # Wait a second
             time.sleep(1)

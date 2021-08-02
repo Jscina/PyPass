@@ -1,14 +1,7 @@
-import datetime
-import os
+import os, datetime, PyPass_Main_Window
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-
-import PyPass_Main_Window
+from PyQt6 import QtCore, QtGui, QtWidgets
 from serial_cypher import File_Manager
-
-
-# @Version: 3.2
-# @Author: Joshua Scina
 
 
 class Ui_UpdateWindow(object):
@@ -21,105 +14,113 @@ class Ui_UpdateWindow(object):
         self.ui = PyPass_Main_Window.Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.window.show()
-        self.UpdateWindow.close()
+        UpdateWindow.close()
 
     def setupUi(self, UpdateWindow):
         UpdateWindow.setObjectName("UpdateWindow")
         UpdateWindow.resize(647, 229)
-        UpdateWindow.setStyleSheet("background-color: rgb(0, 0, 0);\n"
-                                   "font: 11pt \"Segoe UI\";")
+        UpdateWindow.setStyleSheet("background-color: rgb(0, 0, 0);")
+
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(12)
         UpdateWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
-        self.UpdateWindow = UpdateWindow
 
         self.centralwidget = QtWidgets.QWidget(UpdateWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
-
         self.gridLayout.setObjectName("gridLayout")
-
-        # Enter new password
-        self.password = QtWidgets.QLineEdit(self.centralwidget)
-        self.password.setStyleSheet("color: rgb(255, 255, 255);\n"
-                                    "gridline-color: rgb(0, 0, 0);\n"
-                                    "background-color: rgb(80, 80, 80);\n"
-                                    "border-radius: 5px;")
-        self.password.setObjectName("password")
-        self.password.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.gridLayout.addWidget(self.password, 3, 3, 1, 1)
-
-        # Reopens main window
-        self.done = QtWidgets.QPushButton(self.centralwidget)
-        self.done.setStyleSheet("color: rgb(255, 255, 255);\n"
-                                "background-color: rgb(79, 79, 79);")
-        self.done.setObjectName("done")
-        self.done.clicked.connect(self._Main_Window)
-
-        self.gridLayout.addWidget(self.done, 5, 4, 1, 1)
-
-        self.u_label = QtWidgets.QLabel(self.centralwidget)
-        self.u_label.setStyleSheet("color: rgb(255, 255, 255);")
-        self.u_label.setObjectName("u_label")
-
-        self.gridLayout.addWidget(self.u_label, 2, 1, 1, 1)
-
-        # Enter new username
         self.username = QtWidgets.QLineEdit(self.centralwidget)
-        self.username.setStyleSheet("color: rgb(255, 255, 255);\n"
-                                    "gridline-color: rgb(0, 0, 0);\n"
-                                    "background-color: rgb(80, 80, 80);\n"
-                                    "border-radius: 5px;")
+        self.username.setStyleSheet(
+            "color: rgb(255, 255, 255);\n"
+            "                                gridline-color: rgb(0, 0, 0);\n"
+            "                                background-color: rgb(80, 80, 80);\n"
+            "                                border-radius: 5px;\n"
+            "                            "
+        )
         self.username.setObjectName("username")
-
-        self.gridLayout.addWidget(self.username, 3, 1, 1, 1)
-
-        self.current_login_label = QtWidgets.QLabel(self.centralwidget)
-        self.current_login_label.setStyleSheet("color: rgb(255, 255, 255);")
-        self.current_login_label.setObjectName("current_login_label")
-
-        self.gridLayout.addWidget(self.current_login_label, 5, 1, 1, 1)
-
-        self.p_label = QtWidgets.QLabel(self.centralwidget)
-        self.p_label.setStyleSheet("color: rgb(255, 255, 255);")
-        self.p_label.setObjectName("p_label")
-
-        self.gridLayout.addWidget(self.p_label, 2, 3, 1, 1)
+        self.gridLayout.addWidget(self.username, 2, 1, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem, 5, 3, 1, 1)
-
-        # Updates current login
-        self.update_button = QtWidgets.QPushButton(self.centralwidget)
-        self.update_button.setStyleSheet("color: rgb(255, 255, 255);\n"
-                                         "background-color: rgb(79, 79, 79);")
-        self.update_button.setObjectName("update_button")
-        self.update_button.clicked.connect(self.update_login)
-
-        self.gridLayout.addWidget(self.update_button, 3, 4, 1, 1)
-
-        # Displays the current login
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
+        self.gridLayout.addItem(spacerItem, 2, 5, 3, 1)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
+        self.gridLayout.addItem(spacerItem1, 1, 0, 5, 1)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem2, 0, 1, 1, 4)
         self.current_account_label = QtWidgets.QLabel(self.centralwidget)
         self.current_account_label.setStyleSheet("color: rgb(255, 255, 255);")
         self.current_account_label.setObjectName("current_account_label")
-
-        self.gridLayout.addWidget(self.current_account_label, 6, 1, 1, 3)
-        spacerItem1 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem1, 2, 0, 5, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem2, 7, 1, 1, 4)
+        self.gridLayout.addWidget(self.current_account_label, 5, 1, 1, 3)
+        self.password = QtWidgets.QLineEdit(self.centralwidget)
+        self.password.setStyleSheet(
+            "color: rgb(255, 255, 255);\n"
+            "                                gridline-color: rgb(0, 0, 0);\n"
+            "                                background-color: rgb(80, 80, 80);\n"
+            "                                border-radius: 5px;\n"
+            "                            "
+        )
+        self.password.setObjectName("password")
+        self.password.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+        self.gridLayout.addWidget(self.password, 2, 3, 1, 1)
         spacerItem3 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem3, 3, 5, 3, 1)
+            20,
+            40,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem3, 6, 1, 1, 4)
+        self.current_login_label = QtWidgets.QLabel(self.centralwidget)
+        self.current_login_label.setStyleSheet("color: rgb(255, 255, 255);")
+        self.current_login_label.setObjectName("current_login_label")
+        self.gridLayout.addWidget(self.current_login_label, 4, 1, 1, 1)
+        self.done = QtWidgets.QPushButton(self.centralwidget)
+        self.done.setStyleSheet(
+            "color: rgb(255, 255, 255);\n"
+            "                                background-color: rgb(79, 79, 79);\n"
+            "                            "
+        )
+        self.done.setObjectName("done")
+        self.done.clicked.connect(self._Main_Window)
+        self.gridLayout.addWidget(self.done, 4, 4, 1, 1)
+        self.update_button = QtWidgets.QPushButton(self.centralwidget)
+        self.update_button.setStyleSheet(
+            "color: rgb(255, 255, 255);\n"
+            "                                background-color: rgb(79, 79, 79);\n"
+            "                            "
+        )
+        self.update_button.setObjectName("update_button")
+        self.update_button.clicked.connect(self.update_login)
+
+        self.gridLayout.addWidget(self.update_button, 2, 4, 1, 1)
         spacerItem4 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem4, 2, 4, 1, 2)
-        spacerItem5 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem5, 0, 1, 1, 4)
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
+        self.gridLayout.addItem(spacerItem4, 4, 3, 1, 1)
+        self.p_label = QtWidgets.QLabel(self.centralwidget)
+        self.p_label.setStyleSheet("color: rgb(255, 255, 255);")
+        self.p_label.setObjectName("p_label")
+        self.gridLayout.addWidget(self.p_label, 1, 3, 1, 1)
+        self.u_label = QtWidgets.QLabel(self.centralwidget)
+        self.u_label.setStyleSheet("color: rgb(255, 255, 255);")
+        self.u_label.setObjectName("u_label")
+        self.gridLayout.addWidget(self.u_label, 1, 1, 1, 1)
         UpdateWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(UpdateWindow)
@@ -128,14 +129,14 @@ class Ui_UpdateWindow(object):
     def retranslateUi(self, UpdateWindow):
         _translate = QtCore.QCoreApplication.translate
         UpdateWindow.setWindowTitle(_translate("UpdateWindow", "Update Login"))
-        self.done.setText(_translate("UpdateWindow", "Done"))
-        self.u_label.setText(_translate("UpdateWindow", "Username:"))
+        self.current_account_label.setText(_translate("UpdateWindow", self.show_current()))
         self.current_login_label.setText(_translate("UpdateWindow", "Current Login:"))
-        self.p_label.setText(_translate("UpdateWindow", "Password:"))
+        self.done.setText(_translate("UpdateWindow", "Done"))
         self.update_button.setText(_translate("UpdateWindow", "Update"))
-        self.current_account_label.setText(
-            _translate("UpdateWindow", self.show_current()))
+        self.p_label.setText(_translate("UpdateWindow", "Password:"))
+        self.u_label.setText(_translate("UpdateWindow", "Username:"))
 
+        
     # Shows the current login
     def show_current(self):
         data = self._crypter.load_data()
@@ -168,9 +169,8 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyle('fusion')
     UpdateWindow = QtWidgets.QMainWindow()
     ui = Ui_UpdateWindow()
     ui.setupUi(UpdateWindow)
     UpdateWindow.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

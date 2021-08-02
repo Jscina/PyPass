@@ -1,16 +1,10 @@
-import os
+import os, Install_Window
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
-import Install_Window
-
-
-# @Version 3.2
-# @Author: Joshua Scina
 
 class Ui_LicenseWindow(object):
-
-    # Switch to main install window
+     # Switch to main install window
     def proceed(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = Install_Window.Ui_InstallWindow()
@@ -18,66 +12,77 @@ class Ui_LicenseWindow(object):
         self.window.show()
         self.license_window.close()
 
-    # Setup the UI
     def setupUi(self, LicenseWindow):
         LicenseWindow.setObjectName("LicenseWindow")
-        LicenseWindow.resize(800, 600)
+        LicenseWindow.resize(688, 455)
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(12)
         LicenseWindow.setFont(font)
-        LicenseWindow.setStyleSheet("background-color: rgb(0, 0, 0);\n"
-                                    "color: rgb(255, 255, 255);\n")
-        self.license_window = LicenseWindow
-        self.license_window.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
-
+        LicenseWindow.setStyleSheet(
+            "background-color: rgb(0, 0, 0);\n"
+            "                color: rgb(255, 255, 255);\n"
+            "            "
+        )
+        LicenseWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
         self.central_widget = QtWidgets.QWidget(LicenseWindow)
         self.central_widget.setObjectName("central_widget")
         self.gridLayout = QtWidgets.QGridLayout(self.central_widget)
         self.gridLayout.setObjectName("gridLayout")
-
         self.decline_button = QtWidgets.QPushButton(self.central_widget)
-        self.decline_button.setStyleSheet("color: rgb(255, 255, 255);\n"
-                                          "background-color: rgb(79, 79, 79);")
+        self.decline_button.setStyleSheet(
+            "color: rgb(255, 255, 255);\n"
+            "                                background-color: rgb(79, 79, 79);\n"
+            "                            "
+        )
         self.decline_button.setObjectName("decline_button")
         self.decline_button.clicked.connect(self.decline)
-
         self.gridLayout.addWidget(self.decline_button, 1, 1, 1, 1)
-
-        # Button for agreeing to the license
         self.accept_button = QtWidgets.QPushButton(self.central_widget)
-        self.accept_button.setStyleSheet("color: rgb(255, 255, 255);\n"
-                                         "background-color: rgb(79, 79, 79);")
+        self.accept_button.setStyleSheet(
+            "color: rgb(255, 255, 255);\n"
+            "                                background-color: rgb(79, 79, 79);\n"
+            "                            "
+        )
         self.accept_button.setObjectName("accept_button")
-        # If accepted run the proceed funtion to continue installation
         self.accept_button.clicked.connect(self.proceed)
-
         self.gridLayout.addWidget(self.accept_button, 1, 2, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout.addItem(spacerItem, 1, 0, 1, 1)
-
         self.listWidget = QtWidgets.QListWidget(self.central_widget)
         self.listWidget.setObjectName("listWidget")
-
-        self.gridLayout.addWidget(self.listWidget, 0, 0, 1, 4)
-
-        LicenseWindow.setCentralWidget(self.central_widget)
-        # Show the license in the list widget
+        item = QtWidgets.QListWidgetItem()
+        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.listWidget.addItem(item)
         self.show_license()
-        self.listWidget.setItemAlignment(QtCore.Qt.AlignCenter)
+        self.gridLayout.addWidget(self.listWidget, 0, 0, 1, 4)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
+        self.gridLayout.addItem(spacerItem1, 1, 3, 1, 1)
+        LicenseWindow.setCentralWidget(self.central_widget)
 
         self.retranslateUi(LicenseWindow)
         QtCore.QMetaObject.connectSlotsByName(LicenseWindow)
 
     def retranslateUi(self, LicenseWindow):
         _translate = QtCore.QCoreApplication.translate
-        LicenseWindow.setWindowTitle(_translate("LicenseWindow", "License Agreement"))
+        LicenseWindow.setWindowTitle(_translate("LicenseWindow", "MainWindow"))
         self.decline_button.setText(_translate("LicenseWindow", "Decline"))
         self.accept_button.setText(_translate("LicenseWindow", "Accept"))
         __sortingEnabled = self.listWidget.isSortingEnabled()
         self.listWidget.setSortingEnabled(False)
+        item = self.listWidget.item(0)
+        item.setText(_translate("LicenseWindow", "License"))
         self.listWidget.setSortingEnabled(__sortingEnabled)
-
     # If the user doesn't agree to the license close the installer
     def decline(self):
         self.license_window.close()
@@ -95,7 +100,7 @@ class Ui_LicenseWindow(object):
     def show_license(self):
         for line in self.get_license():
             item = QtWidgets.QListWidgetItem()
-            item.setTextAlignment(QtCore.Qt.AlignCenter)
+            item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             item.setText(line)
             self.listWidget.addItem(item)
 
@@ -109,4 +114,4 @@ if __name__ == "__main__":
     ui = Ui_LicenseWindow()
     ui.setupUi(LicenseWindow)
     LicenseWindow.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

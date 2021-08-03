@@ -1,10 +1,12 @@
-import os, time, subprocess
+import os, time, subprocess, Location_Chooser
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QThread, pyqtSignal
 
-import Location_Chooser
 
+
+# @Version: 4.0
+# @ Author: Joshua Scina
 
 class Worker(QThread):
     countChanged = pyqtSignal(int)

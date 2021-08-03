@@ -2,7 +2,8 @@ import os, Install_Window
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 
-
+# @Version: 4.0
+# @ Author: Joshua Scina
 class Ui_LicenseWindow(object):
      # Switch to main install window
     def proceed(self):

@@ -3,6 +3,8 @@ import os, datetime, PyPass_Main_Window
 from PyQt6 import QtCore, QtGui, QtWidgets
 from serial_cypher import File_Manager
 
+# @Version: 4.0
+# @ Author: Joshua Scina
 
 class Ui_UpdateWindow(object):
     def __init__(self):

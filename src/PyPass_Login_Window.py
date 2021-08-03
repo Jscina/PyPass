@@ -3,6 +3,8 @@ import os, PyPass_Main_Window
 from PyQt6 import QtCore, QtGui, QtWidgets
 from serial_cypher import File_Manager
 
+# @Version: 4.0
+# @ Author: Joshua Scina
 
 class Ui_LoginWindow(object):
     # Checks to make sure the storage file exist if not create it

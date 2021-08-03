@@ -11,7 +11,7 @@ class Ui_LicenseWindow(object):
         self.ui = Install_Window.Ui_InstallWindow()
         self.ui.setupUi(self.window)
         self.window.show()
-        self.license_window.close()
+        LicenseWindow.close()
 
     def setupUi(self, LicenseWindow):
         LicenseWindow.setObjectName("LicenseWindow")

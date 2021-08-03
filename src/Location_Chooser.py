@@ -25,6 +25,7 @@ class Ui_FileLocationWindow(object):
         FileLocationWindow.setStyleSheet(
             "color: rgb(255, 255, 255);\n" "background-color: rgb(0, 0, 0);"
         )
+        self.FileLocationWindow = FileLocationWindow
         self.centralwidget = QtWidgets.QWidget(FileLocationWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)

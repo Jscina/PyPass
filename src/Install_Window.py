@@ -1,4 +1,4 @@
-import os, time, subprocess, Location_Chooser
+import os, time, subprocess, Location_Chooser, Create_EXE, random
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -21,19 +21,15 @@ class Worker(QThread):
             file.write(
                 'Set WshShell = CreateObject("WScript.Shell")\n'
                 f'WshShell.Run chr(34) & "{path}" & Chr(34), 0\n'
-                "Set WshShell = Nothing"
+                "Set WshShell = None"
             )
         return path
 
-        # Creates the installation batch file
-
-    def create_install(self):
-        with open("install.bat", "w") as file:
-            file.write(
-                "@echo off\n"
-                "cd %CD%\\python_env\\Scripts\n"
-                "activate.bat && pyinstaller -F -w --i=src\\locked.ico src\\PyPass.py && exit()"
-            )
+       
+    # Creates the PyPass files
+    def _install(self):
+        build = Create_EXE(["PyPass"])
+        build.run()
 
     # Creates the cleanup batch file
     def create_cleanup(self):
@@ -41,10 +37,9 @@ class Worker(QThread):
             file.write(
                 "@echo off\n"
                 "cd %CD%\n"
-                "mkdir PyPass\n"
+                "move /y python_env\\Scripts\\dist\\PyPass PyPass\n"
                 "copy locked.ico PyPass\\locked.ico\n"
                 "copy LICENSE.txt PyPass\\LICENSE.txt\n"
-                "move /y python_env\\Scripts\\dist\\PyPass.exe PyPass\\PyPass.exe\n"
                 f"move /y PyPass {self.location}\n"
                 "rd /s /q python_env\n"
                 "del *.vbs\n"
@@ -55,16 +50,9 @@ class Worker(QThread):
     def run(self):
         count = 0
         while count < 100:
-            count += 1
-            if count == 15:
-                # Creates the first batch file to build the exe
-                self.create_install()
-            elif count == 20:
-                # Hides the script
-                path = self.hide_script("install.bat")
-            elif count == 25:
-                # Runs the install script in hidden mode
-                subprocess.run(path, shell=False)
+            count += random.randint(1,6)
+            if count == 25:
+                self._install()
             elif count == 75:
                 # Creates the batch cleanup file
                 self.create_cleanup()

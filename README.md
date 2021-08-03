@@ -8,7 +8,7 @@ To install (Windows):
         
 To install (Source):
         
-        Download the 
+        Download the zip and run python Create_EXE.py
 The default login is:
 
         Username: Username

@@ -18,7 +18,7 @@ class Ui_MainWindow(object):
         self.ui = PyPass_Update_Window.Ui_UpdateWindow()
         self.ui.setupUi(self.window)
         self.window.show()
-        MainWindow.close()
+        self.MainWindow.close()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -28,7 +28,11 @@ class Ui_MainWindow(object):
             "                color: rgb(255, 255, 255);\n"
             "            "
         )
+        font = QtGui.QFont()
+        font.setFamily("Segoe UI")
+        font.setPointSize(11)
         MainWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
+        self.MainWindow = MainWindow
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -240,6 +244,7 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyle("fusion")
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)

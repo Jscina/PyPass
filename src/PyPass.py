@@ -21,7 +21,7 @@ class Ui_LoginWindow(object):
         self.ui = PyPass_Main_Window.Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.window.show()
-        self.LoginWindow.close()
+        LoginWindow.close()
 
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
@@ -34,7 +34,7 @@ class Ui_LoginWindow(object):
         LoginWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
-        font.setPointSize(12)
+        font.setPointSize(11)
         self.centralwidget = QtWidgets.QWidget(LoginWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -155,6 +155,7 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyle("fusion")
     LoginWindow = QtWidgets.QMainWindow()
     ui = Ui_LoginWindow()
     ui.setupUi(LoginWindow)

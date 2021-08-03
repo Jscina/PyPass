@@ -16,7 +16,7 @@ class Ui_UpdateWindow(object):
         self.ui = PyPass_Main_Window.Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.window.show()
-        UpdateWindow.close()
+        self.UpdateWindow.close()
 
     def setupUi(self, UpdateWindow):
         UpdateWindow.setObjectName("UpdateWindow")
@@ -25,8 +25,9 @@ class Ui_UpdateWindow(object):
 
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
-        font.setPointSize(12)
+        font.setPointSize(11)
         UpdateWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
+        self.UpdateWindow = UpdateWindow
 
         self.centralwidget = QtWidgets.QWidget(UpdateWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -171,6 +172,7 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyle("fusion")
     UpdateWindow = QtWidgets.QMainWindow()
     ui = Ui_UpdateWindow()
     ui.setupUi(UpdateWindow)

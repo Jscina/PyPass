@@ -1,6 +1,4 @@
 import PyInstaller.__main__, os
-
-
 class CreateEXE:
     def __init__(self, files: list) -> None:
         self.files = files
@@ -16,5 +14,5 @@ class CreateEXE:
 
 # For testing only
 if __name__ == "__main__":
-    builder = CreateEXE(["PyPass", "PyPass_Installer"])
+    builder = CreateEXE(["PyPass"])
     builder.run()

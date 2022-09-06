@@ -1,20 +1,31 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Title: Pypass** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Author: Joshua Scina** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Version 5.0** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Imports needed to run program: ** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os, PyPass_Main_Window
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-from serial_cypher import File_Manager
+from PyPass_Engine import File_Manager
+from PyPass_Engine import LoginMethods
 
-# @Version: 4.0
-# @ Author: Joshua Scina
-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Main Login UI** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Ui_LoginWindow(object):
     # Checks to make sure the storage file exist if not create it
     def __init__(self):
-        self._crypter = File_Manager()
         if os.path.exists(os.path.abspath("data.pp")):
             pass
         else:
             self._crypter.gen_data()
-            # Switches to main window after succesful login
 
     def _Main_Window(self):
         self.window = QtWidgets.QMainWindow()
@@ -129,26 +140,14 @@ class Ui_LoginWindow(object):
         self.login.setText(_translate("LoginWindow", "Login"))
         self.pword_label.setText(_translate("LoginWindow", "Password:"))
         self.uname_label.setText(_translate("LoginWindow", "Username:"))
-    
-    # Login Method
+
     def _login(self):
-        global logged_in
-        username_str = self.username.text()
-        password_str = self.password.text()
-        data = self._crypter.load_data()
-        username_list = data[0]
-        password_list = data[1]
-        keys = data[2]
-
-        if username_str == self._crypter.decrypt(username_list[0], keys[0]) and password_str == self._crypter.decrypt(
-                password_list[0], keys[0]):
-            logged_in = True
+        login = LoginMethods()
+        if login.login(self.username.text(), self.password.text()):
             self._Main_Window()
-        else:
-            logged_in = False
+            self.username.setText("")
+            self.password.setText("")
 
-        self.username.setText("")
-        self.password.setText("")
 
 
 if __name__ == "__main__":

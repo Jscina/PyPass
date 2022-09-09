@@ -1,14 +1,24 @@
-import os, datetime, PyPass_Main_Window
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Title: Pypass** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Author: Joshua Scina** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Version 5.0** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### ** Imports needed to run program: ** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+import PyPass_Main_Window
 
+from PyPass_Engine import General_Purpose, Update_Window_Methods
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyPass_Engine import File_Manager
-
-# @Version: 4.0
-# @ Author: Joshua Scina
 
 class Ui_UpdateWindow(object):
     def __init__(self):
-        self._crypter = File_Manager()
+        self.general = General_Purpose()
+        self.update_window_methods = Update_Window_Methods()
 
     # Reopen Main Window
     def _Main_Window(self):
@@ -26,7 +36,7 @@ class Ui_UpdateWindow(object):
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(11)
-        UpdateWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
+        UpdateWindow.setWindowIcon(QtGui.QIcon(self.general.get_icon_path()))
         self.UpdateWindow = UpdateWindow
 
         self.centralwidget = QtWidgets.QWidget(UpdateWindow)
@@ -115,11 +125,13 @@ class Ui_UpdateWindow(object):
             QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Minimum,
         )
+
         self.gridLayout.addItem(spacerItem4, 4, 3, 1, 1)
         self.p_label = QtWidgets.QLabel(self.centralwidget)
         self.p_label.setStyleSheet("color: rgb(255, 255, 255);")
         self.p_label.setObjectName("p_label")
         self.gridLayout.addWidget(self.p_label, 1, 3, 1, 1)
+
         self.u_label = QtWidgets.QLabel(self.centralwidget)
         self.u_label.setStyleSheet("color: rgb(255, 255, 255);")
         self.u_label.setObjectName("u_label")
@@ -132,7 +144,7 @@ class Ui_UpdateWindow(object):
     def retranslateUi(self, UpdateWindow):
         _translate = QtCore.QCoreApplication.translate
         UpdateWindow.setWindowTitle(_translate("UpdateWindow", "Update Login"))
-        self.current_account_label.setText(_translate("UpdateWindow", self.show_current()))
+        self.current_account_label.setText(_translate("UpdateWindow", self.update_window_methods.show_current_login())) #Display's the current login
         self.current_login_label.setText(_translate("UpdateWindow", "Current Login:"))
         self.done.setText(_translate("UpdateWindow", "Done"))
         self.update_button.setText(_translate("UpdateWindow", "Update"))
@@ -142,31 +154,16 @@ class Ui_UpdateWindow(object):
         
     # Shows the current login
     def show_current(self):
-        data = self._crypter.load_data()
-        username = self._crypter.decrypt(data[0][0], data[2][0])
-        password = self._crypter.decrypt(data[1][0], data[2][0])
-        text = "Username: " + username + " Password: " + password
-        self.current_account_label.setText(text)
+        self.current_account_label.setText(self.update_window_methods.show_current_login())
         self.current_account_label.updateGeometry()
-        del data, username, password
-        return text
+
 
     # Updates the old login with the new one
     def update_login(self):
-        key = self._crypter.gen_key()
-        username = self._crypter.encrypt(self.username.text(), key)
-        password = self._crypter.encrypt(self.password.text(), key)
-        date = datetime.datetime.now()
-        data = self._crypter.load_data()
-        data[0][0], data[1][0], data[2][0], data[3][0], data[4][0] = username, password, key, date.strftime(
-            "%x"), [""]
-        del username, password, key, date
+        self.update_window_methods.update_login(username_new = self.username.text(), password_new = self.password.text())
         self.username.clear()
         self.password.clear()
-        self._crypter.dump_data(data)
-        temp = self.show_current()
-        del temp
-
+        self.show_current()
 
 if __name__ == "__main__":
     import sys

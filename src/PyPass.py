@@ -8,13 +8,12 @@
 ##### **Version 5.0** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-##### **Imports needed to run program: ** ######
+##### ** Imports needed to run program: ** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os, PyPass_Main_Window
+import PyPass_Main_Window
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyPass_Engine import File_Manager
-from PyPass_Engine import LoginMethods
+from PyPass_Engine import Login_Methods, General_Purpose
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##### **Main Login UI** ######
@@ -22,10 +21,13 @@ from PyPass_Engine import LoginMethods
 class Ui_LoginWindow(object):
     # Checks to make sure the storage file exist if not create it
     def __init__(self):
-        if os.path.exists(os.path.abspath("data.pp")):
+        self.general = General_Purpose()
+        self.login_methods = Login_Methods()
+
+        if self.general.check_data_path():
             pass
         else:
-            self._crypter.gen_data()
+            self.login_methods.gen_data()
 
     def _Main_Window(self):
         self.window = QtWidgets.QMainWindow()
@@ -42,7 +44,7 @@ class Ui_LoginWindow(object):
             '                font: 11pt "Segoe UI";\n'
             "            "
         )
-        LoginWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
+        LoginWindow.setWindowIcon(QtGui.QIcon(self.general.get_icon_path()))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(11)
@@ -142,9 +144,9 @@ class Ui_LoginWindow(object):
         self.uname_label.setText(_translate("LoginWindow", "Username:"))
 
     def _login(self):
-        login = LoginMethods()
-        if login.login(self.username.text(), self.password.text()):
+        if self.login_methods.login(self.username.text(), self.password.text()):
             self._Main_Window()
+        else:
             self.username.setText("")
             self.password.setText("")
 

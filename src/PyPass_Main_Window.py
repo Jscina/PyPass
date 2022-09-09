@@ -1,18 +1,27 @@
-import os, datetime, PyPass_Update_Window
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Title: Pypass** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Author: Joshua Scina** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### **Version 5.0** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### ** Imports needed to run program: ** ######
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+import PyPass_Update_Window
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyPass_Engine import File_Manager
-
-# @Version: 4.0
-# @ Author: Joshua Scina
-
+from PyPass_Engine import Main_Window_Methods, General_Purpose
 
 class Ui_MainWindow(object):
+
     def __init__(self):
-        self._crypter = File_Manager()
-
-        # Opens update window
-
+        self.main_window_methods = Main_Window_Methods()
+        self.general = General_Purpose()
+        
+    # Opens update window
     def _Update_Window(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = PyPass_Update_Window.Ui_UpdateWindow()
@@ -25,13 +34,12 @@ class Ui_MainWindow(object):
         MainWindow.resize(637, 618)
         MainWindow.setStyleSheet(
             "background-color: rgb(0, 0, 0);\n"
-            "                color: rgb(255, 255, 255);\n"
-            "            "
+            "color: rgb(255, 255, 255);\n"
         )
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(11)
-        MainWindow.setWindowIcon(QtGui.QIcon(os.path.abspath("locked.ico")))
+        MainWindow.setWindowIcon(QtGui.QIcon(self.general.get_icon_path()))
         self.MainWindow = MainWindow
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -55,13 +63,7 @@ class Ui_MainWindow(object):
         self.listWidget.setMovement(QtWidgets.QListView.Movement.Static)
         self.listWidget.setResizeMode(QtWidgets.QListView.ResizeMode.Adjust)
         self.listWidget.setObjectName("listWidget")
-        item = "None"
-        # If there aren't any accounts show none else call the show accounts method
-        if len(self._crypter.load_data()[0]) > 1:
-            self.show_accounts()
-            del item
-        else:
-            self.listWidget.addItem(item)
+        self.listWidget.addItem(self.main_window_methods.check_for_accounts())
         
         self.gridLayout.addWidget(self.listWidget, 7, 1, 1, 3)
         self.usernames = QtWidgets.QLineEdit(self.centralwidget)
@@ -142,6 +144,7 @@ class Ui_MainWindow(object):
         )
         self.website_input.setObjectName("website_input")
         self.gridLayout.addWidget(self.website_input, 2, 1, 1, 1)
+
         self.passwords = QtWidgets.QLineEdit(self.centralwidget)
         self.passwords.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
@@ -152,6 +155,7 @@ class Ui_MainWindow(object):
         )
         self.passwords.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
         self.passwords.setObjectName("passwords")
+
         self.gridLayout.addWidget(self.passwords, 2, 3, 1, 1)
         self.u_label = QtWidgets.QLabel(self.centralwidget)
         self.u_label.setObjectName("u_label")
@@ -170,12 +174,14 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
+        self.listWidget.addItem("")
+        item = self.listWidget.item(0)
+
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.index_label.setText(_translate("MainWindow", "Index to Remove:"))
         self.p_label.setText(_translate("MainWindow", "Password:"))
         __sortingEnabled = self.listWidget.isSortingEnabled()
         self.listWidget.setSortingEnabled(False)
-        item = self.listWidget.item(0)
         item.setText(_translate("MainWindow", "None"))
         self.listWidget.setSortingEnabled(__sortingEnabled)
         self.web_label.setText(_translate("MainWindow", "Website"))
@@ -187,35 +193,14 @@ class Ui_MainWindow(object):
     
     # Load and display accounts
     def show_accounts(self):
-        data = self._crypter.load_data()
-        users, passes, keys, accounts = data[0], data[1], data[2], list()
-
-        for index in range(len(keys)):
-            fuser, fpass = self._crypter.decrypt(users[index], keys[index]), self._crypter.decrypt(
-                passes[index], keys[index])
-            if index == 0:
-                continue
-            else:
-                accounts.append(
-                    f"{index} Webiste: www.{str(data[4][index])}.com Username: {fuser} Password: {fpass} Date Added: {str(data[3][index])}")
-        del users, passes, data
         self.listWidget.clear()
-        if len(keys) == 1:
-            self.listWidget.addItem("None")
-            del accounts, keys
-        else:
-            self.listWidget.addItems(accounts)
-            del accounts, keys
+        account_list: list = self.main_window_methods.show_accounts()
+        self.listWidget.addItems(account_list)
 
     # Remove account at the index
     def remove(self):
         try:
-            index = int(self.index_input.text())
-            if index != 0:
-                data = self._crypter.load_data()
-                for li in range(len(data)):
-                    data[li].remove(data[li][index])
-                self._crypter.dump_data(data)
+            self.main_window_methods.remove_accounts(account_to_be_removed = int(self.index_input.text()))
             self.show_accounts()
             self.index_input.clear()
         except ValueError:
@@ -225,15 +210,7 @@ class Ui_MainWindow(object):
 
     # Add a user to the storage file then show accounts
     def add_user(self):
-        data = self._crypter.load_data()
-        key = self._crypter.gen_key()
-        date = datetime.datetime.now()
-        data[0].append(self._crypter.encrypt(self.usernames.text(), key))
-        data[1].append(self._crypter.encrypt(self.passwords.text(), key))
-        data[2].append(key)
-        data[3].append(date.strftime("%x"))
-        data[4].append(self.website_input.text())
-        self._crypter.dump_data(data)
+        self.main_window_methods.add_user(username = self.usernames.text(), password = self.passwords.text(), website = self.website_input.text())
         self.usernames.clear()
         self.passwords.clear()
         self.website_input.clear()

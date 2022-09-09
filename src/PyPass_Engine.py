@@ -16,31 +16,30 @@ from cryptography.fernet import Fernet
 ##### **Methods for storing and encrypting the usernames/passwords** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class _File_Manager():
-    def __init__(self):
+    def __init__(self) -> None:
         # This key is only used for the default login
         self._master_key = self.gen_key()
 
     # Return the object
-    def load(self, file):
+    def load(self, file) -> None:
         return pickle.load(file)
 
     # Dump the object
-    def dump(self, obj, file):
+    def dump(self, obj, file) -> None:
         pickle.dump(obj, file)
 
     # Return master key
 
-    def get_master(self):
+    def get_master(self) -> bytes:
         return self._master_key
 
     # Generate a new key
-    def gen_key(self):
+    def gen_key(self) -> bytes:
         key = Fernet.generate_key()
         return key
 
     # Create base files
-
-    def gen_data(self):
+    def gen_data(self) -> None:
         data = ([self.encrypt("Username", self.get_master())],
                 [self.encrypt("Password", self.get_master())],
                 [self.get_master()],
@@ -51,7 +50,7 @@ class _File_Manager():
         del data
 
     # Dump data
-    def dump_data(self, data: tuple):
+    def dump_data(self, data: tuple) -> None:
         try:
             with open("data.pp", "wb") as file:
                 self.dump(data, file)
@@ -60,7 +59,7 @@ class _File_Manager():
             self.gen_data()
 
     # Load and return data
-    def load_data(self):
+    def load_data(self) -> tuple:
         try:
             with open("data.pp", "rb") as file:
                 data = self.load(file)
@@ -70,23 +69,23 @@ class _File_Manager():
             return self.load_data()
 
     # Encrypt a string and return it
-    def encrypt(self, phrase: str, key: bytes):
+    def encrypt(self, phrase: str, key: bytes) -> bytes:
         crypto = Fernet(key)
         return crypto.encrypt(phrase.encode())
 
     # Decrypt bytes and return it as a string
-    def decrypt(self, phrase: bytes, key: bytes):
+    def decrypt(self, phrase: bytes, key: bytes) -> bytes:
         crypto = Fernet(key)
         return str(crypto.decrypt(phrase).decode())
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##### **Methods for logging into the app** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Login_Methods():
-    def __init__(self):
+    def __init__(self) -> None:
         self._crypter = _File_Manager()
 
     # Login Method
-    def login(self, username: str, password: str):
+    def login(self, username: str, password: str) -> bool:
         data = self._crypter.load_data()
         username_list = data[0]
         password_list = data[1]
@@ -98,26 +97,25 @@ class Login_Methods():
             logged_in = False
         return logged_in
 
-    def gen_data(self):
+    def gen_data(self) -> None:
         self._crypter = _File_Manager()
         self._crypter.gen_data()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##### **Methods for adding, removing, and displaying accounts** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Main_Window_Methods():
-    def __init__(self):
+    def __init__(self) -> None:
         self._crypter = _File_Manager()
 
-    def check_for_accounts(self):
-        item = "None"
+    def check_for_accounts(self) -> list:
+        item:list = ["None"]
         # If there aren't any accounts show none else call the show accounts method
         if len(self._crypter.load_data()[0]) > 1:
-            self.show_accounts()
-            del item
+            return self.show_accounts()
         else:
             return item
 
-    def show_accounts(self):
+    def show_accounts(self) -> list:
         data = self._crypter.load_data()
         users, passes, keys, accounts = data[0], data[1], data[2], list()
 
@@ -138,7 +136,7 @@ class Main_Window_Methods():
             del keys
             return accounts
 
-    def remove_accounts(self, account_to_be_removed: int):
+    def remove_accounts(self, account_to_be_removed: int) -> None:
             _crypter = _File_Manager()
             index = account_to_be_removed
             if index != 0:
@@ -147,7 +145,7 @@ class Main_Window_Methods():
                     data[li].remove(data[li][index])
                 _crypter.dump_data(data)
 
-    def add_user(self, username: str, password: str, website: str):
+    def add_user(self, username: str, password: str, website: str) -> None:
         _crypter = _File_Manager()
         data = _crypter.load_data()
         key = _crypter.gen_key()
@@ -162,25 +160,25 @@ class Main_Window_Methods():
 ##### **Methods for changing app login credentials** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Update_Window_Methods:
-    def __init__(self):
+    def __init__(self) -> None:
         self._crypter = _File_Manager()
 
-    def show_current_login(self):
-        data = self._crypter.load_data()
-        username = self._crypter.decrypt(data[0][0], data[2][0])
-        password = self._crypter.decrypt(data[1][0], data[2][0])
-        text = "Username: " + username + " Password: " + password
+    def show_current_login(self) -> str:
+        data: tuple = self._crypter.load_data()
+        username: bytes = self._crypter.decrypt(data[0][0], data[2][0])
+        password: bytes = self._crypter.decrypt(data[1][0], data[2][0])
+        text: str = "Username: " + username + " Password: " + password
 
         del data, username, password
 
         return text
 
-    def update_login(self, username_new: str, password_new: str):
-        key = self._crypter.gen_key()
-        username = self._crypter.encrypt(username_new, key)
-        password = self._crypter.encrypt(password_new, key)
-        date = datetime.now()
-        data = self._crypter.load_data()
+    def update_login(self, username_new: str, password_new: str) -> None:
+        key: bytes = self._crypter.gen_key()
+        username: bytes = self._crypter.encrypt(username_new, key)
+        password: bytes = self._crypter.encrypt(password_new, key)
+        date: datetime = datetime.now()
+        data: tuple = self._crypter.load_data()
         data[0][0], data[1][0], data[2][0], data[3][0], data[4][0] = username, password, key, date.strftime(
             "%x"), [""]
         del username, password, key, date
@@ -191,13 +189,13 @@ class Update_Window_Methods:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class General_Purpose:
 
-    def get_icon_path(self):
+    def get_icon_path(self) -> str:
         return path.abspath("locked.ico")
 
-    def _get_data_path(self):
+    def _get_data_path(self) -> str:
         return path.abspath("data.pp")
 
-    def check_data_path(self):
+    def check_data_path(self) -> bool:
         if path.exists(self._get_data_path()):
             return True
         else:
@@ -212,11 +210,21 @@ if __name__ == "__main__":
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     manage = _File_Manager()
     key: bytes = manage.get_master()
-    encrypted_text: bytes = manage.encrypt(phrase = input("Enter text: "), key = key)
+    encrypted_text: bytes = manage.encrypt(phrase = "Happy Campers", key = key)
+
+    test_main_window = Main_Window_Methods()
+    test_general_purpose = General_Purpose()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##### **Outputs** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Make sure text is encrypted and decrypted properly
     print(encrypted_text, manage.decrypt(phrase = encrypted_text, key = key))
+    
+    # Check the type that is returned from method
+    print(type(test_main_window.check_for_accounts()))
+
+    # Check the type that is returned from method
+    print(type(test_general_purpose.get_icon_path()))
 
 
 

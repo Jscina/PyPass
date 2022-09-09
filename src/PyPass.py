@@ -16,33 +16,38 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyPass_Engine import Login_Methods, General_Purpose
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-##### **Main Login UI** ######
+##### **Main Login UI** #####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Ui_LoginWindow(object):
-    # Checks to make sure the storage file exist if not create it
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##### **Checks to make sure the storage file exist if not create it.** #####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self):
-        self.general = General_Purpose()
-        self.login_methods = Login_Methods()
+        self.general = General_Purpose() # Attribute
+        self.login_methods = Login_Methods() # Attribute
 
         if self.general.check_data_path():
             pass
         else:
             self.login_methods.gen_data()
-
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##### **Switches active window to the Main UI Window** #####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _Main_Window(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = PyPass_Main_Window.Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.window.show()
         LoginWindow.close()
-
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##### **Sets up the UI** #####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
         LoginWindow.resize(591, 194)
         LoginWindow.setStyleSheet(
             "background-color: rgb(0, 0, 0);\n"
-            '                font: 11pt "Segoe UI";\n'
-            "            "
+            "font: 11pt 'Segoe UI';\n"
         )
         LoginWindow.setWindowIcon(QtGui.QIcon(self.general.get_icon_path()))
         font = QtGui.QFont()
@@ -55,8 +60,7 @@ class Ui_LoginWindow(object):
         self.login = QtWidgets.QPushButton(self.centralwidget)
         self.login.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                background-color: rgb(79, 79, 79);\n"
-            "                            "
+            "background-color: rgb(79, 79, 79);\n"
         )
         self.login.setObjectName("login")
         self.login.clicked.connect(self._login)
@@ -64,10 +68,9 @@ class Ui_LoginWindow(object):
         self.username = QtWidgets.QLineEdit(self.centralwidget)
         self.username.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                gridline-color: rgb(0, 0, 0);\n"
-            "                                background-color: rgb(80, 80, 80);\n"
-            "                                border-radius: 5px;\n"
-            "                            "
+            "gridline-color: rgb(0, 0, 0);\n"
+            "background-color: rgb(80, 80, 80);\n"
+            "border-radius: 5px;\n"
         )
         self.username.setText("")
         self.username.setObjectName("username")
@@ -94,10 +97,9 @@ class Ui_LoginWindow(object):
         self.password = QtWidgets.QLineEdit(self.centralwidget)
         self.password.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                gridline-color: rgb(0, 0, 0);\n"
-            "                                background-color: rgb(80, 80, 80);\n"
-            "                                border-radius: 5px;\n"
-            "                            "
+            "gridline-color: rgb(0, 0, 0);\n"
+            "background-color: rgb(80, 80, 80);\n"
+            "border-radius: 5px;\n"
         )
         self.password.setText("")
         self.password.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
@@ -135,14 +137,18 @@ class Ui_LoginWindow(object):
 
         self.retranslateUi(LoginWindow)
         QtCore.QMetaObject.connectSlotsByName(LoginWindow)
-
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##### **Translates the UI for other languages** #####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def retranslateUi(self, LoginWindow):
         _translate = QtCore.QCoreApplication.translate
         LoginWindow.setWindowTitle(_translate("LoginWindow", "Login"))
         self.login.setText(_translate("LoginWindow", "Login"))
         self.pword_label.setText(_translate("LoginWindow", "Password:"))
         self.uname_label.setText(_translate("LoginWindow", "Username:"))
-
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##### **Verifies login** #####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _login(self):
         if self.login_methods.login(self.username.text(), self.password.text()):
             self._Main_Window()

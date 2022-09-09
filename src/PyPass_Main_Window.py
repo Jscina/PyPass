@@ -63,16 +63,15 @@ class Ui_MainWindow(object):
         self.listWidget.setMovement(QtWidgets.QListView.Movement.Static)
         self.listWidget.setResizeMode(QtWidgets.QListView.ResizeMode.Adjust)
         self.listWidget.setObjectName("listWidget")
-        self.listWidget.addItem(self.main_window_methods.check_for_accounts())
+        self.listWidget.addItems(self.main_window_methods.check_for_accounts())
         
         self.gridLayout.addWidget(self.listWidget, 7, 1, 1, 3)
         self.usernames = QtWidgets.QLineEdit(self.centralwidget)
         self.usernames.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                gridline-color: rgb(0, 0, 0);\n"
-            "                                background-color: rgb(80, 80, 80);\n"
-            "                                border-radius: 5px;\n"
-            "                            "
+            "gridline-color: rgb(0, 0, 0);\n"
+            "background-color: rgb(80, 80, 80);\n"
+            "border-radius: 5px;\n"
         )
         self.usernames.setObjectName("usernames")
         self.gridLayout.addWidget(self.usernames, 2, 2, 1, 1)
@@ -86,10 +85,9 @@ class Ui_MainWindow(object):
         self.index_input = QtWidgets.QLineEdit(self.centralwidget)
         self.index_input.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                gridline-color: rgb(0, 0, 0);\n"
-            "                                background-color: rgb(80, 80, 80);\n"
-            "                                border-radius: 5px;\n"
-            "                            "
+            "gridline-color: rgb(0, 0, 0);\n"
+            "background-color: rgb(80, 80, 80);\n"
+            "border-radius: 5px;\n"
         )
         self.index_input.setObjectName("index_input")
         self.gridLayout.addWidget(self.index_input, 4, 4, 1, 2)
@@ -106,8 +104,7 @@ class Ui_MainWindow(object):
         self.update_login = QtWidgets.QPushButton(self.centralwidget)
         self.update_login.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                background-color: rgb(79, 79, 79);\n"
-            "                            "
+            "background-color: rgb(79, 79, 79);\n"
         )
         self.update_login.setObjectName("update_login")
         self.update_login.clicked.connect(self._Update_Window)
@@ -116,8 +113,7 @@ class Ui_MainWindow(object):
         self.add_button = QtWidgets.QPushButton(self.centralwidget)
         self.add_button.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                background-color: rgb(79, 79, 79);\n"
-            "                            "
+            "background-color: rgb(79, 79, 79);\n"
         )
         self.add_button.setObjectName("add_button")
         self.add_button.clicked.connect(self.add_user)
@@ -128,8 +124,7 @@ class Ui_MainWindow(object):
         self.remove_user = QtWidgets.QPushButton(self.centralwidget)
         self.remove_user.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                background-color: rgb(79, 79, 79);\n"
-            "                            "
+            "background-color: rgb(79, 79, 79);\n"
         )
         self.remove_user.setObjectName("remove_user")
         self.remove_user.clicked.connect(self.remove)
@@ -137,10 +132,9 @@ class Ui_MainWindow(object):
         self.website_input = QtWidgets.QLineEdit(self.centralwidget)
         self.website_input.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                gridline-color: rgb(0, 0, 0);\n"
-            "                                background-color: rgb(80, 80, 80);\n"
-            "                                border-radius: 5px;\n"
-            "                            "
+            "gridline-color: rgb(0, 0, 0);\n"
+            "background-color: rgb(80, 80, 80);\n"
+            "border-radius: 5px;\n"
         )
         self.website_input.setObjectName("website_input")
         self.gridLayout.addWidget(self.website_input, 2, 1, 1, 1)
@@ -148,10 +142,9 @@ class Ui_MainWindow(object):
         self.passwords = QtWidgets.QLineEdit(self.centralwidget)
         self.passwords.setStyleSheet(
             "color: rgb(255, 255, 255);\n"
-            "                                gridline-color: rgb(0, 0, 0);\n"
-            "                                background-color: rgb(80, 80, 80);\n"
-            "                                border-radius: 5px;\n"
-            "                            "
+            "gridline-color: rgb(0, 0, 0);\n"
+            "background-color: rgb(80, 80, 80);\n"
+            "border-radius: 5px;\n"
         )
         self.passwords.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
         self.passwords.setObjectName("passwords")

@@ -143,7 +143,7 @@ class Ui_UpdateWindow(object):
 
     def retranslateUi(self, UpdateWindow):
         _translate = QtCore.QCoreApplication.translate
-        UpdateWindow.setWindowTitle(_translate("UpdateWindow", "Update Login"))
+        UpdateWindow.setWindowTitle(_translate("UpdateWindow", "Change Login"))
         self.current_account_label.setText(_translate("UpdateWindow", self.update_window_methods.show_current_login())) #Display's the current login
         self.current_login_label.setText(_translate("UpdateWindow", "Current Login:"))
         self.done.setText(_translate("UpdateWindow", "Done"))

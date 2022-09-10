@@ -170,7 +170,7 @@ class Ui_MainWindow(object):
         self.listWidget.addItem("")
         item = self.listWidget.item(0)
 
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "PyPass"))
         self.index_label.setText(_translate("MainWindow", "Index to Remove:"))
         self.p_label.setText(_translate("MainWindow", "Password:"))
         __sortingEnabled = self.listWidget.isSortingEnabled()

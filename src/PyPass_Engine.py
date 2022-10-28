@@ -21,7 +21,7 @@ class _File_Manager():
         self._master_key = self.gen_key()
 
     # Return the object
-    def load(self, file) -> None:
+    def load(self, file):
         return pickle.load(file)
 
     # Dump the object
@@ -74,9 +74,9 @@ class _File_Manager():
         return crypto.encrypt(phrase.encode())
 
     # Decrypt bytes and return it as a string
-    def decrypt(self, phrase: bytes, key: bytes) -> bytes:
+    def decrypt(self, phrase: bytes, key: bytes) -> str:
         crypto = Fernet(key)
-        return str(crypto.decrypt(phrase).decode())
+        return crypto.decrypt(phrase).decode()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##### **Methods for logging into the app** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -165,8 +165,8 @@ class Update_Window_Methods:
 
     def show_current_login(self) -> str:
         data: tuple = self._crypter.load_data()
-        username: bytes = self._crypter.decrypt(data[0][0], data[2][0])
-        password: bytes = self._crypter.decrypt(data[1][0], data[2][0])
+        username: str= self._crypter.decrypt(data[0][0], data[2][0])
+        password: str = self._crypter.decrypt(data[1][0], data[2][0])
         text: str = "Username: " + username + " Password: " + password
 
         del data, username, password

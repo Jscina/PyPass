@@ -1,4 +1,5 @@
 import PyInstaller.__main__, os, time
+from cryptography.fernet import Fernet
 from shutil import copy, rmtree, move
 class CreateEXE:
     def __init__(self, files: list) -> None:
@@ -26,3 +27,7 @@ if __name__ == "__main__":
     move(src, dst)
     os.remove(os.path.join(os.getcwd(), "PyPass.spec"))
     print(f"Done, build took {time.time() - start_time} seconds")
+    print("Generating new master key...")
+    print(f"Done, new master key: {Fernet.generate_key().decode()}")
+    input("Don't forget to copy this! Press any key to exit...")
+    

@@ -29,7 +29,6 @@ InfoBeforeFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\infobefore.txt
 InfoAfterFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\infoafter.txt
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=PyPass
 OutputBaseFilename=PyPass Setup
 SetupIconFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\setup.ico
@@ -53,7 +52,12 @@ Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueTyp
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
-Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
+; NOTE: The secret key here is only a placeholder, DO NOT USE IN PRODUCTION
+Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName: "PYPASS_SECRET"; ValueData: "gizNQcBJHfECgTa2-vmzGIftwH3nfq_MzjGmaBYCOsA="; Flags: preservestringtype
+
+[Setup]
+; Tell Windows Explorer to reload the environment
+ChangesEnvironment=true
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

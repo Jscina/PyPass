@@ -63,8 +63,6 @@ class Ui_MainWindow(object):
         self.listWidget.setMovement(QtWidgets.QListView.Movement.Static)
         self.listWidget.setResizeMode(QtWidgets.QListView.ResizeMode.Adjust)
         self.listWidget.setObjectName("listWidget")
-        self.listWidget.addItems(self.main_window_methods.check_for_accounts())
-        
         self.gridLayout.addWidget(self.listWidget, 7, 1, 1, 3)
         self.usernames = QtWidgets.QLineEdit(self.centralwidget)
         self.usernames.setStyleSheet(
@@ -167,16 +165,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        self.listWidget.addItem("")
-        item = self.listWidget.item(0)
-
         MainWindow.setWindowTitle(_translate("MainWindow", "PyPass"))
         self.index_label.setText(_translate("MainWindow", "Index to Remove:"))
         self.p_label.setText(_translate("MainWindow", "Password:"))
-        __sortingEnabled = self.listWidget.isSortingEnabled()
-        self.listWidget.setSortingEnabled(False)
-        item.setText(_translate("MainWindow", "None"))
-        self.listWidget.setSortingEnabled(__sortingEnabled)
+        self.listWidget.setSortingEnabled(True)
+        self.listWidget.addItems(self.main_window_methods.check_for_accounts())
         self.web_label.setText(_translate("MainWindow", "Website"))
         self.update_login.setText(_translate("MainWindow", "Update Login"))
         self.add_button.setText(_translate("MainWindow", "Add User"))
@@ -193,14 +186,14 @@ class Ui_MainWindow(object):
     # Remove account at the index
     def remove(self):
         try:
-            self.main_window_methods.remove_accounts(account_to_be_removed = int(self.index_input.text()))
+            index = lambda x: x - 1
+            self.main_window_methods.remove_accounts(account_to_be_removed = index(int(self.index_input.text())))
             self.show_accounts()
             self.index_input.clear()
         except ValueError:
             self.index_input.clear()
         except IndexError:
             self.index_input.clear()
-
     # Add a user to the storage file then show accounts
     def add_user(self):
         self.main_window_methods.add_user(username = self.usernames.text(), password = self.passwords.text(), website = self.website_input.text())

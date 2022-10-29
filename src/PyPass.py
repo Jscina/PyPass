@@ -26,10 +26,10 @@ class Ui_LoginWindow(object):
         self.general = General_Purpose() # Attribute
         self.login_methods = Login_Methods() # Attribute
 
-        if self.general.check_data_path():
+        if self.general.check_database_path():
             pass
         else:
-            self.login_methods.gen_data()
+            self.login_methods.gen_database()
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ##### **Switches active window to the Main UI Window** #####
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

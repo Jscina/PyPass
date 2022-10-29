@@ -157,7 +157,7 @@ class Login_Methods():
         _username: bytes = credentials[0].encode()
         _password:bytes = credentials[1].encode()
         key:bytes = credentials[2].encode()
-        key = self._crypter.decrypt(key, self._crypter.get_master())
+        key = self._crypter.decrypt(key, self._crypter.get_master()).encode()
 
         if username == self._crypter.decrypt(_username, key) and password == self._crypter.decrypt(_password, key):
             logged_in = True
@@ -230,7 +230,7 @@ class Update_Window_Methods:
         
     def show_current_login(self) -> str:
         login_credentials = self._crypter.load_login_credentials()
-        key = self._crypter.decrypt(login_credentials[2].encode(), self._crypter.get_master())
+        key:bytes = self._crypter.decrypt(login_credentials[2].encode(), self._crypter.get_master()).encode()
         username = self._crypter.decrypt(login_credentials[0], key)
         password = self._crypter.decrypt(login_credentials[1], key)
         text: str = "Username: " + username + " Password: " + password
@@ -242,8 +242,8 @@ class Update_Window_Methods:
         login_credentials = self._crypter.load_login_credentials()
         old_key = self._crypter.decrypt(login_credentials[2].encode(), self._crypter.get_master())
         new_key: str = self._crypter.gen_key().decode()
-        username: str = self._crypter.encrypt(username_new, new_key).decode()
-        password: str = self._crypter.encrypt(password_new, new_key).decode()
+        username: str = self._crypter.encrypt(username_new, new_key.encode()).decode()
+        password: str = self._crypter.encrypt(password_new, new_key.encode()).decode()
         self._crypter.update_login(username, password, old_key, new_key)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

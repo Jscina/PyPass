@@ -7,8 +7,8 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##### **Imports needed to run engine:** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import pickle
-from os import path
+import sqlite3
+from os import path, environ
 from datetime import datetime
 from cryptography.fernet import Fernet
 
@@ -17,16 +17,7 @@ from cryptography.fernet import Fernet
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class _File_Manager():
     def __init__(self) -> None:
-        # This key is only used for the default login
-        self._master_key = self.gen_key()
-
-    # Return the object
-    def load(self, file):
-        return pickle.load(file)
-
-    # Dump the object
-    def dump(self, obj, file) -> None:
-        pickle.dump(obj, file)
+        self._master_key:bytes = environ.get("PYPASS_MASTER").encode()
 
     # Return master key
     def get_master(self) -> bytes:
@@ -36,36 +27,51 @@ class _File_Manager():
     def gen_key(self) -> bytes:
         key = Fernet.generate_key()
         return key
+        
 
-    # Create base files
-    def gen_data(self) -> None:
-        data = ([self.encrypt("Username", self.get_master())],
-                [self.encrypt("Password", self.get_master())],
-                [self.get_master()],
-                [""],
-                [""])
-        with open("data.pypass", "wb") as file:
-            self.dump(data, file)
-        del data
-
-    # Dump data
-    def dump_data(self, data: tuple) -> None:
+    def get_keys():
+        db_con = sqlite3.connect("PyPass.db")
+        cur = db_con.cursor()
+        
+    # Create database if it doesn't already exist and populate it with default values
+    def gen_database(self) -> None:
+        default_username = self.encrypt("Username", self.get_master()).decode()
+        default_password = self.encrypt("Password", self.get_master()).decode()
         try:
-            with open("data.pypass", "wb") as file:
-                self.dump(data, file)
-            del data
-        except FileNotFoundError:
-            self.gen_data()
+            db_con = sqlite3.connect("PyPass.db")
+            cur = db_con.cursor()
+            queries = [("CREATE TABLE CREDENTIAL_STORAGE(USERNAME, PASSWORD, WEBSITE, DATE)"),
+                    ("CREATE TABLE KEY_STORAGE(KEY)"),
+                    ("CREATE TABLE LOGIN(USERNAME, PASSWORD)"),
+                    (f"INSERT INTO LOGIN VALUES('{default_username}', '{default_password}')"),
+                    (f"INSERT INTO KEY_STORAGE VALUES('{self.get_master().decode()}')")]
+            for query in queries:
+                cur.execute(query)
+            db_con.commit()
+        except Exception as e:
+            print(e)
+        finally:
+            cur.close()
+            db_con.close()    
 
     # Load and return data
-    def load_data(self) -> tuple:
+    def load_database(self) -> tuple:
         try:
-            with open("data.pypass", "rb") as file:
-                data = self.load(file)
-            return tuple(data)
-        except FileNotFoundError:
-            self.gen_data()
-            return self.load_data()
+            db_con = sqlite3.connect("PyPass.db")
+            cur = db_con.cursor()
+            cur.execute("SELECT * from LOGIN")
+            login = cur.fetchall()
+            cur.execute(f"SELECT KEY FROM KEY_STORAGE WHERE KEY = '{self.get_master().decode()}'")
+            key = cur.fetchone()
+            credentials = (login[0][0], login[0][1], key[0])
+            return credentials
+        except Exception:
+            self.gen_database()
+            return self.load_database()
+        finally:
+            cur.close()
+            db_con.close()
+            
         
     # Encrypt a string and return it
     def encrypt(self, phrase: str, key: bytes) -> bytes:
@@ -84,21 +90,21 @@ class Login_Methods():
         self._crypter = _File_Manager()
 
     # Login Method
-    def login(self, username: str, password: str) -> bool:
-        data = self._crypter.load_data()
-        username_list = data[0]
-        password_list = data[1]
-        keys = data[2]
+    def login(self, username: str = "Username", password: str = "Password") -> bool:
+        credentials = self._crypter.load_database()
+        _username = credentials[0].encode()
+        _password = credentials[1].encode()
+        key = credentials[2].encode()
 
-        if username == self._crypter.decrypt(username_list[0], keys[0]) and password == self._crypter.decrypt(password_list[0], keys[0]):
+        if username == self._crypter.decrypt(_username, key) and password == self._crypter.decrypt(_password, key):
             logged_in = True
         else:
             logged_in = False
         return logged_in
 
-    def gen_data(self) -> None:
+    def gen_database(self) -> None:
         self._crypter = _File_Manager()
-        self._crypter.gen_data()
+        self._crypter.gen_database()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##### **Methods for adding, removing, and displaying accounts** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -109,13 +115,13 @@ class Main_Window_Methods():
     def check_for_accounts(self) -> list:
         item:list = ["None"]
         # If there aren't any accounts show none else call the show accounts method
-        if len(self._crypter.load_data()[0]) > 1:
+        if len(self._crypter.load_database()[0]) > 1:
             return self.show_accounts()
         else:
             return item
 
     def show_accounts(self) -> list:
-        data = self._crypter.load_data()
+        data = self._crypter.load_database()
         users, passes, keys, accounts = data[0], data[1], data[2], list()
 
         for index in range(len(keys)):
@@ -139,14 +145,14 @@ class Main_Window_Methods():
             _crypter = _File_Manager()
             index = account_to_be_removed
             if index != 0:
-                data = _crypter.load_data()
+                data = _crypter.load_database()
                 for li in range(len(data)):
                     data[li].remove(data[li][index])
                 _crypter.dump_data(data)
 
     def add_user(self, username: str, password: str, website: str) -> None:
         _crypter = _File_Manager()
-        data = _crypter.load_data()
+        data = _crypter.load_database()
         key = _crypter.gen_key()
         date = datetime.now()
         data[0].append(_crypter.encrypt(username, key))
@@ -163,7 +169,7 @@ class Update_Window_Methods:
         self._crypter = _File_Manager()
 
     def show_current_login(self) -> str:
-        data: tuple = self._crypter.load_data()
+        data: tuple = self._crypter.load_database()
         username: str= self._crypter.decrypt(data[0][0], data[2][0])
         password: str = self._crypter.decrypt(data[1][0], data[2][0])
         text: str = "Username: " + username + " Password: " + password
@@ -177,7 +183,7 @@ class Update_Window_Methods:
         username: bytes = self._crypter.encrypt(username_new, key)
         password: bytes = self._crypter.encrypt(password_new, key)
         date: datetime = datetime.now()
-        data: tuple = self._crypter.load_data()
+        data: tuple = self._crypter.load_database()
         data[0][0], data[1][0], data[2][0], data[3][0], data[4][0] = username, password, key, date.strftime(
             "%x"), [""]
         del username, password, key, date
@@ -200,30 +206,10 @@ class General_Purpose:
         else:
             return False
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-##### **Beta Section** ######
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 if __name__ == "__main__":
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-##### **Inputs** ######
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    manage = _File_Manager()
-    key: bytes = manage.get_master()
-    encrypted_text: bytes = manage.encrypt(phrase = "Happy Campers", key = key)
-
-    test_main_window = Main_Window_Methods()
-    test_general_purpose = General_Purpose()
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-##### **Outputs** ######
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Make sure text is encrypted and decrypted properly
-    print(encrypted_text, manage.decrypt(phrase = encrypted_text, key = key))
-    
-    # Check the type that is returned from method
-    print(type(test_main_window.check_for_accounts()))
-
-    # Check the type that is returned from method
-    print(type(test_general_purpose.get_icon_path()))
+    test_login = Login_Methods()
+    print(test_login.login())    
 
 
 

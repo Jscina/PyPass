@@ -29,7 +29,6 @@ class _File_Manager():
         pickle.dump(obj, file)
 
     # Return master key
-
     def get_master(self) -> bytes:
         return self._master_key
 
@@ -45,14 +44,14 @@ class _File_Manager():
                 [self.get_master()],
                 [""],
                 [""])
-        with open("data.pp", "wb") as file:
+        with open("data.pypass", "wb") as file:
             self.dump(data, file)
         del data
 
     # Dump data
     def dump_data(self, data: tuple) -> None:
         try:
-            with open("data.pp", "wb") as file:
+            with open("data.pypass", "wb") as file:
                 self.dump(data, file)
             del data
         except FileNotFoundError:
@@ -61,13 +60,13 @@ class _File_Manager():
     # Load and return data
     def load_data(self) -> tuple:
         try:
-            with open("data.pp", "rb") as file:
+            with open("data.pypass", "rb") as file:
                 data = self.load(file)
             return tuple(data)
         except FileNotFoundError:
             self.gen_data()
             return self.load_data()
-
+        
     # Encrypt a string and return it
     def encrypt(self, phrase: str, key: bytes) -> bytes:
         crypto = Fernet(key)
@@ -190,10 +189,10 @@ class Update_Window_Methods:
 class General_Purpose:
 
     def get_icon_path(self) -> str:
-        return path.abspath("locked.ico")
+        return path.abspath("PyPass.ico")
 
     def _get_data_path(self) -> str:
-        return path.abspath("data.pp")
+        return path.abspath("data.pypass")
 
     def check_data_path(self) -> bool:
         if path.exists(self._get_data_path()):

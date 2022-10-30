@@ -20,8 +20,10 @@ if __name__ == "__main__":
     builder.run()
     copy(builder.icon, "dist/PyPass")   
     rmtree(os.path.join(os.getcwd(), "build"))
-    if os.path.exists(os.path.join(os.getcwd(), "Staging", "dist")):
+    if os.path.exists(os.path.join(os.getcwd(), "Staging", "dist")) or os.path.exists(os.path.join(os.getcwd(), "Staging", "PyPass")):
         rmtree(os.path.join(os.getcwd(), "Staging"))
+    if os.path.exists(os.path.join(os.getcwd(), "Staging", "PyPass-installer.exe")):
+        os.remove(os.path.join(os.getcwd(), "Staging", "PyPass-Installer.exe"))
     src = os.path.join(os.getcwd(), "dist")
     dst = os.path.join(os.getcwd(), "Staging")
     move(src, dst)

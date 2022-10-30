@@ -10,7 +10,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{3BBDCD1C-863F-4216-A78D-8882F6B1C35A}
+AppId={{FB5C10C9-FBFE-42F3-A00C-88C19A168E6F}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -27,7 +27,7 @@ InfoAfterFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\infoafter.txt
 PrivilegesRequired=lowest
 OutputDir=C:\GitHub_Windows_Repos\PyPass\Staging
 OutputBaseFilename=PyPass-Installer
-SetupIconFile=C:\Users\joshs\Downloads\setup.ico
+SetupIconFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\setup.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -39,12 +39,13 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\GitHub_Windows_Repos\PyPass\Staging\dist\PyPass\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\GitHub_Windows_Repos\PyPass\Staging\dist\PyPass\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\GitHub_Windows_Repos\PyPass\Staging\PyPass\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\GitHub_Windows_Repos\PyPass\Staging\PyPass\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
 Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName: "PYPASS_SECRET"; ValueData: "new_value"; Flags: preservestringtype
+; NOTE: Don't forget to generate a new key
 
 [Setup]
 ; Tell Windows Explorer to reload the environment

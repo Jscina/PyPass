@@ -4,7 +4,7 @@ from shutil import copy, rmtree, move
 class CreateEXE:
     def __init__(self, files: list) -> None:
         self.files = files
-        self.icon = os.path.abspath("_BuildFolder/PyPass.ico")
+        self.icon = os.path.abspath("_BuildFolder/PyPass-6.ico")
 
     def build_program(self, name: str) -> None:
         PyInstaller.__main__.run([f"{name}.py", "--onedir", "--windowed", f"-i={self.icon}"])

@@ -7,8 +7,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##### **Imports needed to run engine:** ######
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import sqlite3
-from os import path, environ
+import sqlite3, os
 from datetime import datetime
 from cryptography.fernet import Fernet
 
@@ -17,7 +16,7 @@ from cryptography.fernet import Fernet
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class _File_Manager():
     def __init__(self) -> None:
-        self._master_key:bytes = str(environ.get("PYPASS_SECRET")).encode()
+        self._master_key:bytes = str(os.environ.get("PYPASS_SECRET")).encode()
 
     # Return master key
     def get_master(self) -> bytes:
@@ -252,13 +251,13 @@ class Update_Window_Methods:
 class General_Purpose:
 
     def get_icon_path(self) -> str:
-        return path.abspath("PyPass.ico")
+        return os.path.abspath("PyPass-6.ico")
 
     def _get_database_path(self) -> str:
-        return path.abspath("PyPass.db")
+        return os.path.abspath("PyPass.db")
 
     def check_database_path(self) -> bool:
-        if path.exists(self._get_database_path()):
+        if os.path.exists(self._get_database_path()):
             return True
         else:
             return False

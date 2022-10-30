@@ -45,11 +45,11 @@ Source: "C:\GitHub_Windows_Repos\PyPass\Staging\PyPass\*"; DestDir: "{app}"; Fla
 
 [Registry]
 Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName: "PYPASS_SECRET"; ValueData: "new_value"; Flags: preservestringtype
-; NOTE: Don't forget to generate a new key
+; NOTE: Don't forget to generate a new key, and clear the ValueData field after build
 
 [Setup]
 ; Tell Windows Explorer to reload the environment
-ChangesEnvironment=true
+ChangesEnvironment=yes
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

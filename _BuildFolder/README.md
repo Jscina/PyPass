@@ -1,6 +1,6 @@
 # PyPass
 
-Simple password manager written in python using PyQt framwork
+A simple password manager written using the eel framework.
 
 To install (Windows):
 
@@ -8,8 +8,7 @@ To install (Windows):
         
 To install (Source):
         
-        Download the zip and run python Create_EXE.py
-The default login is:
+        Download the zip and run python Create_EXE.py from your terminal
 
-        Username: Username
-        Password: Password
+Create a new account to get started
+

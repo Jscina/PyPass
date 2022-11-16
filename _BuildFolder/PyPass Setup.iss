@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PyPass"
-#define MyAppVersion "6.1"
+#define MyAppVersion "7.0"
 #define MyAppPublisher "Jscin"
 #define MyAppURL "https://www.jscin.com/"
 #define MyAppExeName "PyPass.exe"
@@ -20,14 +20,14 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\LICENSE.txt
-InfoBeforeFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\infobefore.txt
-InfoAfterFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\infoafter.txt
+LicenseFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\licenses\LICENSE.txt
+InfoBeforeFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\info\infobefore.txt
+InfoAfterFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\info\infoafter.txt
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputDir=C:\GitHub_Windows_Repos\PyPass\Staging
 OutputBaseFilename=PyPass-Installer
-SetupIconFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\setup.ico
+SetupIconFile=C:\GitHub_Windows_Repos\PyPass\_BuildFolder\icon\setup.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern

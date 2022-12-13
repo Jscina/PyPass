@@ -22,10 +22,3 @@ window.addEventListener('DOMContentLoaded', event => {
     }
 
 });
-
-
-// Close the memory database when logout is chosen
-function logout() {
-    eel.close_memory_database();
-    return true;
-}

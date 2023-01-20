@@ -1,0 +1,1 @@
+asyncio.run(db.get_accounts())

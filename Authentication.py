@@ -3,14 +3,19 @@ from os import environ
 from typing import Any
 from cryptography.fernet import Fernet
 from cryptography.hazmat import backends
+from dataclasses import dataclass
 
 
+@dataclass(frozen=True, slots=True)
 class Auth:
     """The Authentication class handles encryption/decrytpion/pickling/unpickling/hashing of sensitive data"""
-    def __init__(self) -> None:
-        self.__master_key: bytes = b'uINeV3FVfyDZ-40LcgGzJ8oy0tO3K5hCXl5xJtDp_Cs=' # Development key DO NOT USE IN PRODUCTION
-        #__master_key = str(environ.get("CLIENT_SECRET")).encode() for production
-      
+    __master_key: bytes = b'uINeV3FVfyDZ-40LcgGzJ8oy0tO3K5hCXl5xJtDp_Cs=' # Development key DO NOT USE IN PRODUCTION
+    #__master_key = str(environ.get("CLIENT_SECRET")).encode() for production
+
+    @property
+    def master_key(self):
+        return self.__master_key
+    
     def gen_uuid(self) -> str:
         return str(uuid.uuid4())
     
@@ -20,9 +25,15 @@ class Auth:
     def load(self, obj: str) -> Any:
         return pickle.loads(codecs.decode(obj.encode(), "base64"))
 
-    def hash(self, password: str) -> str:
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-        return hashed_password
+    def protect_password(self, password: str):
+        """Creates a hashed password with salt pair"""
+        salt = uuid.uuid4().hex
+        return (hashlib.sha512(password.encode() + salt.encode()).hexdigest(), salt)
+   
+    def check_password(self, password:str, salt: bytes, hashed_password: str) -> bool:
+        if hashlib.sha512(password.encode() + salt).hexdigest() == hashed_password:
+            return True
+        return False
 
     def generate_key(self) -> bytes:
         return Fernet.generate_key()
@@ -38,13 +49,16 @@ class Auth:
         return unprotected_str.decode()
 
     def encrypt_key(self, unprotected_key: bytes) -> str:
-        assert self.__master_key is not None
-        fernet = Fernet(key = self.__master_key, backend=backends.default_backend())
+        fernet = Fernet(key = self.master_key, backend=backends.default_backend())
         protected_key = fernet.encrypt(unprotected_key)
         return protected_key.decode()
 
     def decrypt_key(self, protected_key: str) -> str:
-        assert self.__master_key is not None
-        fernet = Fernet(key = self.__master_key, backend=backends.default_backend())
+        fernet = Fernet(key = self.master_key, backend=backends.default_backend())
         unprotected_key = fernet.decrypt(protected_key.encode())
         return unprotected_key.decode()
+
+if __name__ == "__main__":
+    auth = Auth()
+    print(auth)
+    

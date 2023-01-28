@@ -1,2 +1,0 @@
-Thank you for installing PyPass! 
-If you wish for additional features or to report a bug, please go to my github page @ https://github.com/Jscin/

@@ -1,4 +1,4 @@
-import codecs, hashlib, pickle, uuid
+import uuid, bcrypt
 from os import environ
 from typing import Any
 from cryptography.fernet import Fernet
@@ -19,21 +19,13 @@ class Auth:
     def gen_uuid(self) -> str:
         return str(uuid.uuid4())
     
-    def dump(self, obj: Any) -> str:
-        return codecs.encode(pickle.dumps(obj), "base64").decode()
+    def hash_password(password: str) -> str:
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        return hashed_password
 
-    def load(self, obj: str) -> Any:
-        return pickle.loads(codecs.decode(obj.encode(), "base64"))
-
-    def protect_password(self, password: str):
-        """Creates a hashed password with salt pair"""
-        salt = uuid.uuid4().hex
-        return (hashlib.sha512(password.encode() + salt.encode()).hexdigest(), salt)
-   
-    def check_password(self, password:str, salt: bytes, hashed_password: str) -> bool:
-        if hashlib.sha512(password.encode() + salt).hexdigest() == hashed_password:
-            return True
-        return False
+    def verify_password(password: str, hashed_password: str) -> bool:
+        return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
 
     def generate_key(self) -> bytes:
         return Fernet.generate_key()

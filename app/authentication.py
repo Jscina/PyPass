@@ -1,6 +1,6 @@
+from __future__ import annotations
 import uuid, bcrypt
 from os import environ
-from typing import Any
 from cryptography.fernet import Fernet
 from cryptography.hazmat import backends
 from dataclasses import dataclass
@@ -10,19 +10,21 @@ from dataclasses import dataclass
 class Auth:
     """The Authentication class handles encryption/decrytpion/pickling/unpickling/hashing of sensitive data"""
     __master_key: bytes = b'uINeV3FVfyDZ-40LcgGzJ8oy0tO3K5hCXl5xJtDp_Cs=' # Development key DO NOT USE IN PRODUCTION
-    #__master_key = str(environ.get("CLIENT_SECRET")).encode() for production
+    #__master_key: bytes = str(environ.get("CLIENT_SECRET")).encode() for production
 
     @property
     def master_key(self):
         return self.__master_key
     
     def gen_uuid(self) -> str:
+        """Create's a unique user id"""
         return str(uuid.uuid4())
     
-    def hash_password(password: str) -> str:
+    def hash_password(password: str) -> tuple[str, str]:
+        """Returns the hashed version of the password and the salt"""
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-        return hashed_password
+        return hashed_password, salt
 
     def verify_password(password: str, hashed_password: str) -> bool:
         return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
@@ -50,6 +52,12 @@ class Auth:
         unprotected_key = fernet.decrypt(protected_key.encode())
         return unprotected_key.decode()
 
+    def login(self, username:str, password:str, accounts: list[tuple]) -> bool:
+        for account in accounts:
+            if username == account[1] and self.hash_password(password, account[3]):
+                return True
+        return False
+    
 if __name__ == "__main__":
     auth = Auth()
     print(auth)

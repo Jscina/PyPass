@@ -1,5 +1,8 @@
+from __future__ import annotations
 from flask import Flask, redirect, render_template, request, session
-import secrets
+from authentication import Auth
+from database import Database
+import secrets, os
 
 app = Flask(__name__, static_url_path = "", static_folder = "static", template_folder = "templates")
 app.secret_key = secrets.token_hex(16)
@@ -19,6 +22,18 @@ def login():
         message = "Invalid username or password"
         return render_template("login.html", message=message)
     
+@app.route("/create_account_redirect")
+def create_account_redirect():
+    return render_template("create_account.html")
+
+@app.route("/create_account")
+def create_account():
+    return None
+
+@app.route("/recover_account")
+def recover_account():
+    return None
+
 @app.route("/home")
 def home():
     if "logged_in" in session:
@@ -26,4 +41,5 @@ def home():
     return redirect("/")
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=8000, debug=True)
+    port = int(os.environ.get("PORT"), 5000)
+    app.run(host="localhost", port=port, debug=True)

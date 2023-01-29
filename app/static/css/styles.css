@@ -9,6 +9,15 @@ body {
   background-color: #444;
 }
 
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.welcome {
+  transform: translateY(75px);
+}
+
 .form-container {
   width: 300px;
   margin: 0 auto;
@@ -32,10 +41,10 @@ body {
 .form-input {
   width: 100%;
   padding: 12px 20px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   box-sizing: border-box;
   border: 1px solid #666;
-  border-radius: 4px;
+  border-radius: 1em;
   background-color: #333;
   color: #fff;
 }
@@ -43,11 +52,12 @@ body {
 .form-submit {
   width: 100%;
   background-color: #4CAF50;
+  font-size: large;
   color: white;
   padding: 14px 20px;
-  margin-top: 20px;
+  margin-top: 5px;
   border: none;
-  border-radius: 4px;
+  border-radius: 1em;
   cursor: pointer;
 }
 
@@ -58,4 +68,13 @@ body {
 .error-msg {
   color: red;
   text-align: center;
+}
+.link {
+  display: inline-block;
+  margin-left: 10px;
+  text-decoration: none;
+  color: white;
+}
+.link:hover {
+  color: darkgray;
 }

@@ -1,4 +1,3 @@
-from __future__ import annotations
 import sqlite3, os
 from contextlib import closing
 from dataclasses import dataclass

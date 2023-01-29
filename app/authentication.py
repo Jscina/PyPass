@@ -1,4 +1,3 @@
-from __future__ import annotations
 import uuid, bcrypt
 from os import environ
 from cryptography.fernet import Fernet

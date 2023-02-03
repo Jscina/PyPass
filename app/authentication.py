@@ -1,4 +1,4 @@
-import uuid, bcrypt
+import bcrypt
 from os import environ
 from cryptography.fernet import Fernet
 from cryptography.hazmat import backends
@@ -15,17 +15,13 @@ class Auth:
     def master_key(self):
         return self.__master_key
     
-    def gen_uuid(self) -> str:
-        """Create's a unique user id"""
-        return str(uuid.uuid4())
-    
-    def hash_password(password: str) -> tuple[str, str]:
+    def hash_password(self, password: str) -> str:
         """Returns the hashed version of the password and the salt"""
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-        return hashed_password, salt
+        return hashed_password
 
-    def verify_password(password: str, hashed_password: str) -> bool:
+    def verify_password(self, password: str, hashed_password: str) -> bool:
         return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
 
     def generate_key(self) -> bytes:
@@ -53,7 +49,7 @@ class Auth:
 
     def login(self, username:str, password:str, accounts: list[tuple]) -> bool:
         for account in accounts:
-            if username == account[1] and self.hash_password(password, account[3]):
+            if username == account[1] and self.verify_password(password, account[2]):
                 return True
         return False
     

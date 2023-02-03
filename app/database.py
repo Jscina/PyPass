@@ -1,25 +1,26 @@
-import sqlite3, os
+import os
 from contextlib import closing
+from sqlite3 import connect
 from dataclasses import dataclass
 from authentication import Auth
 
 
 @dataclass(frozen=True, slots=True)
 class Database:
-    db_name = "pypass.sqlite"
-    auth = Auth()
+    """PyPass Database interface"""
+    db_name:str = "pypass.sqlite"
+    auth:Auth = Auth()
 
     def init_db(self) -> None:
         if os.path.exists(os.path.join(os.getcwd(), self.db_name)):
             return
         
-        with closing(sqlite3.connect(self.db_name)) as conn, conn as cur:
-            cur = cur.cursor()
+        with closing(connect(self.db_name)) as conn:
+            cur = conn.cursor()
             queries = ["""CREATE TABLE users (
                         id INTEGER PRIMARY KEY,
                         username TEXT NOT NULL,
                         password TEXT NOT NULL,
-                        salt TEXT NOT NULL,
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                     );""", 
                         """CREATE TABLE accounts (
@@ -36,16 +37,23 @@ class Database:
                 cur.execute(query)
             conn.commit()
             
-    def create_user(self, username:str, password:str) -> None:
-        query = "INSERT INTO users (username, password, salt, created_at) VALUES(?, ?, ? , datetime())"
-        hashed_password, salt = self.auth.hash_password(password)
-        params = (username, hashed_password, salt)
+    def create_user(self, username:str, password:str) -> str | None:
+        queries = [
+            "SELECT * FROM users WHERE username = ?;",
+            "INSERT INTO users (username, password, created_at) VALUES(?, ?, datetime());"
+            ]
+        hashed_password = self.auth.hash_password(password)
+        params = [(username,), (username, hashed_password)]
         
-        del username, password, hashed_password, salt
+        del username, password, hashed_password
         
-        with closing(sqlite3.connect(self.db_name)) as conn:
+        with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
-            cur.execute(query, params)
+            for param, query in enumerate(queries):
+                cur.execute(query, params[param])
+
+                if cur.fetchone():
+                    return "Username already exists"
             conn.commit()
     
     def create_account(self, username:str, password:str) -> None:
@@ -57,19 +65,19 @@ class Database:
         
         del username, password, protected_key, protected_password
         
-        with closing(sqlite3.connect(self.db_name)) as conn:
+        with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
             cur.execute(query, params)
             conn.commit()
             
     def fetch_login(self, username:str) -> list[tuple]:
-        with closing(sqlite3.connect(self.db_name)) as conn:
+        with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
             query = "SELECT * FROM users WHERE username = ?;"
             params = (username,)
             
             cur.execute(query, params)
-            accounts:list[tuple] = cur.fetch_all()
+            accounts:list[tuple] = cur.fetchall()
             
         return accounts
             

@@ -9,18 +9,17 @@
 <body class="bg-gray">
     <form class="form-container" action="{{url_for('create_account')}}" method="POST">
         <label class="form-label">Username:</label>
-        <input type="text" class="form-input" name="username" required>
+        <input id="username" type="text" class="form-input" name="username" required>
         <label class="form-label">Password:</label>
-        <input type="password" class="form-input" name="password" required>
+        <input id="password" type="password" class="form-input" name="password" required>
 
         <label class="form-label">Confirm Password:</label>
-        <input type="password" class="form-input" name="confirm_password" required>
-        {% if message %}
-        <p class="error-msg">{{ message }}</p>
-        {% endif %}
-        <input type="submit" class="form-submit" value="Create User">
+        <input id="confirm_password" type="password" class="form-input" name="confirm_password" required>
+        <p id="error_msg" class="error-msg"></p>
+        <input id="create_account" type="submit" class="form-submit" value="Create User">
         <br>
         <br>
         <a class="link" href="{{url_for('home')}}">Already have an account? Login here</a>
     </form>
+    <script src="{{ url_for('static', filename='js/create_account.js') }}"></script>
 </body>

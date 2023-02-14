@@ -20,10 +20,29 @@ __server_args = {
 server = Flask(**__server_args)
 server.secret_key = token_hex(16)
 
+## Index section ##
 
 @server.route('/', methods=['GET'])
 def index() -> str:
     return render_template("login.html")
+
+@server.route('/home', methods=['GET'])
+def home() -> Response:
+    if "logged_in" in session:
+        return render_template("index.html")
+    return redirect("/")
+
+@server.route("/add_account", methods=["POST"])
+def add_account() -> Response:
+    website = request.form["website"]
+    username = request.form["username"]
+    password = request.form["password"]
+    __db.create_account(website, username, password)
+    del website, username, password
+    return redirect("/home")
+
+
+## Login Section ##
 
 @server.route('/', methods=['POST'])
 def login() -> str | Response:
@@ -40,6 +59,8 @@ def login() -> str | Response:
         del username, password, accounts
         message = "Invalid username or password"
         return render_template("login.html", message=message)
+    
+## Create Account section ##
 
 @server.route('/create_account_redirect', methods=['GET'])
 def create_account_redirect() -> str:
@@ -63,27 +84,12 @@ def create_account() -> Response:
 
     return redirect("/home")
 
+## Recover Account section ##
 @server.route('/recover_account', methods=['GET'])
 def recover_account():
     return None
 
-@server.route('/home', methods=['GET'])
-def home() -> Response:
-    if "logged_in" in session:
-        return render_template("index.html", name="Josh!")
-    return redirect("/")
-
-@server.route("/add_account", methods=["POST"])
-def add_account() -> Response:
-    website = request.form["website"]
-    username = request.form["username"]
-    password = request.form["password"]
-    __db.create_account(website, username, password)
-    del website, username, password
-    return redirect("/home")
-
-
-
+## Testing Server ##
 def run_testing_sever() -> None:
     """Run this to debug as a website"""
     server.run(host="localhost", port=5000, debug=True)

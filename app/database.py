@@ -70,8 +70,7 @@ class Database:
             cur.execute(query, params)
             conn.commit()
         return True
-            
-            
+                    
     def fetch_login(self, username:str) -> list[tuple]:
         with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()

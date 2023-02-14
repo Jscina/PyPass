@@ -9,15 +9,17 @@
 </head>
 
 <body>
-    <nav id="mySidenav" class="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <nav id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="toggle_sidebar()">&times;</a>
         <a href="#">Add a Password</a>
         <a href="#">Link 2</a>
         <a href="#">Link 3</a>
         <a href="#">Link 4</a>
       </nav>
-    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Menu</span>
-    <h1>Password Manager Dashboard</h1>
+    <span id="navmenu" class="navmenu" onclick="toggle_sidebar()">&#9776;</span>
+    <br>
+    <main id="content" class="main-content">
+    <h1>PyPass Dashboard</h1>
     <h2>My Passwords</h2>
     <table>
         <thead>
@@ -57,6 +59,7 @@
             <input type="submit" value="Add Password" class="form-submit">
         </form>
     </div>
+    </main>
 </body>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 

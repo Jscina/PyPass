@@ -11,7 +11,7 @@ class Database:
     db_name:str = "pypass.sqlite"
     auth:Auth = Auth()
 
-    def init_db(self) -> None:
+    def __post_init__(self) -> None:
         if os.path.exists(os.path.join(os.getcwd(), self.db_name)):
             return
         
@@ -26,6 +26,7 @@ class Database:
                         """CREATE TABLE accounts (
                             id INTEGER PRIMARY KEY,
                             user_id INTEGER NOT NULL,
+                            website TEXT NOT NULL,
                             account_name TEXT NOT NULL,
                             account_username TEXT NOT NULL,
                             account_password TEXT NOT NULL,
@@ -56,19 +57,20 @@ class Database:
                     return "Username already exists"
             conn.commit()
     
-    def create_account(self, username:str, password:str) -> None:
-        query = "INSERT INTO accounts (account_name, account_username, account_password, encryption_key, created_at) VALUES (?, ?, ?, ?, datetime());"
+    def create_account(self, website:str, username:str, password:str) -> None:
+        query = "INSERT INTO accounts (website, account_name, account_username, account_password, encryption_key, created_at) VALUES (?, ?, ?, ?, ?, datetime());"
         key = self.auth.generate_key()
         protected_password = self.auth.encrypt_str(password, key)
         protected_key = self.auth.encrypt_key(key)
-        params = (username, protected_password, protected_key)
+        params = (website, username, protected_password, protected_key)
         
-        del username, password, protected_key, protected_password
-        
+        del website, username, password, protected_key, protected_password
         with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
             cur.execute(query, params)
             conn.commit()
+        return True
+            
             
     def fetch_login(self, username:str) -> list[tuple]:
         with closing(connect(self.db_name)) as conn:

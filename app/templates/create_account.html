@@ -1,24 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create account form for PyPass">
     <title>Create Account</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body class="bg-gray">
-    <form class="form-container" action="{{url_for('create_account')}}" method="POST">
+    <form class="form-container" action="{{ url_for('create_account') }}" method="POST">
         <label class="form-label">Username:</label>
         <input id="username" type="text" class="form-input" name="username" required>
         <label class="form-label">Password:</label>
         <input id="password" type="password" class="form-input" name="password" required>
         <label class="form-label">Confirm Password:</label>
         <input id="confirm_password" type="password" class="form-input" name="confirm_password" required>
-        <p id="error_msg" class="error-msg"></p>
+        {% if message %}
+        <p id="error_msg" class="error-msg">{{ message }}</p>
+        {% end if %}
         <input id="create_account" type="submit" class="form-submit" value="Create User">
         <br>
         <br>
-        <a class="link" href="{{url_for('home')}}">Already have an account? Login here</a>
+        <a class="link" href="{{ url_for('home') }}">Already have an account? Login here</a>
     </form>
-    <script src="{{ url_for('static', filename='js/create_account.js') }}"></script>
 </body>

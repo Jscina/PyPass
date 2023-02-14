@@ -25,7 +25,7 @@ server.secret_key = token_hex(16)
 def index() -> str:
     return render_template("login.html")
 
-@server.route('/', methods=['GET'])
+@server.route('/', methods=['POST'])
 def login() -> str | Response:
     username = request.form["username"]
     password = request.form["password"]
@@ -72,6 +72,17 @@ def home() -> Response:
     if "logged_in" in session:
         return render_template("index.html", name="Josh!")
     return redirect("/")
+
+@server.route("/add_account", methods=["POST"])
+def add_account() -> Response:
+    website = request.form["website"]
+    username = request.form["username"]
+    password = request.form["password"]
+    __db.create_account(website, username, password)
+    del website, username, password
+    return redirect("/home")
+
+
 
 def run_testing_sever() -> None:
     """Run this to debug as a website"""

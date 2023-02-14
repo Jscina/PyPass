@@ -80,8 +80,3 @@ class Database:
             accounts:list[tuple] = cur.fetchall()
             
         return accounts
-            
-            
-if __name__ == "__main__":
-    db = Database()
-    db.init_db()

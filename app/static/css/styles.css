@@ -14,10 +14,6 @@ body {
   justify-content: center;
 }
 
-.welcome {
-  transform: translateY(75px);
-}
-
 .form-container {
   width: 300px;
   margin: 0 auto;

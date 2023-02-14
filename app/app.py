@@ -1,29 +1,21 @@
-from flask import Flask, redirect, render_template, request, session
-import secrets
+# Main Entry Point for the serverlication
+from threading import Thread
 
-app = Flask(__name__, static_url_path = "", static_folder = "static", template_folder = "templates")
-app.secret_key = secrets.token_hex(16)
+import webview
+from server import server
 
-@app.route("/")
-def index():
-    return render_template("login.html")
 
-@app.route("/login", methods=["POST"])
-def login():
-    username = request.form["username"]
-    password = request.form["password"]
-    if username == "admin" and password == "admin":
-        session["logged_in"] = True
-        return redirect("/home")
-    else:
-        message = "Invalid username or password"
-        return render_template("login.html", message=message)
-    
-@app.route("/home")
-def home():
-    if "logged_in" in session:
-        return render_template("index.html", name = "Josh!")
-    return redirect("/")
+def run_server(host: str = "localhost", port: int = 5000, debug: bool = False) -> None:
+    Thread(target=server.run,
+            args=((host,port,debug)),
+            daemon=True) \
+    .start()
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=8000, debug=True)
+    run_server()
+    webview.create_window(
+        title="PyPass",
+        url="http://localhost:5000"
+        )
+    webview.start()
+

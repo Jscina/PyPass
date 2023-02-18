@@ -1,3 +1,6 @@
+from functools import wraps
+import json
+import webview
 from secrets import token_hex
 from authentication import Auth
 from database import Database
@@ -20,19 +23,36 @@ __server_args = {
 server = Flask(**__server_args)
 server.secret_key = token_hex(16)
 
-## Index section ##
 
+# Token verification
+def verify_token(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        data = json.loads(request.data)
+        token = data.get("token")
+        if token == webview.token:
+            return function(*args, **kwargs)
+        else:
+            raise Exception("Authentication Error")
+    return wrapper
+
+
+# Index section
 @server.route('/', methods=['GET'])
 def index() -> str:
     return render_template("login.html")
 
+
 @server.route('/home', methods=['GET'])
+@verify_token
 def home() -> Response:
     if "logged_in" in session:
         return render_template("index.html")
     return redirect("/")
 
+
 @server.route("/add_account", methods=["POST"])
+@verify_token
 def add_account() -> Response:
     website = request.form["website"]
     username = request.form["username"]
@@ -42,9 +62,9 @@ def add_account() -> Response:
     return redirect("/home")
 
 
-## Login Section ##
-
+# Login Section
 @server.route('/', methods=['POST'])
+@verify_token
 def login() -> str | Response:
     username = request.form["username"]
     password = request.form["password"]
@@ -59,14 +79,17 @@ def login() -> str | Response:
         del username, password, accounts
         message = "Invalid username or password"
         return render_template("login.html", message=message)
-    
-## Create Account section ##
 
+
+# Create Account section
 @server.route('/create_account_redirect', methods=['GET'])
+@verify_token
 def create_account_redirect() -> str:
     return render_template("create_account.html")
 
+
 @server.route('/create_account', methods=['POST'])
+@verify_token
 def create_account() -> Response:
     username = request.form["username"]
     password = request.form["password"]
@@ -81,18 +104,21 @@ def create_account() -> Response:
         message = message
 
     del username, password
-
     return redirect("/home")
 
-## Recover Account section ##
+
+# Recover Account section
 @server.route('/recover_account', methods=['GET'])
+@verify_token
 def recover_account():
     return None
 
-## Testing Server ##
+
+# Testing Server
 def run_testing_sever() -> None:
     """Run this to debug as a website"""
     server.run(host="localhost", port=5000, debug=True)
-    
+
+
 if __name__ == "__main__":
     run_testing_sever()

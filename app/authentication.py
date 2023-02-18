@@ -1,5 +1,5 @@
 import bcrypt
-from os import environ
+# from os import environ
 from cryptography.fernet import Fernet
 from cryptography.hazmat import backends
 from dataclasses import dataclass
@@ -9,14 +9,14 @@ from typing import Any
 @dataclass(frozen=True, slots=True)
 class Auth:
     """The Authentication class handles encryption/decrytpion/pickling/unpickling/hashing of sensitive data"""
-    __master_key: bytes = b'uINeV3FVfyDZ-40LcgGzJ8oy0tO3K5hCXl5xJtDp_Cs=' # Development key DO NOT USE IN PRODUCTION
-    backend:Any = backends.default_backend()
-    #__master_key: bytes = str(environ.get("CLIENT_SECRET")).encode() for production
+    __master_key: bytes = b'uINeV3FVfyDZ-40LcgGzJ8oy0tO3K5hCXl5xJtDp_Cs='  # Development key DO NOT USE IN PRODUCTION
+    backend: Any = backends.default_backend()
+    # _master_key: bytes = str(environ.get("CLIENT_SECRET")).encode() for production
 
     @property
     def master_key(self):
         return self.__master_key
-    
+
     def hash_password(self, password: str) -> str:
         """Returns the hashed version of the password and the salt"""
         salt = bcrypt.gensalt()
@@ -40,17 +40,18 @@ class Auth:
         return unprotected_str.decode()
 
     def encrypt_key(self, unprotected_key: bytes) -> str:
-        fernet = Fernet(key = self.master_key, backend=self.backend)
+        fernet = Fernet(key=self.master_key, backend=self.backend)
         protected_key = fernet.encrypt(unprotected_key)
         return protected_key.decode()
 
     def decrypt_key(self, protected_key: str) -> str:
-        fernet = Fernet(key = self.master_key, backend=self.backend)
+        fernet = Fernet(key=self.master_key, backend=self.backend)
         unprotected_key = fernet.decrypt(protected_key.encode())
         return unprotected_key.decode()
 
-    def login(self, username:str, password:str, accounts: list[tuple]) -> bool:
+    def login(self, username: str, password: str, accounts: list[tuple]) -> bool:
         for account in accounts:
             if username == account[1] and self.verify_password(password, account[2]):
                 return True
         return False
+

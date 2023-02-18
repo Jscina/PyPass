@@ -8,22 +8,23 @@ from authentication import Auth
 @dataclass(frozen=True, slots=True)
 class Database:
     """PyPass Database interface"""
-    db_name:str = "pypass.sqlite"
-    auth:Auth = Auth()
+    db_name: str = "pypass.sqlite"
+    auth: Auth = Auth()
 
     def __post_init__(self) -> None:
         if os.path.exists(os.path.join(os.getcwd(), self.db_name)):
             return
-        
+
         with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
-            queries = ["""CREATE TABLE users (
+            queries = [
+                    """CREATE TABLE users (
                         id INTEGER PRIMARY KEY,
                         username TEXT NOT NULL,
                         password TEXT NOT NULL,
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                    );""", 
-                        """CREATE TABLE accounts (
+                    );""",
+                    """CREATE TABLE accounts (
                             id INTEGER PRIMARY KEY,
                             user_id INTEGER NOT NULL,
                             website TEXT NOT NULL,
@@ -37,17 +38,16 @@ class Database:
             for query in queries:
                 cur.execute(query)
             conn.commit()
-            
-    def create_user(self, username:str, password:str) -> str | None:
+
+    def create_user(self, username: str, password: str) -> str | None:
         queries = [
             "SELECT * FROM users WHERE username = ?;",
             "INSERT INTO users (username, password, created_at) VALUES(?, ?, datetime());"
             ]
         hashed_password = self.auth.hash_password(password)
         params = [(username,), (username, hashed_password)]
-        
         del username, password, hashed_password
-        
+
         with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
             for param, query in enumerate(queries):
@@ -56,28 +56,26 @@ class Database:
                 if cur.fetchone():
                     return "Username already exists"
             conn.commit()
-    
-    def create_account(self, website:str, username:str, password:str) -> None:
+
+    def create_account(self, website: str, username: str, password: str) -> None:
         query = "INSERT INTO accounts (website, account_name, account_username, account_password, encryption_key, created_at) VALUES (?, ?, ?, ?, ?, datetime());"
         key = self.auth.generate_key()
         protected_password = self.auth.encrypt_str(password, key)
         protected_key = self.auth.encrypt_key(key)
         params = (website, username, protected_password, protected_key)
-        
+
         del website, username, password, protected_key, protected_password
         with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
             cur.execute(query, params)
             conn.commit()
         return True
-                    
-    def fetch_login(self, username:str) -> list[tuple]:
+
+    def fetch_login(self, username: str) -> list[tuple]:
         with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
             query = "SELECT * FROM users WHERE username = ?;"
             params = (username,)
-            
             cur.execute(query, params)
-            accounts:list[tuple] = cur.fetchall()
-            
+            accounts: list[tuple] = cur.fetchall()
         return accounts

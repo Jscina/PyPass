@@ -18,13 +18,13 @@ class Database:
         with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
             queries = [
-                    """CREATE TABLE users (
+                """CREATE TABLE users (
                         id INTEGER PRIMARY KEY,
                         username TEXT NOT NULL,
                         password TEXT NOT NULL,
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                     );""",
-                    """CREATE TABLE accounts (
+                """CREATE TABLE accounts (
                             id INTEGER PRIMARY KEY,
                             user_id INTEGER NOT NULL,
                             website TEXT NOT NULL,
@@ -40,10 +40,22 @@ class Database:
             conn.commit()
 
     def create_user(self, username: str, password: str) -> str | None:
+        """Creates a new login user
+
+        Args:
+            username (str): The username to add
+            password (str): The password to add
+
+        Returns:
+            str | None: Returns a string if there's an error. Returns nothing if account creation is successful.
+        """
         queries = [
             "SELECT * FROM users WHERE username = ?;",
-            "INSERT INTO users (username, password, created_at) VALUES(?, ?, datetime());"
-            ]
+            """INSERT INTO users (
+                username,
+                password,
+                created_at) VALUES(?, ?, datetime());"""
+        ]
         hashed_password = self.auth.hash_password(password)
         params = [(username,), (username, hashed_password)]
         del username, password, hashed_password
@@ -57,8 +69,18 @@ class Database:
                     return "Username already exists"
             conn.commit()
 
-    def create_account(self, website: str, username: str, password: str) -> None:
-        query = "INSERT INTO accounts (website, account_name, account_username, account_password, encryption_key, created_at) VALUES (?, ?, ?, ?, ?, datetime());"
+    def create_account(self,
+                       website: str,
+                       username: str,
+                       password: str) -> bool:
+        query = """INSERT INTO accounts (
+                website,
+                account_name,
+                account_username,
+                account_password,
+                encryption_key,
+                created_at)
+        VALUES (?, ?, ?, ?, ?, datetime());"""
         key = self.auth.generate_key()
         protected_password = self.auth.encrypt_str(password, key)
         protected_key = self.auth.encrypt_key(key)

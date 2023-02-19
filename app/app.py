@@ -16,5 +16,9 @@ def run_server(host: str = "localhost",
 if __name__ == "__main__":
     stream = StringIO()
     with redirect_stdout(stream):
-        window = webview.create_window("PyPass", server)
-        webview.start(debug=True)
+        run_server(debug=False)
+        webview.create_window(
+            title="PyPass",
+            url="http://localhost:5000"
+        )
+        webview.start()

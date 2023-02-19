@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <form class="form-container bg-gray" action="{{url_for('login')}}" method="POST">
+  <form class="form-container bg-gray" id="login" method="POST">
     <div class="center">
       <h1>PyPass</h1>
     </div>
@@ -18,9 +18,7 @@
     <input type="text" class="form-input" name="username" required>
     <label class="form-label">Password:</label>
     <input type="password" class="form-input" name="password" required>
-    {% if message %}
-    <p class="error-msg">{{ message }}</p>
-    {% endif %}
+    <p class="error-msg" id="error_msg"></p>
     <input type="submit" class="form-submit" value="Login">
     <br>
     <br>
@@ -28,5 +26,7 @@
     <a class="link" href="{{url_for('recover_account')}}">Forgot username or password?</a>
   </form>
 </body>
+<script src="{{ url_for('static', filename='js/helper_functions.js') }}"></script>
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
 
 </html>

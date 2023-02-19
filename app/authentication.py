@@ -9,13 +9,13 @@ from typing import Any
 @dataclass(frozen=True, slots=True)
 class Auth:
     """The Authentication class handles encryption/decrytpion/pickling/unpickling/hashing of sensitive data"""
-    __master_key: bytes = b'uINeV3FVfyDZ-40LcgGzJ8oy0tO3K5hCXl5xJtDp_Cs='  # Development key DO NOT USE IN PRODUCTION
+    _master_key: bytes = b'uINeV3FVfyDZ-40LcgGzJ8oy0tO3K5hCXl5xJtDp_Cs='  # Development key DO NOT USE IN PRODUCTION
     backend: Any = backends.default_backend()
     # _master_key: bytes = str(environ.get("CLIENT_SECRET")).encode() for production
 
     @property
     def master_key(self):
-        return self.__master_key
+        return self._master_key
 
     def hash_password(self, password: str) -> str:
         """Returns the hashed version of the password and the salt"""
@@ -54,4 +54,3 @@ class Auth:
             if username == account[1] and self.verify_password(password, account[2]):
                 return True
         return False
-

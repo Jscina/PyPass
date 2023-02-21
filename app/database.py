@@ -1,7 +1,8 @@
 import os
 from contextlib import closing
-from sqlite3 import connect
 from dataclasses import dataclass
+from sqlite3 import connect
+
 from authentication import Auth
 
 

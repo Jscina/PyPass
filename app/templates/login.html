@@ -22,8 +22,8 @@
     <input type="submit" class="form-submit" value="Login">
     <br>
     <br>
-    <a class="link" href="{{url_for('create_account_redirect')}}">Don't have an account? Sign up here</a>
-    <a class="link" href="{{url_for('recover_account')}}">Forgot username or password?</a>
+    <a class="link" href="{{url_for('create_account_view.create_account_redirect')}}">Don't have an account? Sign up here</a>
+    <a class="link" href="{{url_for('recover_account_view.recover_account')}}">Forgot username or password?</a>
   </form>
 </body>
 <script src="{{ url_for('static', filename='js/helper_functions.js') }}"></script>

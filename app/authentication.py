@@ -1,9 +1,10 @@
+from dataclasses import dataclass
+from typing import Any
+
 import bcrypt
 # from os import environ
 from cryptography.fernet import Fernet
 from cryptography.hazmat import backends
-from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass(frozen=True, slots=True)

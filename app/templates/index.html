@@ -14,7 +14,7 @@
         <a href="#">Add a Password</a>
         <a href="#">Link 2</a>
         <a href="#">Link 3</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('login_view.logout') }}">Logout</a>
     </nav>
     <span id="navmenu" class="navmenu" onclick="toggle_sidebar()">&#9776;</span>
     <br>
@@ -49,7 +49,7 @@
         </table>
         <a href="#" class="link">View Passwords</a>
         <div class="form-container hide">
-            <form action="{{ url_for('add_account') }}" method="POST">
+            <form action="{{ url_for('index_view.add_account') }}" method="POST">
                 <label for="website" class="form-label">Website/Service:</label>
                 <input type="text" id="website" name="website" class="form-input" required><br>
                 <label for="username" class="form-label">Username:</label>

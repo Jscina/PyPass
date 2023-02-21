@@ -1,9 +1,9 @@
-# Main Entry Point for the serverlication
+# Main Entry Point for the application
+from contextlib import redirect_stdout
+from io import StringIO
 from threading import Thread
 
 import webview
-from contextlib import redirect_stdout
-from io import StringIO
 from server import server
 
 

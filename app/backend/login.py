@@ -33,3 +33,4 @@ def login() -> Response:
 def logout():
     session["logged_in"] = False
     return redirect("/home")
+    

@@ -21,6 +21,7 @@ class Database:
             queries = [
                 """CREATE TABLE users (
                         id INTEGER PRIMARY KEY,
+                        email TEXT NOT NULL,
                         username TEXT NOT NULL,
                         password TEXT NOT NULL,
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -94,11 +95,11 @@ class Database:
             conn.commit()
         return True
 
-    def fetch_login(self, username: str) -> list[tuple]:
+    def fetch_login(self, email: str | None, username: str | None) -> list[tuple]:
         with closing(connect(self.db_name)) as conn:
             cur = conn.cursor()
-            query = "SELECT * FROM users WHERE username = ?;"
-            params = (username,)
+            query = "SELECT * FROM users WHERE username = ?;" if username is not None else "SELECT * FROM users were email = ?;"
+            params = (username or email,)
             cur.execute(query, params)
             accounts: list[tuple] = cur.fetchall()
         return accounts

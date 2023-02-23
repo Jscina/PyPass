@@ -5,6 +5,7 @@ login_form.addEventListener("submit", (event) => {
 
 	const username = document.querySelector('input[name="username"]').value;
 	const password = document.querySelector('input[name="password"]').value;
+	
 	fetch("/login", {
 		method: "POST",
 		headers: {
@@ -19,7 +20,6 @@ login_form.addEventListener("submit", (event) => {
 					login();
 					break;
 				default:
-					console.log("login failed");
 					let error = document.getElementById("error_msg");
 					error.innerText = data.message;
 					break;

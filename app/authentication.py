@@ -50,8 +50,11 @@ class Auth:
         unprotected_key = fernet.decrypt(protected_key.encode())
         return unprotected_key.decode()
 
-    def login(self, username: str, password: str, accounts: list[tuple]) -> bool:
+    def login(self, email:str | None, username: str | None, password: str, accounts: list[tuple]) -> bool:
         for account in accounts:
-            if username == account[1] and self.verify_password(password, account[2]):
+            verify_password = self.verify_password(password, account[3])
+            if username == account[2] and verify_password:
+                return True
+            elif email == account[1] and verify_password:
                 return True
         return False

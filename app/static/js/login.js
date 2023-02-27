@@ -1,3 +1,21 @@
+/* 
+* Check the status of the response
+* If the status is ok trigger the login function
+* Otherwise show an error message
+*/
+function checkStatus(data) {
+	switch (data.status) {
+		case "success":
+			login();
+			break;
+		default:
+			let error = document.getElementById("error_msg");
+			error.innerText = data.message;
+			break;
+	}
+}
+
+// Login even listener
 const login_form = document.getElementById("login");
 
 login_form.addEventListener("submit", (event) => {
@@ -15,15 +33,7 @@ login_form.addEventListener("submit", (event) => {
 	})
 		.then(response => response.json())
 		.then(data => {
-			switch (data.status) {
-				case "success":
-					login();
-					break;
-				default:
-					let error = document.getElementById("error_msg");
-					error.innerText = data.message;
-					break;
-			}
+			checkStatus(data)
 		})
 		.catch(error => {
 			console.log(error);

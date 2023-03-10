@@ -34,8 +34,6 @@ class Server:
         self.server_start_process.start()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        # Close the database
-        self.db.close()
         # Stop the server process
         self.server_start_process.terminate()
         self.server_start_process.join()

@@ -84,15 +84,15 @@ class Database(AbstractDatabase):
     def fetch_login(self, email: str | None, username: str | None) -> list[tuple[str, str]]:
         """Collects the possible accounts that match the username or email"""
         if username is not None:
-            user = self.session.query(User).filter(
-                User.username == username).first()
+            users = self.session.query(User).filter(
+                User.username == username).all()
         elif email is not None:
-            email = self.session.query(User).filter(
-                User.email == email).first()
+            users = self.session.query(User).filter(
+                User.email == email).all()
         else:
             return []
-        users = self.session.query(User).filter(User.username == user).all()
         return [(user.username, user.password) for user in users]
+
 
     def login(self, email: str | None, username: str | None, password: str) -> bool:
         users = self.fetch_login(email, username)

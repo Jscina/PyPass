@@ -50,7 +50,7 @@ def login() -> Response:
 
     if db.login(**login_info):
         session["logged_in"] = True
-        del username, password, accounts
+        del username, password, login_info
         return jsonify({"status": "success"})
 
     del username, password, login_info

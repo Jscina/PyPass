@@ -5,49 +5,40 @@ from backend.create_account import create_account_view
 from backend.index import index_view
 from backend.login import login_view
 from backend.recover_account import recover_account_view
-from flask import Flask, render_template
-
+from flask import Flask
 
 class Server:
-    def __init__(self,
-                 import_name: str = __name__,
-                 static_url_path: str = "",
-                 static_folder: str = "static",
-                 template_folder: str = "templates") -> None:
-        # Setup up the Flask server
-        __server_args = {
-            "import_name": import_name,
-            "static_url_path": static_url_path,
-            "static_folder": static_folder,
-            "template_folder": template_folder
-        }
-        self.__server = Flask(**__server_args)
-        self.__server_process = Process(target=self.start_server)
-
+    def __init__(self, app: Flask, debug:bool = False) -> None:
+        # Setup up the Flask server and the database
+        self._server = app
+        self._debug = debug
+        
     @property
     def server(self) -> Flask:
-        return self.__server
+        return self._server
 
     @property
-    def server_process(self) -> Process | None:
-        return self.__server_process
-
-    @server_process.setter
-    def server_process(self, new_server: Process) -> None:
-        self.__server_process = new_server       
-        
+    def debug(self) -> bool:
+        return self._debug
+    
+    @property
+    def server_start_process(self) -> Process:
+        return Process(target=self.start_server)
+    
     def __enter__(self):
         # Configure the server
         self._config_server()
         # Register the views
         self._register_views()
         # Start the server process
-        self.server_process.start()
+        self.server_start_process.start()
 
     def __exit__(self, exc_type, exc_value, traceback):
+        # Close the database
+        self.db.close()
         # Stop the server process
-        self.server_process.terminate()
-        self.server_process.join()
+        self.server_start_process.terminate()
+        self.server_start_process.join()
 
     def _config_server(self) -> None:
         # Basic config for the server
@@ -65,9 +56,9 @@ class Server:
             recover_account_view
         )
         # Register the views with the server
-        for view in views:
-            self.server.register_blueprint(view)
-    
+        for blueprint in views:
+            self.server.register_blueprint(blueprint)
+        
     def start_server(self) -> None:
         """Starts the Flask server
 
@@ -76,9 +67,20 @@ class Server:
         Args:
             debug (bool, optional): Set to True to enable debug mode. Defaults to False.
         """
-        self.server.run(host="localhost", port=5000, debug=True)
-        
+        self.server.run(host="localhost", port=5000, debug=self.debug)
+
 if __name__ == "__main__":
-    with Server():
-        while True:
-            pass
+    
+    server_args = {
+    "import_name": __name__,
+    "static_url_path": "",
+    "static_folder": "static",
+    "template_folder": "templates"
+    }
+
+    app = Flask(**server_args)
+    
+    srv = Server(app, True)
+    srv._config_server()
+    srv._register_views()
+    srv.start_server()

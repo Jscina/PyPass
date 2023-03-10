@@ -4,6 +4,7 @@ create_account_form.addEventListener("submit", (event) => {
 	event.preventDefault();
     
 	const username = document.querySelector('input[name="username"]').value;
+	const email = document.querySelector('input[name="email"]').value;
 	const password = document.querySelector('input[name="password"]').value;
 	const confirm_password = document.querySelector('input[name="confirm_password"]').value;
 
@@ -12,7 +13,7 @@ create_account_form.addEventListener("submit", (event) => {
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded"
 			},
-			body: `username=${username}&password=${password}&confirm_password=${confirm_password}`
+			body: `username=${username}&email=${email}&password=${password}&confirm_password=${confirm_password}`
 		})
 			.then(response => {
 				if (response.redirected)
@@ -22,7 +23,7 @@ create_account_form.addEventListener("submit", (event) => {
 
 			})
 			.then(data => {
-                if (data == undefined)
+                if (data === undefined)
                     return;
 				if (data.status === "error") {
 					const error_msg = document.getElementById("error_msg");

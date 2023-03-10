@@ -1,105 +1,117 @@
-import os
-from contextlib import closing
-from dataclasses import dataclass
-from sqlite3 import connect
+import logging
+from abc import ABC, abstractmethod
 
 from authentication import Auth
+from flask import Response, jsonify, request
+from models import Account, Base, User
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True, slots=True)
-class Database:
+class AbstractDatabase(ABC):
+    
+    @abstractmethod
+    def create_user(self, username: str, password: str) -> str | None:
+        pass
+
+    @abstractmethod
+    def create_account(self, website: str, username: str, password: str) -> bool:
+        pass
+
+    @abstractmethod
+    def fetch_login(self, email: str | None, username: str | None) -> list[tuple]:
+        pass
+
+    @abstractmethod
+    def login(self, email: str | None, username: str | None, password: str) -> bool:
+        pass
+
+    @abstractmethod
+    def close(self):
+        pass
+
+
+class Database(AbstractDatabase):
     """PyPass Database interface"""
     db_name: str = "pypass.sqlite"
-    auth: Auth = Auth()
 
-    def __post_init__(self) -> None:
-        if os.path.exists(os.path.join(os.getcwd(), self.db_name)):
-            return
+    def __init__(self) -> None:
+        engine = create_engine(f'sqlite:///{self.db_name}')
+        Base.metadata.create_all(engine)
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
+        self.auth = Auth()
 
-        with closing(connect(self.db_name)) as conn:
-            cur = conn.cursor()
-            queries = [
-                """CREATE TABLE users (
-                        id INTEGER PRIMARY KEY,
-                        email TEXT NOT NULL,
-                        username TEXT NOT NULL,
-                        password TEXT NOT NULL,
-                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                    );""",
-                """CREATE TABLE accounts (
-                            id INTEGER PRIMARY KEY,
-                            user_id INTEGER NOT NULL,
-                            website TEXT NOT NULL,
-                            account_name TEXT NOT NULL,
-                            account_username TEXT NOT NULL,
-                            account_password TEXT NOT NULL,
-                            encryption_key TEXT NOT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            FOREIGN KEY (user_id) REFERENCES users(id)
-                        );"""]
-            for query in queries:
-                cur.execute(query)
-            conn.commit()
-
-    def create_user(self, username: str, password: str) -> str | None:
-        """Creates a new login user
-
-        Args:
-            username (str): The username to add
-            password (str): The password to add
-
-        Returns:
-            str | None: Returns a string if there's an error. Returns nothing if account creation is successful.
-        """
-        queries = [
-            "SELECT * FROM users WHERE username = ?;",
-            """INSERT INTO users (
-                username,
-                password,
-                created_at) VALUES(?, ?, datetime());"""
-        ]
+    def create_user(self, email: str, username: str, password: str) -> str | None:
         hashed_password = self.auth.hash_password(password)
-        params = [(username,), (username, hashed_password)]
-        del username, password, hashed_password
+        user = User(email=email, username=username, password=hashed_password)
+        self.session.add(user)
+        try:
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            return f"Error creating user: {e}"
 
-        with closing(connect(self.db_name)) as conn:
-            cur = conn.cursor()
-            for param, query in enumerate(queries):
-                cur.execute(query, params[param])
-
-                if cur.fetchone():
-                    return "Username already exists"
-            conn.commit()
-
-    def create_account(self,
-                       website: str,
-                       username: str,
-                       password: str) -> bool:
-        query = """INSERT INTO accounts (
-                website,
-                account_name,
-                account_username,
-                account_password,
-                encryption_key,
-                created_at)
-        VALUES (?, ?, ?, ?, ?, datetime());"""
+    def create_account(self, website: str, username: str, password: str) -> bool | str:
         key = self.auth.generate_key()
         protected_password = self.auth.encrypt_str(password, key)
         protected_key = self.auth.encrypt_key(key)
-        params = (website, username, protected_password, protected_key)
-
-        del website, username, password, protected_key, protected_password
-        with closing(connect(self.db_name)) as conn:
-            cur = conn.cursor()
-            cur.execute(query, params)
-            conn.commit()
+        user = self.session.query(User).filter(
+            User.username == username).first()
+        account = Account(
+            user_id=user.id,
+            website=website,
+            account_name=username,
+            account_username=username,
+            account_password=protected_password,
+            encryption_key=protected_key
+        )
+        self.session.add(account)
+        try:
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            return f"Error creating account: {e}"
         return True
 
-    def fetch_login(self, email: str | None, username: str | None) -> list[tuple]:
-        with closing(connect(self.db_name)) as conn:
-            cur = conn.cursor()
-            query = "SELECT * FROM users WHERE username = ?;" if username is not None else "SELECT * FROM users were email = ?;"
-            params = (username or email,)
-            cur.execute(query, params)
-            accounts: list[tuple] = cur.fetchall()
-        return accounts
+    def fetch_login(self, email: str | None, username: str | None) -> list[tuple[str, str]]:
+        """Collects the possible accounts that match the username or email"""
+        if username is not None:
+            user = self.session.query(User).filter(
+                User.username == username).first()
+        elif email is not None:
+            email = self.session.query(User).filter(
+                User.email == email).first()
+        else:
+            return []
+        users = self.session.query(User).filter(User.username == user).all()
+        return [(user.username, user.password) for user in users]
+
+    def login(self, email: str | None, username: str | None, password: str) -> bool:
+        users = self.fetch_login(email, username)
+        for account_username, account_password in users:
+            verify_password = self.auth.verify_password(
+                password, account_password)
+            verify_user = self.auth.compare(
+                username, account_username) or self.auth.compare(email, account_username)
+            if verify_user and verify_password:
+                return True
+        return False
+
+    def close(self):
+        self.session.close()
+
+
+def get_database() -> Database | Response:
+    db: Database = getattr(request, "db", None)
+    if db is None:
+        logger.error("No database found in request context")
+        return jsonify({"status": "error", "message": "Internal server error"}), 500
+    return db

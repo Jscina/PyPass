@@ -1,9 +1,10 @@
 import logging
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from authentication import Auth
 from flask import Response, jsonify, request
-from models import Account, Base, User
+from models import Account, Base, User, Master_Key
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -14,31 +15,30 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-
-class AbstractDatabase(ABC):
-    
+class DatabaseInterace(ABC):
+    """Database interface for the PyPass application"""
     @abstractmethod
     def create_user(self, username: str, password: str) -> str | None:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def create_account(self, website: str, username: str, password: str) -> bool:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def fetch_login(self, email: str | None, username: str | None) -> list[tuple]:
-        pass
+    def fetch_login(self, email: Optional[str], username: Optional[str]) -> list[tuple]:
+        raise NotImplementedError
 
     @abstractmethod
-    def login(self, email: str | None, username: str | None, password: str) -> bool:
-        pass
+    def login(self, email: Optional[str], username: Optional[str], password: str) -> bool:
+        raise NotImplementedError
 
     @abstractmethod
     def close(self):
-        pass
+        raise NotImplementedError
 
 
-class Database(AbstractDatabase):
+class Database(DatabaseInterace):
     """PyPass Database interface"""
     db_name: str = "pypass.sqlite"
 
@@ -47,62 +47,118 @@ class Database(AbstractDatabase):
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
-        self.auth = Auth()
+        self.auth = Auth(session=self.session)
 
     def create_user(self, email: str, username: str, password: str) -> str | None:
+        """Create a new login account
+
+        Args:
+            email (str): User's email
+            username (str): User's username
+            password (str): User's password
+
+        Returns:
+            str | None: Returns a string with the error if the insertion fails for display otherwise returns None
+        """
         hashed_password = self.auth.hash_password(password)
+        key = self.auth.generate_key()
+        master_key = Master_Key(master_key=key.decode('utf-8'))
         user = User(email=email, username=username, password=hashed_password)
-        self.session.add(user)
+        user.master_key = master_key
+        transactions = (user, master_key)
         try:
-            self.session.commit()
+            for transaction in transactions:
+                self.session.add(transaction)
+                self.session.commit()
         except Exception as e:
             self.session.rollback()
             return f"Error creating user: {e}"
 
     def create_account(self, website: str, username: str, password: str) -> bool | str:
+        """Add a new account for storing user's credentials to other sites/applications
+
+        Args:
+            website (str): The website the account is associated with
+            username (str): The username
+            password (str): The password
+
+        Returns:
+            bool | str: Returns True if successful otherwise returns the error message for display
+        """
         key = self.auth.generate_key()
         protected_password = self.auth.encrypt_str(password, key)
         protected_key = self.auth.encrypt_key(key)
-        user = self.session.query(User).filter(
-            User.username == username).first()
+        user_id = request.cookies.get('user_id')
+        
+        if user_id is not None:
+            user_id = int(user_id)
+            
         account = Account(
-            user_id=user.id,
             website=website,
             account_name=username,
             account_username=username,
             account_password=protected_password,
             encryption_key=protected_key
         )
-        self.session.add(account)
+        account.user_id = user_id
         try:
+            self.session.add(account)
             self.session.commit()
         except Exception as e:
             self.session.rollback()
             return f"Error creating account: {e}"
         return True
 
-    def fetch_login(self, email: str | None, username: str | None) -> list[tuple[str, str]]:
-        """Collects the possible accounts that match the username or email"""
+    def fetch_login(self, email: Optional[str], username: Optional[str]) -> list[User]:
+        """Collects the possible accounts that match the username or email
+
+            Either username or email must be passed into this method
+
+            Args:
+                email (Optional[str]): The user's email, optional
+                username (Optional[str]): The user's username, optional
+
+            Return:
+                list[User]: Returns a list of the Users
+        """
         if username is not None:
-            users = self.session.query(User).filter(
-                User.username == username).all()
+            users = self.session.query(User) \
+                .filter(User.username == username).all()
         elif email is not None:
-            users = self.session.query(User).filter(
-                User.email == email).all()
+            users = self.session.query(User) \
+                .filter(User.email == email).all()
         else:
             return []
-        return [(user.username, user.password) for user in users]
+        return [user for user in users]
 
+    def login(self, password: str, email: Optional[str] = None, username: Optional[str] = None) -> tuple[bool, User] | bool:
+        """Logs the user into the application
 
-    def login(self, email: str | None, username: str | None, password: str) -> bool:
+        Args:
+            password (str): The user's password, required
+            email (Optional[str], optional): The user's email. Defaults to None.
+            username (Optional[str], optional): The user's username. Defaults to None.
+            
+            Either username or email must be entered
+
+        Returns:
+            tuple[bool, User] | bool: Returns a tuple of a boolean and the user if successful otherwise returns False
+        """
         users = self.fetch_login(email, username)
-        for account_username, account_password in users:
+        for user in users:
             verify_password = self.auth.verify_password(
-                password, account_password)
-            verify_user = self.auth.compare(
-                username, account_username) or self.auth.compare(email, account_username)
-            if verify_user and verify_password:
-                return True
+                password, user.password
+                )
+            if email is not None:
+                verify_account = email
+            elif username is not None:
+                verify_account = username
+            verify_account = self.auth.compare(
+                verify_account,
+                user.username
+            )
+            if verify_account and verify_password:
+                return (True, user)
         return False
 
     def close(self):
@@ -110,8 +166,12 @@ class Database(AbstractDatabase):
 
 
 def get_database() -> Database | Response:
+    """Get the database object from the request
+
+    Returns:
+        Database | Response: Returns the database object or a response with an error message
+    """
     db: Database = getattr(request, "db", None)
     if db is None:
-        logger.error("No database found in request context")
         return jsonify({"status": "error", "message": "Internal server error"}), 500
     return db

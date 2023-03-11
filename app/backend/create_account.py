@@ -19,6 +19,7 @@ kwargs = {
 }
 create_account_view = Blueprint(**kwargs)
 
+
 @create_account_view.before_request
 def before_request() -> None:
     setattr(request, "db", Database())
@@ -30,10 +31,12 @@ def after_request(response: Response) -> Response:
     db.close()
     return response
 
+
 # Create Account section
 @create_account_view.route('/create_account_redirect', methods=['GET', 'POST'])
 def create_account_redirect() -> str:
     return render_template("create_account.html")
+
 
 @create_account_view.route('/create_account', methods=['POST'])
 def create_account() -> Response:

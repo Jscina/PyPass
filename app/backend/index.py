@@ -10,6 +10,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
 kwargs = {
     "name": "index_view",
     "import_name": __name__,

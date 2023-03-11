@@ -15,6 +15,7 @@ kwargs = {
     "import_name": __name__,
     "url_prefix": "/"
 }
+
 login_view = Blueprint(**kwargs)
 
 
@@ -48,10 +49,17 @@ def login() -> Response:
     else:
         login_info["email"] = None
 
-    if db.login(**login_info):
+    login = db.login(**login_info)
+
+    if isinstance(login, tuple):
+        logged_in, user = login
+
+    if logged_in:
         session["logged_in"] = True
+        response = jsonify({"status": "success"})
+        response.set_cookie("user", str(user.id), secure=True, samesite="Strict")
         del username, password, login_info
-        return jsonify({"status": "success"})
+        return response
 
     del username, password, login_info
     message = "Invalid username or password"

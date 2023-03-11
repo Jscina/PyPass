@@ -102,6 +102,10 @@ celerybeat.pid
 # Private keys
 *.key
 
+#sqlalchemy
+*.db
+*.sqlite
+
 # SageMath parsed files
 *.sage.py
 

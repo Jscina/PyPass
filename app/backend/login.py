@@ -57,7 +57,7 @@ def login() -> Response:
     if logged_in:
         session["logged_in"] = True
         response = jsonify({"status": "success"})
-        response.set_cookie("user", str(user.id), secure=True, samesite="Strict")
+        response.set_cookie("user_id", str(user.id), secure=True, samesite="Strict")
         del username, password, login_info
         return response
 

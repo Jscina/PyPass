@@ -1,54 +1,69 @@
 import logging
-from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Optional
-
-from authentication import Auth
+from authorization import Auththorizer_User
+from cipher import Cipher_User
 from flask import Response, jsonify, request
-from models import Account, Base, User, Master_Key
+from models import Account, Base, Master_Key, User
 from sqlalchemy import create_engine
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
 
-logger = logging.getLogger(__name__)
-
-class DatabaseInterace(ABC):
-    """Database interface for the PyPass application"""
-    @abstractmethod
-    def create_user(self, username: str, password: str) -> str | None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def create_account(self, website: str, username: str, password: str) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def fetch_login(self, email: Optional[str], username: Optional[str]) -> list[tuple]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def login(self, email: Optional[str], username: Optional[str], password: str) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def close(self):
-        raise NotImplementedError
-
-
-class Database(DatabaseInterace):
-    """PyPass Database interface"""
+@dataclass
+class Database:
+    """The Database class handles all database operations"""
     db_name: str = "pypass.sqlite"
 
-    def __init__(self) -> None:
+    def __post_init__(self) -> None:
         engine = create_engine(f'sqlite:///{self.db_name}')
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
-        self.auth = Auth(session=self.session)
+    
+    @property
+    def cipher(self) -> Cipher_User:
+        return Cipher_User(self.session)
 
+    def fetch_master_key(self, user: User) -> bytes:
+        """Get the master key from the database.
+        
+        Args:
+            user_id (int): The user's id
+        
+        Returns:
+            bytes: The master key
+        """
+        try:
+            key = self.session.query(Master_Key) \
+                .filter(Master_Key.user_id == user.id).one()
+            return key
+        except NoResultFound:
+            logging.warning("No result's from query, creating new key...")
+            self.cipher.master_key = self.create_master_key()
+            return self.fetch_master_key()
+        
+    def create_master_key(self, user: User) -> bytes:
+        """Add a new master key for the user to the database
+
+        Args:
+            user (User): The user object
+
+        Returns:
+            bytes: The master key
+        """
+        key = self.cipher.generate_key()
+        master_key = Master_Key(master_key=key.decode('utf-8'))
+        master_key.user_id = user.id
+        try:
+            self.session.add(master_key)
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            logging.error(f"Error creating master key: {e}")
+        return key
+        
+        
     def create_user(self, email: str, username: str, password: str) -> str | None:
         """Create a new login account
 
@@ -60,8 +75,8 @@ class Database(DatabaseInterace):
         Returns:
             str | None: Returns a string with the error if the insertion fails for display otherwise returns None
         """
-        hashed_password = self.auth.hash_password(password)
-        key = self.auth.generate_key()
+        hashed_password = self.cipher.hash_password(password)
+        key = self.cipher.generate_key()
         master_key = Master_Key(master_key=key.decode('utf-8'))
         user = User(email=email, username=username, password=hashed_password)
         user.master_key = master_key
@@ -109,7 +124,7 @@ class Database(DatabaseInterace):
             return f"Error creating account: {e}"
         return True
 
-    def fetch_login(self, email: Optional[str], username: Optional[str]) -> list[User]:
+    def fetch_user(self, email: Optional[str], username: Optional[str]) -> list[User]:
         """Collects the possible accounts that match the username or email
 
             Either username or email must be passed into this method
@@ -144,7 +159,7 @@ class Database(DatabaseInterace):
         Returns:
             tuple[bool, User] | bool: Returns a tuple of a boolean and the user if successful otherwise returns False
         """
-        users = self.fetch_login(email, username)
+        users = self.fetch_user(email, username)
         for user in users:
             verify_password = self.auth.verify_password(
                 password, user.password

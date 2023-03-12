@@ -22,7 +22,7 @@ body {
   font-size: 40px;
   position: absolute;
   top: 0px;
-  right: 5px;
+  left: 5px;
   padding: 10px;
 
 }
@@ -36,7 +36,7 @@ body {
   left: 0;
   background-color: #222;
   overflow-x: hidden;
-  transition: 0.5s;
+  transition: 0.1s;
   padding-top: 60px;
 }
 

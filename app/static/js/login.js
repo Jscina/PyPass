@@ -1,9 +1,3 @@
-/**
-* Check the status of the response
-* If the status is ok trigger the login function
-* Otherwise show an error message
-* @param {Object} data - the response data
-*/
 function checkStatus(data) {
 	switch (data.status) {
 		case "success":
@@ -16,12 +10,6 @@ function checkStatus(data) {
 	}
 }
 
-/**
- * Checks if the response is a redirect
- * If the response is a redirect, switch the window to the new location
- * @param {Response} response - the response from the fetch request
- * @returns {string} the response text if the response is not a redirect
- */
 function check_if_redirect(response) {
 	// If the response is a redirect, switch the window to the new location
 	if (response.redirected) {
@@ -32,35 +20,25 @@ function check_if_redirect(response) {
 	return response.text();
 }
 
-/**
- * Fetch the home page
- * If the response is a redirect, switch the window to the new location
- * Otherwise set the innerHTML of the document to the response text
- * @returns {string} the response text if the response is not a redirect
-*/
 function login() {
 	fetch('/home', {
 		method: 'GET',
 	})
-	.then(response => {
-		return check_if_redirect(response);
-	})
-	.then(data => {
-		document.documentElement.innerHTML = data;
-	})
-	.catch(error => {
-		console.error('Error fetching data:', error);
-	});
+		.then(response => {
+			return check_if_redirect(response);
+		})
+		.then(data => {
+			document.documentElement.innerHTML = data;
+		})
+		.catch(error => {
+			console.error('Error fetching data:', error);
+		});
 }
 
-/**
- * Add an event listener to the login form if it exists
- * @returns {void} returns nothing
- */
 function addLoginEventListener() {
 	const login_form = document.getElementById("login");
 
-	if(login_form)
+	if (login_form === null)
 		return;
 
 	login_form.addEventListener("submit", (event) => {

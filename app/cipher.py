@@ -1,6 +1,5 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Protocol
 
 import bcrypt
 from cryptography.fernet import Fernet
@@ -8,43 +7,42 @@ from cryptography.hazmat import backends
 
 
 @dataclass
-class Cryptography(ABC):
-    """Abstract base class for the Encryption class."""
+class Cipher(Protocol):
+    """Protocol class for the Encryption class."""
     @property
-    @abstractmethod
     def master_key(self) -> bytes:
-        raise NotImplementedError
+        ...
 
     @master_key.setter
-    @abstractmethod
     def master_key(self, key: bytes) -> None:
-        raise NotImplementedError
+        ...
 
-    @abstractmethod
     def hash_password(self, password: str) -> str:
-        raise NotImplementedError
+        """Returns the hashed version of the password and the salt"""
+        ...
+    
+    @staticmethod
+    def generate_key() -> bytes:
+        """Generate a new encryption key"""
+        ...
 
-    @abstractmethod
-    def generate_key(self) -> bytes:
-        raise NotImplementedError
-
-    @abstractmethod
     def encrypt(self, unprotected: str | bytes, key: bytes, encrypt_key: bool = False) -> str:
-        raise NotImplementedError
+        """Encrypt a string or bytes"""  
+        ...
 
-    @abstractmethod
     def decrypt(self, protected: str | bytes, key: bytes, encrypt_key: bool = False) -> str:
-        raise NotImplementedError
+        """Decrypt a string or bytes"""
+        ...
 
 
 @dataclass
-class Cipher_User(Cryptography):
+class Cipher_User:
     """The Encryption class handles encryption/decrytpion//hashing of sensitive data"""
-    master_key: Optional[bytes] = None
+    _master_key: Optional[bytes] = None
 
     @property
     def master_key(self) -> bytes:
-        return self.master_key
+        return self._master_key
 
     @master_key.setter
     def master_key(self, key: bytes) -> None:
@@ -55,18 +53,14 @@ class Cipher_User(Cryptography):
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed_password
-
+    
+    @staticmethod
+    def generate_key() -> bytes:
+        """Generate a new encryption key"""
+        return Fernet.generate_key()
+    
     def encrypt(self, unprotected: str | bytes, key: bytes, encrypt_key: bool = False) -> str | tuple[str, str]:
-        """Encrypt a string or bytes
-
-        Args:
-            unprotected (str | bytes): The string or bytes to encrypt
-            key (bytes): The encryption key
-            encrypt_key (bool, optional): Whether to encrypt the key. Defaults to False.
-
-        Returns:
-            str | tuple[str, str]: The encrypted string or a tuple of the encrypted string and the encrypted key
-        """        
+        """Encrypt a string or bytes, if encrypt_key is True, encrypt the key as well"""        
         fernet = Fernet(key=key, backend=backends.default_backend())
         protected_str = fernet.encrypt(unprotected.encode('utf-8'))
         if encrypt_key:
@@ -75,27 +69,11 @@ class Cipher_User(Cryptography):
         return protected_str.decode('utf-8')
 
     def decrypt(self, protected: str, key: bytes, encrypted_key: bool = False) -> str:
-        """Decrypt a string or bytes
-
-        Args:
-            protected (str): The string or bytes to decrypt
-            key (bytes): The encryption key
-            encrypted_key (bool, optional): Whether the key is encrypted. Defaults to False.
-
-        Returns:
-            str: The decrypted string
-        """
+        """Decrypt a string or bytes"""
         if encrypted_key:
-            fernet = Fernet(key=self.master_key, backend=backends.default_backend())
-            key = fernet.decrypt(key.encode('utf-8'))        
+            key = self.decrypt(key.decode("utf-8"), self.master_key)
         fernet = Fernet(key=key, backend=backends.default_backend())
         unprotected_str = fernet.decrypt(protected.encode('utf-8'))
         return unprotected_str.decode('utf-8')
 
-    def generate_key(self) -> bytes:
-        """Generate a new encryption key
-
-        Returns:
-            bytes: The encryption key
-        """
-        return Fernet.generate_key()
+    

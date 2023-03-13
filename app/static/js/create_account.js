@@ -1,10 +1,6 @@
-/**
- * Adds event listener to the create account form if it exists
- * @returns {void} returns nothing
- */
 function addCreateAccountEventListenter() {
 	const create_account_form = document.getElementById("create_account");
-	if (create_account_form)
+	if (create_account_form === null)
 		return;
 	create_account_form.addEventListener("submit", (event) => {
 		event.preventDefault();

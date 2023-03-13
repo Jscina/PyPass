@@ -1,8 +1,9 @@
 import logging
 
 from database import Database, get_database
+from cipher import Cipher_User
 from flask import (Blueprint, Response, jsonify, redirect, render_template,
-                   request, session)
+                   request, session, url_for)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,7 +22,8 @@ index_view = Blueprint(**kwargs)
 
 @index_view.before_request
 def before_request() -> None:
-    setattr(request, "db", Database())
+    cipher = Cipher_User()
+    setattr(request, "db", Database(cipher=cipher))
 
 
 @index_view.after_request
@@ -52,6 +54,6 @@ def add_account() -> Response:
     website = request.form["website"]
     username = request.form["username"]
     password = request.form["password"]
-    db.create_account(website, username, password)
+    db.add_account(website, username, password)
     del website, username, password
     return redirect("/home")

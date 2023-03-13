@@ -1,57 +1,44 @@
 import logging
 from dataclasses import dataclass
 from typing import Optional
-from authorization import Auththorizer_User
-from cipher import Cipher_User
+from authorization import verify_username, verify_password
+from cipher import Cipher
 from flask import Response, jsonify, request
 from models import Account, Base, Master_Key, User
 from sqlalchemy import create_engine
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 
 @dataclass
 class Database:
     """The Database class handles all database operations"""
+    cipher: Cipher
     db_name: str = "pypass.sqlite"
 
     def __post_init__(self) -> None:
         engine = create_engine(f'sqlite:///{self.db_name}')
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
-        self.session = Session()
-    
+        self._session = Session()
+
     @property
-    def cipher(self) -> Cipher_User:
-        return Cipher_User(self.session)
+    def session(self) -> Session:
+        return self._session
 
     def fetch_master_key(self, user: User) -> bytes:
-        """Get the master key from the database.
-        
-        Args:
-            user_id (int): The user's id
-        
-        Returns:
-            bytes: The master key
-        """
+        """Get the master key from the database."""
         try:
             key = self.session.query(Master_Key) \
                 .filter(Master_Key.user_id == user.id).one()
             return key
         except NoResultFound:
             logging.warning("No result's from query, creating new key...")
-            self.cipher.master_key = self.create_master_key()
+            self.cipher.master_key = self.add_master_key(user=user)
             return self.fetch_master_key()
-        
-    def create_master_key(self, user: User) -> bytes:
-        """Add a new master key for the user to the database
 
-        Args:
-            user (User): The user object
-
-        Returns:
-            bytes: The master key
-        """
+    def add_master_key(self, user: User) -> bytes:
+        """Add a new master key for the user to the database"""
         key = self.cipher.generate_key()
         master_key = Master_Key(master_key=key.decode('utf-8'))
         master_key.user_id = user.id
@@ -62,19 +49,9 @@ class Database:
             self.session.rollback()
             logging.error(f"Error creating master key: {e}")
         return key
-        
-        
-    def create_user(self, email: str, username: str, password: str) -> str | None:
-        """Create a new login account
 
-        Args:
-            email (str): User's email
-            username (str): User's username
-            password (str): User's password
-
-        Returns:
-            str | None: Returns a string with the error if the insertion fails for display otherwise returns None
-        """
+    def add_user(self, email: str, username: str, password: str) -> str | None:
+        """Create a new login account"""
         hashed_password = self.cipher.hash_password(password)
         key = self.cipher.generate_key()
         master_key = Master_Key(master_key=key.decode('utf-8'))
@@ -89,25 +66,16 @@ class Database:
             self.session.rollback()
             return f"Error creating user: {e}"
 
-    def create_account(self, website: str, username: str, password: str) -> bool | str:
-        """Add a new account for storing user's credentials to other sites/applications
-
-        Args:
-            website (str): The website the account is associated with
-            username (str): The username
-            password (str): The password
-
-        Returns:
-            bool | str: Returns True if successful otherwise returns the error message for display
-        """
-        key = self.auth.generate_key()
-        protected_password = self.auth.encrypt_str(password, key)
-        protected_key = self.auth.encrypt_key(key)
+    def add_account(self, website: str, username: str, password: str) -> bool | str:
+        """Add a new account for storing user's credentials to other sites/applications"""
+        key = self.cipher.generate_key()
+        protected_password, protected_key = self.cipher.encrypt(
+            password, key, encrypt_key=True)
         user_id = request.cookies.get('user_id')
-        
+
         if user_id is not None:
             user_id = int(user_id)
-            
+
         account = Account(
             website=website,
             account_name=username,
@@ -125,17 +93,9 @@ class Database:
         return True
 
     def fetch_user(self, email: Optional[str], username: Optional[str]) -> list[User]:
-        """Collects the possible accounts that match the username or email
-
-            Either username or email must be passed into this method
-
-            Args:
-                email (Optional[str]): The user's email, optional
-                username (Optional[str]): The user's username, optional
-
-            Return:
-                list[User]: Returns a list of the Users
-        """
+        """Collects the possible accounts that match the username or email"""
+        if username is not None and email is not None:
+            raise ValueError("Email or username must be provided")
         if username is not None:
             users = self.session.query(User) \
                 .filter(User.username == username).all()
@@ -147,32 +107,21 @@ class Database:
         return [user for user in users]
 
     def login(self, password: str, email: Optional[str] = None, username: Optional[str] = None) -> tuple[bool, User] | bool:
-        """Logs the user into the application
+        """Logs the user into the application"""
+        if email is None and username is None:
+            raise ValueError("Email or username must be provided")
 
-        Args:
-            password (str): The user's password, required
-            email (Optional[str], optional): The user's email. Defaults to None.
-            username (Optional[str], optional): The user's username. Defaults to None.
-            
-            Either username or email must be entered
-
-        Returns:
-            tuple[bool, User] | bool: Returns a tuple of a boolean and the user if successful otherwise returns False
-        """
         users = self.fetch_user(email, username)
         for user in users:
-            verify_password = self.auth.verify_password(
+            password_verified = verify_password(
                 password, user.password
-                )
-            if email is not None:
-                verify_account = email
-            elif username is not None:
-                verify_account = username
-            verify_account = self.auth.compare(
+            )
+            verify_account = email or username
+            account_verified = verify_username(
                 verify_account,
                 user.username
             )
-            if verify_account and verify_password:
+            if account_verified and password_verified:
                 return (True, user)
         return False
 
@@ -181,11 +130,7 @@ class Database:
 
 
 def get_database() -> Database | Response:
-    """Get the database object from the request
-
-    Returns:
-        Database | Response: Returns the database object or a response with an error message
-    """
+    """Get the database object from the request"""
     db: Database = getattr(request, "db", None)
     if db is None:
         return jsonify({"status": "error", "message": "Internal server error"}), 500

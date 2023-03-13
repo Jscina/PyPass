@@ -2,31 +2,33 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Login form for PyPass">
-  <title>Login</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login form for PyPass">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
-  <form class="form-container bg-gray" id="login" method="POST">
-    <div class="center">
-      <h1>PyPass</h1>
-    </div>
-    <label class="form-label">Username/Email:</label>
-    <input type="text" class="form-input" name="username" required>
-    <label class="form-label">Password:</label>
-    <input type="password" class="form-input" name="password" required>
-    <p class="error-msg" id="error_msg"></p>
-    <input type="submit" class="form-submit" value="Login">
-    <br>
-    <br>
-    <a class="link" href="{{url_for('create_account_view.create_account_redirect')}}">Don't have an account? Sign up here</a>
-    <a class="link" href="{{url_for('recover_account_view.recover_account')}}">Forgot username or password?</a>
-  </form>
+    <form class="form-container bg-gray" id="login" method="POST">
+        <div class="center">
+            <h1>PyPass</h1>
+        </div>
+        <label class="form-label">Username/Email:</label>
+        <input type="text" class="form-input" name="username" required>
+        <label class="form-label">Password:</label>
+        <input type="password" class="form-input" name="password" required>
+        <p class="error-msg" id="error_msg"></p>
+        <input type="submit" class="form-submit" value="Login">
+        <br>
+        <br>
+        <a class="link" href="{{url_for('create_account_view.create_account_redirect')}}">Don't have an account? Sign up
+            here</a>
+        <a class="link" href="{{url_for('recover_account_view.recover_account')}}">Forgot username or password?</a>
+    </form>
 </body>
-<script src="{{ url_for('static', filename='js/helper_functions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<!--Must be loaded here or else the script will not work-->
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 
 </html>

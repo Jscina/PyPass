@@ -4,6 +4,7 @@ from flask import (Blueprint, Response,
 
 from database import Database, get_database
 import logging
+from cipher import Cipher_User
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,7 +23,8 @@ create_account_view = Blueprint(**kwargs)
 
 @create_account_view.before_request
 def before_request() -> None:
-    setattr(request, "db", Database())
+    cipher = Cipher_User()
+    setattr(request, "db", Database(cipher=cipher))
 
 
 @create_account_view.after_request
@@ -48,7 +50,7 @@ def create_account() -> Response:
     if password != confirm_password:
         message = "Passwords do not match"
         return jsonify({"status": "error", "message": message})
-    message = db.create_user(email, username, password)
+    message = db.add_user(email, username, password)
 
     if isinstance(message, str):
         return jsonify({"status": "error", "message": message})

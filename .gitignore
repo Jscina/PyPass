@@ -102,9 +102,8 @@ celerybeat.pid
 # Private keys
 *.key
 
-#sqlalchemy
-*.db
-*.sqlite
+# Don't commit the database file
+pypass.sqlite
 
 # SageMath parsed files
 *.sage.py

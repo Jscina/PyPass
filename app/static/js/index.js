@@ -1,4 +1,3 @@
-// Opens/Closes the sidebar
 function toggle_sidebar() {
 	const sidebar = document.getElementById("sidebar");
 	const content = document.getElementById("content");
@@ -15,8 +14,3 @@ function toggle_sidebar() {
 	}
 }
 
-
-window.addEventListener("load", () => {
-    console.log("Loaded");
-    toggle_sidebar();
-});

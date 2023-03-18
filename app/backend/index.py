@@ -34,14 +34,19 @@ def after_request(response: Response) -> Response:
 
 
 @index_view.route('/', methods=['GET'])
-def index() -> str:
+def root() -> str:
     return render_template("login.html")
 
 
+@index_view.route('/index', methods=['GET'])
+def index() -> str:
+    return render_template("index.html")
+
+
 @index_view.route('/home', methods=['GET'])
-def home() -> Response | str:
+def home() -> Response:
     if session.get("logged_in"):
-        return render_template("index.html")
+        return redirect('/index')
     return redirect("/")
 
 

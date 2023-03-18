@@ -32,7 +32,6 @@ def after_request(response: Response) -> Response:
     db.close()
     return response
 
-
 # Login Section
 @login_view.route('/login', methods=['POST'])
 def login() -> Response:

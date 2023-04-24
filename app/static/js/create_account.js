@@ -11,17 +11,17 @@ function addCreateAccountEventListenter() {
         fetch("/create_account", {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: `username=${username}&email=${email}&password=${password}&confirm_password=${confirm_password}`
+            body: `username=${username}&email=${email}&password=${password}&confirm_password=${confirm_password}`,
         })
-            .then(response => {
+            .then((response) => {
             if (response.redirected)
                 login();
             else
                 return response.json();
         })
-            .then(data => {
+            .then((data) => {
             if (data === undefined)
                 return;
             if (data.status === "error") {
@@ -29,7 +29,7 @@ function addCreateAccountEventListenter() {
                 error_msg.innerText = data.message;
             }
         })
-            .catch(error => {
+            .catch((error) => {
             console.log(error);
         });
     });

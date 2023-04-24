@@ -29,25 +29,10 @@
                     <th>Password</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Google</td>
-                    <td>john.doe@gmail.com</td>
-                    <td>********</td>
-                </tr>
-                <tr>
-                    <td>Facebook</td>
-                    <td>johndoe123</td>
-                    <td>********</td>
-                </tr>
-                <tr>
-                    <td>Twitter</td>
-                    <td>johndoe</td>
-                    <td>********</td>
-                </tr>
+            <tbody id="dashboard_passwords">
             </tbody>
         </table>
-        <a href="#" class="link">View Passwords</a>
+        <a href="javascript:void(0)" class="link">View Passwords</a>
         <div class="form-container hide">
             <form action="{{ url_for('index_view.add_account') }}" method="POST">
                 <label for="website" class="form-label">Website/Service:</label>

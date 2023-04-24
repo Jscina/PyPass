@@ -49,6 +49,18 @@ def home() -> Response:
         return redirect('/index')
     return redirect("/")
 
+@index_view.route('/fetch_accounts', methods=['GET'])
+def fetch_accounts() -> Response:
+    db: Database = getattr(request, "db", None)
+    if db is None:
+        logger.error("No database found in request context")
+        return jsonify({"status": "error", "message": "Internal server error"}), 500
+    accounts = db.fetch_accounts(session.get("logged_in"), session.get("user_id"))
+    Account = dict[int, dict[str, str]]
+    # Reformats the accounts into a dictionary with the account id as the key for javascript to use
+    accounts:list[Account] = [{account.id : {"website": account.website, "username": account.username, "password": account.password}} for account in accounts]  
+    
+    return jsonify(accounts)
 
 @index_view.route("/add_account", methods=["POST"])
 def add_account() -> Response:

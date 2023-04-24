@@ -1,3 +1,4 @@
+// Recover account form event listener
 function addRecoverAccountEventListener() {
     const recover_account_form = document.getElementById("recover_account");
     if (recover_account_form === null)

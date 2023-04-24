@@ -106,6 +106,20 @@ class Database:
             return []
         return [user for user in users]
 
+    def fetch_accounts(self, is_authorized: bool, user_id: str) -> list[Account]:
+        """Fetches all accounts from the database"""
+        if is_authorized:
+            accounts = self.session.query(Account) \
+                .filter(Account.user_id == user_id).all()
+            for account in accounts:
+                account.account_password = self.cipher.decrypt(
+                    account.account_password,
+                    account.encryption_key,
+                    encrypt_key=True
+                )
+            return accounts
+        return []
+
     def login(self, password: str, email: Optional[str] = None, username: Optional[str] = None) -> tuple[bool, User] | bool:
         """Logs the user into the application"""
         if email is None and username is None:

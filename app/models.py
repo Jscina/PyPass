@@ -2,9 +2,11 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import  relationship
 from sqlalchemy.ext.declarative import declarative_base
+from dataclasses import dataclass
 
 Base = declarative_base()
 
+@dataclass(unsafe_hash=True)
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -19,6 +21,7 @@ class User(Base):
     def __repr__(self):
         return f"<User(username='{self.username}', email='{self.email}')>"
 
+@dataclass(unsafe_hash=True)
 class Account(Base):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
@@ -35,6 +38,7 @@ class Account(Base):
     def __repr__(self):
         return f"<Account(website='{self.website}', account_name='{self.account_name}', account_username='{self.account_username}')>"
 
+@dataclass(unsafe_hash=True)
 class Master_Key(Base):
     __tablename__ = "master_key"
     id = Column(Integer, primary_key=True)

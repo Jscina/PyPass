@@ -10,7 +10,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker, Session
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class Database:
     """The Database class handles all database operations"""
     cipher: Cipher

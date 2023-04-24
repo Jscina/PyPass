@@ -3,13 +3,16 @@ from secrets import token_hex
 
 from backend import create_account, login, recover_account, index
 from flask import Flask
+from dataclasses import dataclass, field
 
+@dataclass(unsafe_hash=True)
 class Server:
     """Server class for the PyPass application"""
-    def __init__(self, app: Flask, debug:bool = False) -> None:
-        # Setup up the Flask server and the database
-        self._server = app
-        self._debug = debug
+    _server: Flask
+    _debug: bool = field(default=False)
+    _server_process: Process = field(init=False)
+
+    def __post_init__(self) -> None:
         self._server_process = Process(target=self.start_server)
         
     @property

@@ -6,7 +6,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat import backends
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class Cipher(Protocol):
     """Protocol class for the Encryption class."""
     @property
@@ -35,7 +35,7 @@ class Cipher(Protocol):
         ...
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class Cipher_User:
     """The Encryption class handles encryption/decrytpion//hashing of sensitive data"""
     _master_key: Optional[bytes] = None

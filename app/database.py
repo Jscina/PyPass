@@ -1,82 +1,154 @@
-import os
-from contextlib import closing
-from sqlite3 import connect
+import logging
 from dataclasses import dataclass
-from authentication import Auth
+from typing import Optional
+from authorization import verify_username, verify_password
+from cipher import Cipher, Cipher_User
+from flask import Response, jsonify, request
+from models import Account, Base, Master_Key, User
+from sqlalchemy import create_engine
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm import sessionmaker, Session
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(unsafe_hash=True)
 class Database:
-    """PyPass Database interface"""
-    db_name:str = "pypass.sqlite"
-    auth:Auth = Auth()
+    """The Database class handles all database operations"""
+    cipher: Cipher
+    db_name: str = "pypass.sqlite"
 
-    def init_db(self) -> None:
-        if os.path.exists(os.path.join(os.getcwd(), self.db_name)):
-            return
-        
-        with closing(connect(self.db_name)) as conn:
-            cur = conn.cursor()
-            queries = ["""CREATE TABLE users (
-                        id INTEGER PRIMARY KEY,
-                        username TEXT NOT NULL,
-                        password TEXT NOT NULL,
-                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                    );""", 
-                        """CREATE TABLE accounts (
-                            id INTEGER PRIMARY KEY,
-                            user_id INTEGER NOT NULL,
-                            account_name TEXT NOT NULL,
-                            account_username TEXT NOT NULL,
-                            account_password TEXT NOT NULL,
-                            encryption_key TEXT NOT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            FOREIGN KEY (user_id) REFERENCES users(id)
-                        );"""]
-            for query in queries:
-                cur.execute(query)
-            conn.commit()
-            
-    def create_user(self, username:str, password:str) -> str | None:
-        queries = [
-            "SELECT * FROM users WHERE username = ?;",
-            "INSERT INTO users (username, password, created_at) VALUES(?, ?, datetime());"
-            ]
-        hashed_password = self.auth.hash_password(password)
-        params = [(username,), (username, hashed_password)]
-        
-        del username, password, hashed_password
-        
-        with closing(connect(self.db_name)) as conn:
-            cur = conn.cursor()
-            for param, query in enumerate(queries):
-                cur.execute(query, params[param])
+    def __post_init__(self) -> None:
+        engine = create_engine(f'sqlite:///{self.db_name}')
+        Base.metadata.create_all(engine)
+        Session = sessionmaker(bind=engine)
+        self._session = Session()
 
-                if cur.fetchone():
-                    return "Username already exists"
-            conn.commit()
-    
-    def create_account(self, username:str, password:str) -> None:
-        query = "INSERT INTO accounts (account_name, account_username, account_password, encryption_key, created_at) VALUES (?, ?, ?, ?, datetime());"
-        key = self.auth.generate_key()
-        protected_password = self.auth.encrypt_str(password, key)
-        protected_key = self.auth.encrypt_key(key)
-        params = (username, protected_password, protected_key)
-        
-        del username, password, protected_key, protected_password
-        
-        with closing(connect(self.db_name)) as conn:
-            cur = conn.cursor()
-            cur.execute(query, params)
-            conn.commit()
-            
-    def fetch_login(self, username:str) -> list[tuple]:
-        with closing(connect(self.db_name)) as conn:
-            cur = conn.cursor()
-            query = "SELECT * FROM users WHERE username = ?;"
-            params = (username,)
-            
-            cur.execute(query, params)
-            accounts:list[tuple] = cur.fetchall()
-            
-        return accounts
+    @property
+    def session(self) -> Session:
+        return self._session
+
+    def fetch_master_key(self, user: User) -> bytes:
+        """Get the master key from the database."""
+        try:
+            key = self.session.query(Master_Key) \
+                .filter(Master_Key.user_id == user.id).one()
+            return key
+        except NoResultFound:
+            logging.warning("No result's from query, creating new key...")
+            self.cipher.master_key = self.add_master_key(user=user)
+            return self.fetch_master_key()
+
+    def add_master_key(self, user: User) -> bytes:
+        """Add a new master key for the user to the database"""
+        key = self.cipher.generate_key()
+        master_key = Master_Key(master_key=key.decode('utf-8'))
+        master_key.user_id = user.id
+        try:
+            self.session.add(master_key)
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            logging.error(f"Error creating master key: {e}")
+        return key
+
+    def add_user(self, email: str, username: str, password: str) -> str | None:
+        """Create a new login account"""
+        hashed_password = self.cipher.hash_password(password)
+        key = self.cipher.generate_key()
+        master_key = Master_Key(master_key=key.decode('utf-8'))
+        user = User(email=email, username=username, password=hashed_password)
+        user.master_key = master_key
+        transactions = (user, master_key)
+        try:
+            for transaction in transactions:
+                self.session.add(transaction)
+                self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            return f"Error creating user: {e}"
+
+    def add_account(self, website: str, username: str, password: str) -> bool | str:
+        """Add a new account for storing user's credentials to other sites/applications"""
+        key = self.cipher.generate_key()
+        protected_password, protected_key = self.cipher.encrypt(
+            password, key, encrypt_key=True)
+        user_id = request.cookies.get('user_id')
+
+        if user_id is not None:
+            user_id = int(user_id)
+
+        account = Account(
+            website=website,
+            account_name=username,
+            account_username=username,
+            account_password=protected_password,
+            encryption_key=protected_key
+        )
+        account.user_id = user_id
+        try:
+            self.session.add(account)
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            return f"Error creating account: {e}"
+        return True
+
+    def fetch_user(self, email: Optional[str], username: Optional[str]) -> list[User]:
+        """Collects the possible accounts that match the username or email"""
+        if username is not None and email is not None:
+            raise ValueError("Email or username must be provided")
+        if username is not None:
+            users = self.session.query(User) \
+                .filter(User.username == username).all()
+        elif email is not None:
+            users = self.session.query(User) \
+                .filter(User.email == email).all()
+        else:
+            return []
+        return [user for user in users]
+
+    def fetch_accounts(self, is_authorized: bool, user_id: str) -> list[Account]:
+        """Fetches all accounts from the database"""
+        if is_authorized:
+            accounts = self.session.query(Account) \
+                .filter(Account.user_id == user_id).all()
+            for account in accounts:
+                account.account_password = self.cipher.decrypt(
+                    account.account_password,
+                    account.encryption_key,
+                    encrypt_key=True
+                )
+            return accounts
+        return []
+
+    def login(self, password: str, email: Optional[str] = None, username: Optional[str] = None) -> tuple[bool, User] | bool:
+        """Logs the user into the application"""
+        if email is None and username is None:
+            raise ValueError("Email or username must be provided")
+
+        users = self.fetch_user(email, username)
+        for user in users:
+            password_verified = verify_password(
+                password, user.password
+            )
+            verify_account = email or username
+            account_verified = verify_username(
+                verify_account,
+                user.username
+            )
+            if account_verified and password_verified:
+                return (True, user)
+        return False
+
+    def close(self):
+        self.session.close()
+
+
+def get_database() -> Database | Response:
+    """Get the database instance"""
+    db: Database = Database(cipher=Cipher_User())
+    if db is None:
+        return jsonify({"status": "error", "message": "Internal server error"}), 500
+    return db
+
+def close_database(db: Database) -> None:
+    db.close()

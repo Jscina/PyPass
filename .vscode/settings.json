@@ -1,0 +1,6 @@
+{
+    "python.analysis.typeCheckingMode": "off",
+    "files.exclude": {
+        "**/static/js/*.js: { \"when\": \"$(basename).ts\" }": true
+    }
+}

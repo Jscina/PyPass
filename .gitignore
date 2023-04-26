@@ -51,6 +51,10 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+.mypy_cache
+
+# Build folder
+.build
 
 # Translations
 *.mo

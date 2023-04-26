@@ -1,30 +1,23 @@
 # Main Entry Point for the application
-import webview
-from flask import Flask
-from server import Server
+from fastapi import FastAPI
+from backend import login, create_account, index, recover_account
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+import uvicorn
+from starlette.middleware.errors import ServerErrorMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from secrets import token_urlsafe
 
-def main(app:Flask, server_url:str = "http://localhost:5000"):
-    """Main entry point for the application
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.add_middleware(ServerErrorMiddleware, debug=True)
+app.add_middleware(SessionMiddleware, secret_key=token_urlsafe(16))
+templates = Jinja2Templates(directory="app/templates")
+routers = (login.router, create_account.router,
+           index.router, recover_account.router)
 
-    Args:
-        app (Flask): Flask application instance
-        server_url (str, optional): The URL for the Flask server. Defaults to "http://localhost:5000".
-    """
-    with Server(app, False):
-        webview.create_window(
-            title="PyPass",
-            url=server_url
-        )
-        webview.start()
+for router in routers:
+    app.include_router(router)
 
-if __name__ == "__main__":
-        
-    server_args = {
-        "import_name": __name__,
-        "static_url_path": "",
-        "static_folder": "static",
-        "template_folder": "templates"
-    }
 
-    app = Flask(**server_args)
-    main(app=app)
+uvicorn.run(app, host="127.0.0.1", port=8000)

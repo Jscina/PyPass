@@ -40,59 +40,67 @@ function toggle_sidebar(): void {
   }
 }
 
+function createAccountRow(
+  account: Account,
+  index: number,
+  table: HTMLTableElement
+): void {
+  const row = table.insertRow(index + 1);
+  const website = row.insertCell(0);
+  const account_name = row.insertCell(1);
+  const account_username = row.insertCell(2);
+  const account_password = row.insertCell(3);
+  website.innerHTML = account.website;
+  account_name.innerHTML = account.account_name;
+  account_username.innerHTML = account.account_username;
+  account_password.innerHTML = account.account_password;
+}
+
 function buildAccountTable(accounts: Array<Account>): void {
   const table = document.getElementById("password_table") as HTMLTableElement;
   if (table === null) return;
-  for (let index = 0; index < accounts.length; index++) {
-    const row = table.insertRow(index + 1);
-    const website = row.insertCell(0);
-    const account_name = row.insertCell(1);
-    const account_username = row.insertCell(2);
-    const account_password = row.insertCell(3);
-    website.innerHTML = accounts[index].website;
-    account_name.innerHTML = accounts[index].account_name;
-    account_username.innerHTML = accounts[index].account_username;
-    account_password.innerHTML = accounts[index].account_password;
-  }
+  accounts.forEach((account, index) => {
+    createAccountRow(account, index, table);
+  });
 }
 
-function fetchUserAccounts(): Array<Account> | void {
+function processAccountData(data: any): Array<Account> {
   const accounts: Array<Account> = [];
+  data.accounts.forEach((account: Account) => {
+    accounts.push(
+      new User_Accounts(
+        account.website,
+        account.account_name,
+        account.account_username,
+        account.account_password
+      )
+    );
+  });
+  return accounts;
+}
 
-  fetch("/fetch_accounts", {
+function fetchUserAccounts(): Promise<Array<Account>> {
+  return fetch("/fetch_accounts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
   })
     .then((response) => {
-      // Check if the response is successful (status code 200-299)
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      console.log(response.json());
       return response.json();
     })
-    .then((data) => {
-      data.accounts.forEach((account: Account) => {
-        accounts.push(
-          new User_Accounts(
-            account.website,
-            account.account_name,
-            account.account_username,
-            account.account_password
-          )
-        );
-      });
-    })
+    .then(processAccountData)
     .catch((error) => {
       console.log(error);
-      return;
+      return [];
     });
-  return accounts;
 }
 
 window.onload = () => {
-  const accounts = fetchUserAccounts();
-  console.log(accounts);
+  fetchUserAccounts().then((accounts) => {
+    buildAccountTable(accounts);
+  });
 };

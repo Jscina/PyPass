@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Recover Account form for PyPass">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
 <body>
 	<div class="form-container">
 		<h2>Account Recovery</h2>
-		<form class="form-container bg-gray" id="recover_account"method="POST">
+		<form class="form-container bg-gray" id="recover_account" method="POST">
 			<label for="email" class="form-label">Email:</label>
 			<input type="email" name="email" id="email" class="form-input" required>
 			<label for="password" class="form-label">New Password:</label>
@@ -21,13 +21,13 @@
 			<br>
 			<br>
 			<div class="center">
-				<a href="{{ url_for('index_view.home') }}" class="link">Back to login</a>
+				<a href="{{ url_for('home') }}" class="link">Back to login</a>
 			</div>
 			
 		</form>
 		<div class="error-msg hide"></div>
 	</div>
 </body>
-<script src="{{ url_for('static', filename='js/login.js') }}"></script>
-<script src="{{ url_for('static', filename='js/recover_account.js') }}"></script>
+<script src="{{ url_for('static', path='js/login.js') }}"></script>
+<script src="{{ url_for('static', path='js/recover_account.js') }}"></script>
 </html>

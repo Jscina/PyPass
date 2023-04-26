@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Login form for PyPass">
     <title>Login</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
 
 <body>
@@ -22,10 +22,10 @@
         <input type="submit" class="form-submit" value="Login">
         <br>
         <br>
-        <a class="link" href="{{url_for('create_account_view.create_account_redirect')}}">Don't have an account? Sign up
+        <a class="link" href="{{ url_for('create_account_redirect') }}">Don't have an account? Sign up
             here</a>
-        <a class="link" href="{{url_for('recover_account_view.recover_account')}}">Forgot username or password?</a>
+        <a class="link" href="{{ url_for('recover_account') }}">Forgot username or password?</a>
     </form>
 </body>
-<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<script src="{{ url_for('static', path='js/login.js') }}"></script>
 </html>

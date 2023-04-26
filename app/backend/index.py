@@ -1,9 +1,8 @@
 import logging
-
-from database import Database, get_database
-from cipher import Cipher_User
-from flask import (Blueprint, Response, jsonify, redirect, render_template,
-                   request, session, url_for)
+from fastapi import APIRouter, Depends, Request, Response
+from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from database import Database, get_database, close_database
 
 logging.basicConfig(
     level=logging.INFO,
@@ -12,65 +11,43 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-kwargs = {
-    "name": "index_view",
-    "import_name": __name__,
-    "url_prefix": "/"
-}
-index_view = Blueprint(**kwargs)
+router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
 
+@router.get('/', response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
-@index_view.before_request
-def before_request() -> None:
-    cipher = Cipher_User()
-    setattr(request, "db", Database(cipher=cipher))
+@router.get('/index', response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
+@router.get('/home')
+async def home(request: Request):
+    logged_in = request.session.get("logged_in", False)
+    if logged_in:
+        return RedirectResponse('/index')
+    return RedirectResponse("/")
 
-@index_view.after_request
-def after_request(response: Response) -> Response:
-    db = get_database()
-    db.close()
-    return response
-
-
-@index_view.route('/', methods=['GET'])
-def root() -> str:
-    return render_template("login.html")
-
-
-@index_view.route('/index', methods=['GET'])
-def index() -> str:
-    return render_template("index.html")
-
-
-@index_view.route('/home', methods=['GET'])
-def home() -> Response:
-    if session.get("logged_in"):
-        return redirect('/index')
-    return redirect("/")
-
-@index_view.route('/fetch_accounts', methods=['GET'])
-def fetch_accounts() -> Response:
-    db: Database = getattr(request, "db", None)
-    if db is None:
+@router.get('/fetch_accounts')
+async def fetch_accounts(logged_in: bool, user_id: int, db: Database = Depends(get_database)) -> Response:
+    if not db:
         logger.error("No database found in request context")
-        return jsonify({"status": "error", "message": "Internal server error"}), 500
-    accounts = db.fetch_accounts(session.get("logged_in"), session.get("user_id"))
-    Account = dict[int, dict[str, str]]
-    # Reformats the accounts into a dictionary with the account id as the key for javascript to use
-    accounts:list[Account] = [{account.id : {"website": account.website, "username": account.username, "password": account.password}} for account in accounts]  
-    
-    return jsonify(accounts)
+        return JSONResponse({"status": "error", "message": "Internal server error"}, status_code=500)
+    accounts = db.fetch_accounts(logged_in, user_id)
+    accounts = [{account.id: {"website": account.website, "username": account.account_name, "password": account.account_password}} for account in accounts]
+    close_database(db)
+    return JSONResponse(accounts)
 
-@index_view.route("/add_account", methods=["POST"])
-def add_account() -> Response:
-    db: Database = getattr(request, "db", None)
-    if db is None:
+@router.post("/add_account")
+async def add_account(account_data: dict, db: Database = Depends(get_database)) -> Response:
+    if not db:
         logger.error("No database found in request context")
-        return jsonify({"status": "error", "message": "Internal server error"}), 500
-    website = request.form["website"]
-    username = request.form["username"]
-    password = request.form["password"]
+        return JSONResponse({"status": "error", "message": "Internal server error"}, status_code=500)
+    website = account_data["website"]
+    username = account_data["username"]
+    password = account_data["password"]
     db.add_account(website, username, password)
     del website, username, password
-    return redirect("/home")
+    close_database(db)
+    return RedirectResponse("/home")

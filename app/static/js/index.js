@@ -21,40 +21,54 @@ function toggle_sidebar() {
         navmenu.style.display = "none";
     }
 }
-function buildAccountTable() {
+function createAccountRow(account, index, table) {
+    const row = table.insertRow(index + 1);
+    const website = row.insertCell(0);
+    const account_name = row.insertCell(1);
+    const account_username = row.insertCell(2);
+    const account_password = row.insertCell(3);
+    website.innerHTML = account.website;
+    account_name.innerHTML = account.account_name;
+    account_username.innerHTML = account.account_username;
+    account_password.innerHTML = account.account_password;
+}
+function buildAccountTable(accounts) {
     const table = document.getElementById("password_table");
     if (table === null)
         return;
+    accounts.forEach((account, index) => {
+        createAccountRow(account, index, table);
+    });
+}
+function processAccountData(data) {
+    const accounts = [];
+    data.accounts.forEach((account) => {
+        accounts.push(new User_Accounts(account.website, account.account_name, account.account_username, account.account_password));
+    });
+    return accounts;
 }
 function fetchUserAccounts() {
-    const accounts = [];
-    fetch("/fetch_accounts", {
+    return fetch("/fetch_accounts", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
     })
         .then((response) => {
-        // Check if the response is successful (status code 200-299)
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
-        console.log(response.json());
         return response.json();
     })
-        .then((data) => {
-        data.accounts.forEach((account) => {
-            accounts.push(new User_Accounts(account.website, account.account_name, account.account_username, account.account_password));
-        });
-    })
+        .then(processAccountData)
         .catch((error) => {
         console.log(error);
-        return;
+        return [];
     });
-    return accounts;
 }
 window.onload = () => {
-    const accounts = fetchUserAccounts();
-    console.log(accounts);
+    fetchUserAccounts().then((accounts) => {
+        buildAccountTable(accounts);
+    });
 };
 //# sourceMappingURL=index.js.map

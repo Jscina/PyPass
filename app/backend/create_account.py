@@ -1,10 +1,9 @@
-from flask import (Blueprint, Response,
-                   jsonify, redirect,
-                   render_template, request)
-
-from database import Database, get_database
+from fastapi import APIRouter, Depends, Request, Response
+from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from database import Database, get_database, close_database
+from schemas import UserData
 import logging
-from cipher import Cipher_User
 
 logging.basicConfig(
     level=logging.INFO,
@@ -13,47 +12,26 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-kwargs = {
-    "name": "create_account_view",
-    "import_name": __name__,
-    "url_prefix": "/"
-}
-create_account_view = Blueprint(**kwargs)
+router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
 
+@router.get('/create_account_redirect', response_class=HTMLResponse)
+async def create_account_redirect(request: Request):
+    return templates.TemplateResponse("create_account.html", {"request": request})
 
-@create_account_view.before_request
-def before_request() -> None:
-    cipher = Cipher_User()
-    setattr(request, "db", Database(cipher=cipher))
-
-
-@create_account_view.after_request
-def after_request(response: Response) -> Response:
-    db = get_database()
-    db.close()
-    return response
-
-
-# Create Account section
-@create_account_view.route('/create_account_redirect', methods=['GET', 'POST'])
-def create_account_redirect() -> str:
-    return render_template("create_account.html")
-
-
-@create_account_view.route('/create_account', methods=['POST'])
-def create_account() -> Response:
-    db = get_database()
-    username = request.form.get("username")
-    password = request.form.get("password")
-    email = request.form.get("email")
-    confirm_password = request.form.get("confirm_password")
-    if password != confirm_password:
+@router.post('/create_account')
+async def create_account(user_info: UserData, db: Database = Depends(get_database)) -> Response:
+    user_info:dict = user_info.dict()
+    if user_info["password"] != user_info["confirm_password"]:
         message = "Passwords do not match"
-        return jsonify({"status": "error", "message": message})
-    message = db.add_user(email, username, password)
+        return JSONResponse({"status": "error", "message": message})
+    
+    user_info.pop("confirm_password")
+
+    message = db.add_user(**user_info)
 
     if isinstance(message, str):
-        return jsonify({"status": "error", "message": message})
+        return JSONResponse({"status": "error", "message": message})
 
-    del username, password
-    return redirect("/home")
+    close_database(db)
+    return RedirectResponse("/home")

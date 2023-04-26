@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 from authorization import verify_username, verify_password
-from cipher import Cipher
+from cipher import Cipher, Cipher_User
 from flask import Response, jsonify, request
 from models import Account, Base, Master_Key, User
 from sqlalchemy import create_engine
@@ -144,8 +144,11 @@ class Database:
 
 
 def get_database() -> Database | Response:
-    """Get the database object from the request"""
-    db: Database = getattr(request, "db", None)
+    """Get the database instance"""
+    db: Database = Database(cipher=Cipher_User())
     if db is None:
         return jsonify({"status": "error", "message": "Internal server error"}), 500
     return db
+
+def close_database(db: Database) -> None:
+    db.close()

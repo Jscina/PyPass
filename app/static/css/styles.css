@@ -3,6 +3,80 @@ body {
   height: 100%;
   background-color: #333;
   color: #fff;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.main-content {
+  transition: all 0.3s ease;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.main-content.shifted {
+  margin-left: 250px; /* adjust as needed */
+}
+
+.navmenu {
+  cursor: pointer;
+  font-size: 40px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  padding: 10px;
+}
+
+.sidebar {
+  height: 100%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #222;
+  overflow-x: hidden;
+  transition: 0.3s;
+}
+
+.sidebar a {
+  padding: 8px 8px 8px 8px;
+  text-decoration: none;
+  text-align: center;
+  font-size: 24px;
+  color: #fff;
+  display: block;
+  transition: 0.5s;
+}
+
+.sidebar-links {
+  border: 1px solid #fff;
+  border-left: none;
+  border-right: none;
+}
+
+.sidebar a:hover {
+  color: #f1f1f19f;
+  background-color: #f1f1f109;
+}
+
+.sidebar .closebtn {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  margin-left: 75%;
+  max-width: 25%;
+  font-size: 36px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidebar a {
+    font-size: 18px;
+    padding: 4px 4px 4px 4px;
+  }
+
+  .closebtn {
+    font-size: 18px;
+  }
 }
 
 .bg-gray {
@@ -73,4 +147,31 @@ body {
 }
 .link:hover {
   color: darkgray;
+}
+
+.hide {
+  display: none;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+td:first-child {
+  font-weight: bold;
+}
+
+td:nth-child(2) {
+  font-style: italic;
+}
+
+td:nth-child(3) {
+  font-family: monospace;
 }

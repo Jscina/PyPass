@@ -102,6 +102,9 @@ celerybeat.pid
 # Private keys
 *.key
 
+# Don't commit the database file
+pypass.sqlite
+
 # SageMath parsed files
 *.sage.py
 
@@ -131,3 +134,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# TypeScript
+*.js.map

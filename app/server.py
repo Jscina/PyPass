@@ -1,81 +1,99 @@
 from secrets import token_hex
-from authentication import Auth
-from database import Database
-from flask import (Flask, redirect,
-                   render_template,
-                   request, session,
-                   Response)
-
-# Initalize the database
-__db: Database = Database()
-# Initalize the authentication client
-__auth: Auth = Auth()
-# Setup up the Flask server
-__server_args = {
-    "import_name": __name__,
-    "static_url_path": "",
-    "static_folder": "static",
-    "template_folder": "templates"
-}
-server = Flask(**__server_args)
-server.secret_key = token_hex(16)
+from backend import create_account, login, recover_account, index
+from fastapi import FastAPI
+import uvicorn
+from fastapi.templating import Jinja2Templates
+from dataclasses import dataclass, field
+from threading import Thread, Event
 
 
-@server.route('/', methods=['GET'])
-def index() -> str:
-    return render_template("login.html")
+@dataclass
+class Server:
+    """Server class for the PyPass application"""
+    _server: FastAPI
+    _templates: Jinja2Templates
+    _debug: bool = field(default=False)
+    _server_thread: Thread = field(init=False)
+    _event_loop: Event = field(init=False)
 
-@server.route('/', methods=['GET'])
-def login() -> str | Response:
-    username = request.form["username"]
-    password = request.form["password"]
+    def __post_init__(self) -> None:
+        self._server_thread = Thread(target=self.start_server)
+        self._kill_thread = Event()
 
-    accounts = __db.fetch_login(username)
+    @property
+    def server(self) -> FastAPI:
+        return self._server
 
-    if __auth.login(username, password, accounts):
-        session["logged_in"] = True
-        del username, password, accounts
-        return redirect("/home")
-    else:
-        del username, password, accounts
-        message = "Invalid username or password"
-        return render_template("login.html", message=message)
+    @property
+    def debug(self) -> bool:
+        return self._debug
 
-@server.route('/create_account_redirect', methods=['GET'])
-def create_account_redirect() -> str:
-    return render_template("create_account.html")
+    @property
+    def server_thread(self) -> Thread:
+        return self._server_thread
 
-@server.route('/create_account', methods=['POST'])
-def create_account() -> Response:
-    username = request.form["username"]
-    password = request.form["password"]
-    confirm_password = request.form["confirm_password"]
+    def __enter__(self):
+        # Configure the server
+        self._config_server()
+        # Register the views
+        self._register_views()
+        # Start the server process
+        self.server_thread.start()
 
-    if password != confirm_password:
-        message = "Passwords do not match"
+    def __exit__(self, exc_type, exc_value, traceback):
+        # Stop the server process
+        self.server_thread.join()
 
-    message = __db.create_user(username, password)
+    def _config_server(self) -> None:
+        """Configures the Flask server"""
+        # Basic config for the server
+        self.server.secret_key = token_hex(16)
+        self.server.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+        self.server.config["SESSION_COOKIE_SECURE"] = True
+        self.server.config["SESSION_COOKIE_HTTPONLY"] = True
 
-    if isinstance(message, str):
-        message = message
+    def _register_views(self) -> None:
+        """Registers the views with the server"""
+        # Group views into a tuple
+        views = (
+            index.index_view,
+            create_account.create_account_view,
+            login.login_view,
+            recover_account.recover_account_view
+        )
+        # Register the views with the server
+        for blueprint in views:
+            self.server.register_blueprint(blueprint)
 
-    del username, password
+    def start_server(self) -> None:
+        """Starts the Uvicorn server
 
-    return redirect("/home")
+        Note: This can be used standalone for development purposes
 
-@server.route('/recover_account', methods=['GET'])
-def recover_account():
-    return None
+        Args:
+            debug (bool, optional): Set to True to enable debug mode. Defaults to False.
+        """
+        uvicorn.run(app="app:app", host="0.0.0.0", port=5000)
 
-@server.route('/home', methods=['GET'])
-def home() -> Response:
-    if "logged_in" in session:
-        return render_template("index.html", name="Josh!")
-    return redirect("/")
 
-def run_testing_sever() -> None:
-    """Run this to debug as a website"""
-    server.run(host="localhost", port=5000, debug=True)
-    
+def main(**server_args: dict[str, str]) -> None:
+    from fastapi.templating import Jinja2Templates
+    from fastapi.staticfiles import StaticFiles
+    app = FastAPI()
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    templates = Jinja2Templates(directory="templates")
+
+    srv = Server(app, True)
+    srv._config_server()
+    srv._register_views()
+    srv.start_server()
+
+
 if __name__ == "__main__":
-    run_testing_sever()
+    server_args = {
+        "import_name": __name__,
+        "static_url_path": "",
+        "static_folder": "static",
+        "template_folder": "templates"
+    }
+    main(**server_args)

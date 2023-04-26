@@ -1,18 +1,52 @@
-// Contains the listeners for the create_account page
-const create_account_btn = document.getElementById("create_account");
-
-create_account_btn.addEventListener("click", () => {
-    let python_data = $.get("/get_error_message");
-    console.log(python_data);
-    let data = JSON.parse(python_data);
-
-    const error_msg = document.getElementById("error_msg");
-    const username = document.getElementById("username");
-    const password = document.getElementById("password");
-    const confirm_password = document.getElementById("confirm_password");
-    
-    error_msg.innerHTML = data["message"];
-    username.style.borderColor = "#FFB6C1";
-    password.style.borderColor = "#FFB6C1";
-    confirm_password.borderColor = "#FFB6C1";
-});
+function submitCreateAccountForm(event) {
+    event.preventDefault();
+    const createAccountData = getCreateAccountFormData();
+    sendCreateAccountRequest(createAccountData)
+        .then((response) => {
+        if (response.redirected)
+            redirectToHomePage();
+        else
+            return response.json();
+    })
+        .then(handleCreateAccountResponse)
+        .catch((error) => {
+        console.log(error);
+    });
+}
+function getCreateAccountFormData() {
+    const username = document.querySelector('input[name="username"]').value;
+    const email = document.querySelector('input[name="email"]').value;
+    const password = document.querySelector('input[name="password"]').value;
+    const confirm_password = document.querySelector('input[name="confirm_password"]').value;
+    return {
+        username,
+        email,
+        password,
+        confirm_password,
+    };
+}
+function sendCreateAccountRequest(data) {
+    return fetch("/create_account", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+}
+function handleCreateAccountResponse(data) {
+    if (data === undefined)
+        return;
+    if (data.status === "error") {
+        const error_msg = document.getElementById("error_msg");
+        error_msg.innerText = data.message;
+    }
+}
+function addCreateAccountEventListenter() {
+    const create_account_form = document.getElementById("create_account");
+    if (create_account_form === null)
+        return;
+    create_account_form.addEventListener("submit", submitCreateAccountForm);
+}
+window.addEventListener("load", addCreateAccountEventListenter);
+//# sourceMappingURL=create_account.js.map

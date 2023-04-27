@@ -2,7 +2,7 @@ import logging
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from database import Database, get_database, close_database
+from database import Database, get_database
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,9 +34,8 @@ async def fetch_accounts(logged_in: bool, user_id: int, db: Database = Depends(g
     if not db:
         logger.error("No database found in request context")
         return JSONResponse({"status": "error", "message": "Internal server error"}, status_code=500)
-    accounts = db.fetch_accounts(logged_in, user_id)
+    accounts = await db.fetch_accounts(logged_in, user_id)
     accounts = [{account.id: {"website": account.website, "username": account.account_name, "password": account.account_password}} for account in accounts]
-    close_database(db)
     return JSONResponse(accounts)
 
 @router.post("/add_account")
@@ -47,7 +46,6 @@ async def add_account(account_data: dict, db: Database = Depends(get_database)) 
     website = account_data["website"]
     username = account_data["username"]
     password = account_data["password"]
-    db.add_account(website, username, password)
+    await db.add_account(website, username, password)
     del website, username, password
-    close_database(db)
     return RedirectResponse("/home")

@@ -1,23 +1,31 @@
-# Main Entry Point for the application
+import webview
+from server import Server
 from fastapi import FastAPI
-from backend import login, create_account, index, recover_account
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import uvicorn
-from starlette.middleware.errors import ServerErrorMiddleware
-from starlette.middleware.sessions import SessionMiddleware
-from secrets import token_urlsafe
 
-app = FastAPI()
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.add_middleware(ServerErrorMiddleware, debug=True)
-app.add_middleware(SessionMiddleware, secret_key=token_urlsafe(16))
-templates = Jinja2Templates(directory="app/templates")
-routers = (login.router, create_account.router,
-           index.router, recover_account.router)
+def main(
+    app: FastAPI,
+    static_files: StaticFiles,
+    templates: Jinja2Templates,
+    host: str = "127.0.0.1",
+    port: int = 8000,
+) -> None:
+    with Server(
+        server=app,
+        static_files=static_files,
+        templates=templates,
+        host=host,
+        port=port
+    ) as server:
+        server.start_server()
+        webview.create_window(title="PyPass", url=f"http://{host}:{port}")
+        # This is a blocking call when the user closes the window the program will exit
+        webview.start()  
 
-for router in routers:
-    app.include_router(router)
 
-
-uvicorn.run(app, host="127.0.0.1", port=8000)
+if __name__ == "__main__":
+    app = FastAPI()
+    static_files = StaticFiles(directory="app/static")
+    templates = Jinja2Templates(directory="app/templates")
+    main(app=app, static_files=static_files, templates=templates)

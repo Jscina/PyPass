@@ -2,5 +2,14 @@
     "python.analysis.typeCheckingMode": "off",
     "files.exclude": {
         "**/static/js/*.js: { \"when\": \"$(basename).ts\" }": true
-    }
+    },
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:PyPass}/pypass.sqlite",
+            "name": "PyPass"
+        }
+    ],
+    "python.formatting.provider": "black"
 }

@@ -2,7 +2,7 @@ import logging
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from database import Database, get_database, close_database
+from database import Database, get_database
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,6 +27,5 @@ async def recover(email: str, password: str, confirm_password: str, db: Database
         }
         return JSONResponse(response)
 
-    accounts = db.fetch_user(email)
+    accounts = await db.fetch_user(email)
     
-    close_database(db)

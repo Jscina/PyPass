@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from database import Database, get_database, close_database
+from database import Database, get_database
 from schemas import LoginData
 
 router = APIRouter()
@@ -13,7 +13,7 @@ templates = Jinja2Templates(directory="app/templates")
 async def login(login_data: LoginData, request: Request, db: Database = Depends(get_database)) -> Response:
     print(login_data.dict())
     try:
-        login = db.login(**login_data.dict())
+        login = await db.login(**login_data.dict())
     except ValueError as e:
         return JSONResponse({"status": "error", "message": f"{e}"})
 
@@ -33,8 +33,7 @@ async def login(login_data: LoginData, request: Request, db: Database = Depends(
         return response
 
     message = "Invalid username or password"
-    close_database(db)
-    return JSONResponse({"status": "error", "message": message})
+    return JSONResponse({"status": "error", "message": message}, status_code=401)
 
 
 @router.get("/logout")

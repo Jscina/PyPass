@@ -1,99 +1,74 @@
-from secrets import token_hex
-from backend import create_account, login, recover_account, index
-from fastapi import FastAPI
-import uvicorn
-from fastapi.templating import Jinja2Templates
-from dataclasses import dataclass, field
-from threading import Thread, Event
+from dataclasses import dataclass
+from secrets import token_urlsafe
+from typing import Self
 
+import uvicorn
+from backend import create_account, index, login, recover_account
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.middleware.errors import ServerErrorMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from multiprocessing import Process
 
 @dataclass
 class Server:
     """Server class for the PyPass application"""
-    _server: FastAPI
-    _templates: Jinja2Templates
-    _debug: bool = field(default=False)
-    _server_thread: Thread = field(init=False)
-    _event_loop: Event = field(init=False)
+
+    server: FastAPI
+    templates: Jinja2Templates
+    static_files: StaticFiles
+    host: str = "0.0.0.0"
+    port: int = 8000
+    debug: bool = False
 
     def __post_init__(self) -> None:
-        self._server_thread = Thread(target=self.start_server)
-        self._kill_thread = Event()
+        self.server.mount("/static", self.static_files, name="static")
 
-    @property
-    def server(self) -> FastAPI:
-        return self._server
+        self.__server_process = Process(target=self.__start_server)
 
-    @property
-    def debug(self) -> bool:
-        return self._debug
+    def __enter__(self) -> Self:
+        self.__register_routes()
+        self.__setup_middleware()
+        return self
 
-    @property
-    def server_thread(self) -> Thread:
-        return self._server_thread
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.__server_process.terminate()
+        self.__server_process.join()
 
-    def __enter__(self):
-        # Configure the server
-        self._config_server()
-        # Register the views
-        self._register_views()
-        # Start the server process
-        self.server_thread.start()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        # Stop the server process
-        self.server_thread.join()
-
-    def _config_server(self) -> None:
-        """Configures the Flask server"""
-        # Basic config for the server
-        self.server.secret_key = token_hex(16)
-        self.server.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-        self.server.config["SESSION_COOKIE_SECURE"] = True
-        self.server.config["SESSION_COOKIE_HTTPONLY"] = True
-
-    def _register_views(self) -> None:
-        """Registers the views with the server"""
-        # Group views into a tuple
-        views = (
-            index.index_view,
-            create_account.create_account_view,
-            login.login_view,
-            recover_account.recover_account_view
+    def __register_routes(self) -> None:
+        """Registers the routes with the server"""
+        routers = (
+            login.router,
+            create_account.router,
+            index.router,
+            recover_account.router,
         )
-        # Register the views with the server
-        for blueprint in views:
-            self.server.register_blueprint(blueprint)
+        for router in routers:
+            self.server.include_router(router)
+
+    def __setup_middleware(self) -> None:
+        self.server.add_middleware(ServerErrorMiddleware, debug=self.debug)
+        self.server.add_middleware(SessionMiddleware, secret_key=token_urlsafe(16))
+
+    def __start_server(self) -> None:
+        """Starts the uviorn server"""
+        uvicorn.run(app=self.server, host=self.host, port=self.port)
 
     def start_server(self) -> None:
-        """Starts the Uvicorn server
-
-        Note: This can be used standalone for development purposes
-
-        Args:
-            debug (bool, optional): Set to True to enable debug mode. Defaults to False.
-        """
-        uvicorn.run(app="app:app", host="0.0.0.0", port=5000)
+        self.__server_process.start()
 
 
-def main(**server_args: dict[str, str]) -> None:
-    from fastapi.templating import Jinja2Templates
-    from fastapi.staticfiles import StaticFiles
+def main() -> None:
     app = FastAPI()
-    app.mount("/static", StaticFiles(directory="static"), name="static")
-    templates = Jinja2Templates(directory="templates")
+    static_files = StaticFiles(directory="app/static")
+    templates = Jinja2Templates(directory="app/templates")
 
-    srv = Server(app, True)
-    srv._config_server()
-    srv._register_views()
-    srv.start_server()
+    with Server(app, templates, static_files) as server:
+        server.start_server()
+        while True:
+            pass
 
 
 if __name__ == "__main__":
-    server_args = {
-        "import_name": __name__,
-        "static_url_path": "",
-        "static_folder": "static",
-        "template_folder": "templates"
-    }
-    main(**server_args)
+    main()

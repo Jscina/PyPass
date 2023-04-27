@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from database import Database, get_database, close_database
+from database import Database, get_database
 from schemas import UserData
 import logging
 
@@ -24,14 +24,13 @@ async def create_account(user_info: UserData, db: Database = Depends(get_databas
     user_info:dict = user_info.dict()
     if user_info["password"] != user_info["confirm_password"]:
         message = "Passwords do not match"
-        return JSONResponse({"status": "error", "message": message})
+        return JSONResponse({"status": "error", "message": message}, status_code=400)
     
     user_info.pop("confirm_password")
 
-    message = db.add_user(**user_info)
+    message = await db.add_user(**user_info)
 
     if isinstance(message, str):
-        return JSONResponse({"status": "error", "message": message})
+        return JSONResponse({"status": "error", "message": message}, status_code=400)
 
-    close_database(db)
     return RedirectResponse("/home")

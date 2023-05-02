@@ -8,6 +8,7 @@ from models import Account, Base, Master_Key, User
 from sqlalchemy import create_engine
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker, Session
+from collections import namedtuple
 
 
 @dataclass(unsafe_hash=True)
@@ -38,12 +39,12 @@ class Database:
             return key
         except NoResultFound:
             logging.warning("No result's from query, creating new key...")
-        self.cipher.master_key = self.add_master_key(user=user)
+        self.cipher.master_key = await self.add_master_key(user=user)
         return self.fetch_master_key()
 
     async def add_master_key(self, user: User) -> bytes:
         """Add a new master key for the user to the database"""
-        key = self.cipher.generate_key()
+        key = await self.cipher.generate_key()
         master_key = Master_Key(master_key=key.decode("utf-8"))
         master_key.user_id = user.id
         try:
@@ -56,8 +57,8 @@ class Database:
 
     async def add_user(self, email: str, username: str, password: str) -> str | None:
         """Create a new login account"""
-        hashed_password = self.cipher.hash_password(password)
-        key = self.cipher.generate_key()
+        hashed_password = await self.cipher.hash_password(password)
+        key = await self.cipher.generate_key()
         master_key = Master_Key(master_key=key.decode("utf-8"))
         user = User(email=email, username=username, password=hashed_password)
         user.master_key = master_key
@@ -74,8 +75,8 @@ class Database:
         self, request: Request, website: str, username: str, password: str
     ) -> bool | str:
         """Add a new account for storing user's credentials to other sites/applications"""
-        key = self.cipher.generate_key()
-        protected_password, protected_key = self.cipher.encrypt(
+        key = await self.cipher.generate_key()
+        protected_password, protected_key = await self.cipher.encrypt(
             password, key, encrypt_key=True
         )
         user_id = request.cookies.get("user_id")
@@ -122,7 +123,10 @@ class Database:
                     account.account_password, account.encryption_key, encrypt_key=True
                 )
             return accounts
-        return []
+        # Default account for when user has no accounts
+        account = namedtuple("account", ["website", "account_name", "account_username", "account_password"])
+        
+        return [account("None", "None", "None", "None")]
 
     async def login(
         self, password: str, email: Optional[str] = None, username: Optional[str] = None
@@ -148,3 +152,4 @@ def get_database() -> Database:
 
 def close_db(database: Database) -> None:
     database.close()
+    

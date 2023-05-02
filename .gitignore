@@ -141,3 +141,8 @@ dmypy.json
 
 # TypeScript
 *.js.map
+
+
+# Added by cargo
+
+/target

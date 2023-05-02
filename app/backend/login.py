@@ -11,7 +11,6 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.post('/login')
 async def login(login_data: LoginData, request: Request, db: Database = Depends(get_database)) -> Response:
-    print(login_data.dict())
     try:
         login = await db.login(**login_data.dict())
     except ValueError as e:

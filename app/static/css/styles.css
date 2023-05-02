@@ -1,3 +1,4 @@
+/* Generic styles */
 body {
   width: 100%;
   height: 100%;
@@ -7,24 +8,66 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #222;
+}
+
+header h1 {
+  font-size: 28px;
+  padding: 5px;
+}
+
+header h1.shifted {
+  margin-left: 200px;
+}
+
+.link {
+  display: inline-block;
+  margin-left: 10px;
+  text-decoration: none;
+  color: white;
+}
+
+.link:hover {
+  color: darkgray;
+}
+
+/* Layout */
+.wrapper {
+  display: flex;
+}
+
+.content-container {
+  flex-grow: 1;
+  display: flex;
+  position: relative;
+  top: 10vh;
+  justify-content: center;
+}
+
 .main-content {
   transition: all 0.3s ease;
   max-width: 800px;
-  margin: 0 auto;
   padding: 0 20px;
 }
 
 .main-content.shifted {
-  margin-left: 250px; /* adjust as needed */
+  padding-left: 270px;
 }
 
+/* Navigation */
 .navmenu {
   cursor: pointer;
   font-size: 40px;
-  position: absolute;
-  top: 0px;
-  left: 0px;
   padding: 10px;
+}
+
+.navmenu:hover {
+  color: #f1f1f19f;
+  background-color: #f1f1f109;
 }
 
 .sidebar {
@@ -35,7 +78,9 @@ body {
   left: 0;
   background-color: #222;
   overflow-x: hidden;
-  transition: 0.3s;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: width 0.3s ease;
 }
 
 .sidebar a {
@@ -46,12 +91,6 @@ body {
   color: #fff;
   display: block;
   transition: 0.5s;
-}
-
-.sidebar-links {
-  border: 1px solid #fff;
-  border-left: none;
-  border-right: none;
 }
 
 .sidebar a:hover {
@@ -68,26 +107,7 @@ body {
   font-size: 36px;
 }
 
-@media screen and (max-height: 450px) {
-  .sidebar a {
-    font-size: 18px;
-    padding: 4px 4px 4px 4px;
-  }
-
-  .closebtn {
-    font-size: 18px;
-  }
-}
-
-.bg-gray {
-  background-color: #444;
-}
-
-.center {
-  display: flex;
-  justify-content: center;
-}
-
+/* Form */
 .form-container {
   width: 300px;
   margin: 0 auto;
@@ -121,7 +141,7 @@ body {
 
 .form-submit {
   width: 100%;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   font-size: large;
   color: white;
   padding: 14px 20px;
@@ -139,20 +159,8 @@ body {
   color: red;
   text-align: center;
 }
-.link {
-  display: inline-block;
-  margin-left: 10px;
-  text-decoration: none;
-  color: white;
-}
-.link:hover {
-  color: darkgray;
-}
 
-.hide {
-  display: none;
-}
-
+/* Table */
 table {
   border-collapse: collapse;
   width: 100%;
@@ -164,6 +172,7 @@ td {
   padding: 8px;
   border-bottom: 1px solid #ddd;
 }
+
 td:first-child {
   font-weight: bold;
 }
@@ -174,4 +183,18 @@ td:nth-child(2) {
 
 td:nth-child(3) {
   font-family: monospace;
+}
+
+/* Utility classes */
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.hide {
+  display: none;
+}
+
+.bg-gray {
+  background-color: #444;
 }

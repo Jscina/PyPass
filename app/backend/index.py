@@ -29,7 +29,7 @@ async def home(request: Request):
         return RedirectResponse('/index')
     return RedirectResponse("/")
 
-@router.get('/fetch_accounts')
+@router.post('/fetch_accounts')
 async def fetch_accounts(logged_in: bool, user_id: int, db: Database = Depends(get_database)) -> Response:
     if not db:
         logger.error("No database found in request context")

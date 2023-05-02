@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from secrets import token_urlsafe
 from typing import Self
 
@@ -14,18 +14,21 @@ from multiprocessing import Process
 @dataclass
 class Server:
     """Server class for the PyPass application"""
-
     server: FastAPI
     templates: Jinja2Templates
     static_files: StaticFiles
     host: str = "0.0.0.0"
     port: int = 8000
     debug: bool = False
+    __server_process: Process | None = field(init=False, default=None)
+
+    @property
+    def server_process(self) -> Process:
+        assert self.__server_process is not None, "No server process found"
+        return self.__server_process
 
     def __post_init__(self) -> None:
         self.server.mount("/static", self.static_files, name="static")
-
-        self.__server_process = Process(target=self.__start_server)
 
     def __enter__(self) -> Self:
         self.__register_routes()
@@ -33,8 +36,8 @@ class Server:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        self.__server_process.terminate()
-        self.__server_process.join()
+        self.server_process.terminate()
+        self.server_process.join()
 
     def __register_routes(self) -> None:
         """Registers the routes with the server"""
@@ -54,11 +57,16 @@ class Server:
     def __start_server(self) -> None:
         """Starts the uviorn server"""
         uvicorn.run(app=self.server, host=self.host, port=self.port)
+        
+    def __create_server_process(self) -> Process:
+        return Process(target=self.__start_server)
 
     def start_server(self) -> None:
+        if self.__server_process is None:
+            self.__server_process = self.__create_server_process()
         self.__server_process.start()
 
-
+# For local testing in the browser
 def main() -> None:
     app = FastAPI()
     static_files = StaticFiles(directory="app/static")
@@ -67,7 +75,8 @@ def main() -> None:
     with Server(app, templates, static_files) as server:
         server.start_server()
         while True:
-            pass
+            continue
+            
 
 
 if __name__ == "__main__":

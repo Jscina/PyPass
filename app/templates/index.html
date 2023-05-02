@@ -2,50 +2,57 @@
 <html lang="en">
 
 <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PyPass Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
 
-<body>
-    <nav id="sidebar" class="sidebar">
-        <a href="javascript:void(0)" id="closebtn" class="closebtn" onclick="toggle_sidebar()">&times;</a>
-        <a href="#">Add a Password</a>
-        <a href="#">Link 2</a>
-        <a href="#">Link 3</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </nav>
-    <span id="navmenu" class="navmenu" onclick="toggle_sidebar()">&#9776;</span>
-    <br>
-    <main id="content" class="main-content">
-        <h1>PyPass Dashboard</h1>
-        <h2>My Passwords</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Website/Service</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                </tr>
-            </thead>
-            <tbody id="dashboard_passwords">
-            </tbody>
-        </table>
-        <a href="javascript:void(0)" class="link">View Passwords</a>
-        <div class="form-container hide">
-            <form action="" method="POST">
-                <label for="website" class="form-label">Website/Service:</label>
-                <input type="text" id="website" name="website" class="form-input" required><br>
-                <label for="username" class="form-label">Username:</label>
-                <input type="text" id="username" name="username" class="form-input" required><br>
-                <label for="password" class="form-label">Password:</label>
-                <input type="password" id="password" name="password" class="form-input" required><br>
-                <input type="submit" value="Add Password" class="form-submit">
-            </form>
+<body data-new-gr-c-s-check-loaded="8.905.0" data-gr-ext-installed="">
+    <header>
+        <span id="navmenu" class="navmenu" onclick="toggleSidebar()" style="display: block;">☰</span>
+        <h1 id="header-title">PyPass Dashboard</h1>
+    </header>
+    <div class="wrapper">
+        <nav id="sidebar" class="sidebar" style="width: 0px;">
+            <a href="javascript:void(0)" id="closebtn" class="closebtn" onclick="toggleSidebar()">×</a>
+            <a href="#">Add a Password</a>
+            <a href="#">Link 2</a>
+            <a href="#">Link 3</a>
+            <a href="http://0.0.0.0:8000/logout">Logout</a>
+        </nav>
+        <div class="content-container">
+            <main id="content" class="main-content">
+                <h2>My Passwords</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Website/Service</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard_passwords">
+                    </tbody>
+                </table>
+                <a href="javascript:void(0)" class="link">View Passwords</a>
+                <div class="form-container hide">
+                    <form action="" method="POST">
+                        <label for="website" class="form-label">Website/Service:</label>
+                        <input type="text" id="website" name="website" class="form-input" required=""><br>
+                        <label for="username" class="form-label">Username:</label>
+                        <input type="text" id="username" name="username" class="form-input" required=""><br>
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="password" id="password" name="password" class="form-input" required=""><br>
+                        <input type="submit" value="Add Password" class="form-submit">
+                    </form>
+                </div>
+            </main>
         </div>
-    </main>
+    </div>
+    <script src="{{ url_for('static', path='js/index.js') }}"></script>
+
 </body>
-<script src="{{ url_for('static', path='js/index.js') }}"></script>
 
 </html>

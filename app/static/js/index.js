@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const js_cookie_1 = require("js-cookie");
 class User_Accounts {
     constructor(website, account_name, account_username, account_password) {
         this.website = website;
@@ -6,19 +9,22 @@ class User_Accounts {
         this.account_password = account_password;
     }
 }
-function toggle_sidebar() {
+function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
-    const content = document.getElementById("content");
+    const headerTitle = document.getElementById("header-title");
+    const mainContent = document.getElementById("content");
     const navmenu = document.getElementById("navmenu");
     if (sidebar.style.width === "250px") {
         sidebar.style.width = "0";
-        content.classList.remove("shifted");
+        headerTitle.classList.remove("shifted");
+        mainContent.classList.remove("shifted");
         navmenu.style.display = "block";
     }
     else {
         sidebar.style.width = "250px";
-        content.classList.add("shifted");
-        navmenu.style.display = "none";
+        headerTitle.classList.add("shifted");
+        mainContent.classList.add("shifted");
+        navmenu.style.display = "hidden";
     }
 }
 function createAccountRow(account, index, table) {
@@ -41,6 +47,7 @@ function buildAccountTable(accounts) {
     });
 }
 function processAccountData(data) {
+    console.log(data);
     const accounts = [];
     data.accounts.forEach((account) => {
         accounts.push(new User_Accounts(account.website, account.account_name, account.account_username, account.account_password));
@@ -48,13 +55,20 @@ function processAccountData(data) {
     return accounts;
 }
 function fetchUserAccounts() {
+    const user_id = js_cookie_1.Cookie.get("user_id");
+    const logged_in = js_cookie_1.Cookie.get("logged_in");
     return fetch("/fetch_accounts", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+            user_id: user_id,
+            logged_in: logged_in,
+        }),
     })
         .then((response) => {
+        console.log(response);
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -66,9 +80,11 @@ function fetchUserAccounts() {
         return [];
     });
 }
-window.onload = () => {
+window.addEventListener("load", () => {
+    for (let i = 0; i < 2; i++)
+        toggleSidebar();
     fetchUserAccounts().then((accounts) => {
         buildAccountTable(accounts);
     });
-};
+});
 //# sourceMappingURL=index.js.map

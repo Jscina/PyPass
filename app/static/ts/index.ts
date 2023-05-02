@@ -1,3 +1,5 @@
+import { Cookie } from "js-cookie";
+
 interface Account {
   website: string;
   account_name: string;
@@ -24,19 +26,22 @@ class User_Accounts implements Account {
   }
 }
 
-function toggle_sidebar(): void {
+function toggleSidebar(): void {
   const sidebar = document.getElementById("sidebar") as HTMLElement;
-  const content = document.getElementById("content") as HTMLElement;
+  const headerTitle = document.getElementById("header-title") as HTMLElement;
+  const mainContent = document.getElementById("content") as HTMLElement;
   const navmenu = document.getElementById("navmenu") as HTMLElement;
 
   if (sidebar.style.width === "250px") {
     sidebar.style.width = "0";
-    content.classList.remove("shifted");
+    headerTitle.classList.remove("shifted");
+    mainContent.classList.remove("shifted");
     navmenu.style.display = "block";
   } else {
     sidebar.style.width = "250px";
-    content.classList.add("shifted");
-    navmenu.style.display = "none";
+    headerTitle.classList.add("shifted");
+    mainContent.classList.add("shifted");
+    navmenu.style.display = "hidden";
   }
 }
 
@@ -65,6 +70,7 @@ function buildAccountTable(accounts: Array<Account>): void {
 }
 
 function processAccountData(data: any): Array<Account> {
+  console.log(data);
   const accounts: Array<Account> = [];
   data.accounts.forEach((account: Account) => {
     accounts.push(
@@ -80,13 +86,20 @@ function processAccountData(data: any): Array<Account> {
 }
 
 function fetchUserAccounts(): Promise<Array<Account>> {
+  const user_id = Cookie.get("user_id") as string;
+  const logged_in = Cookie.get("logged_in") as string;
   return fetch("/fetch_accounts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      user_id: user_id,
+      logged_in: logged_in,
+    }),
   })
     .then((response) => {
+      console.log(response);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -99,8 +112,10 @@ function fetchUserAccounts(): Promise<Array<Account>> {
     });
 }
 
-window.onload = () => {
+window.addEventListener("load", () => {
+  for (let i = 0; i < 2; i++) toggleSidebar();
+
   fetchUserAccounts().then((accounts) => {
     buildAccountTable(accounts);
   });
-};
+});

@@ -1,4 +1,4 @@
-import { Cookie } from "js-cookie";
+import { get as getCookie} from "js-cookie";
 
 interface Account {
   website: string;
@@ -26,7 +26,7 @@ class User_Accounts implements Account {
   }
 }
 
-function toggleSidebar(): void {
+export function toggleSidebar(): void {
   const sidebar = document.getElementById("sidebar") as HTMLElement;
   const headerTitle = document.getElementById("header-title") as HTMLElement;
   const mainContent = document.getElementById("content") as HTMLElement;
@@ -61,7 +61,7 @@ function createAccountRow(
   account_password.innerHTML = account.account_password;
 }
 
-function buildAccountTable(accounts: Array<Account>): void {
+export function buildAccountTable(accounts: Array<Account>): void {
   const table = document.getElementById("password_table") as HTMLTableElement;
   if (table === null) return;
   accounts.forEach((account, index) => {
@@ -85,9 +85,9 @@ function processAccountData(data: any): Array<Account> {
   return accounts;
 }
 
-function fetchUserAccounts(): Promise<Array<Account>> {
-  const user_id = Cookie.get("user_id") as string;
-  const logged_in = Cookie.get("logged_in") as string;
+export function fetchUserAccounts(): Promise<Array<Account>> {
+  const user_id = getCookie("user_id") as string;
+  const logged_in = getCookie("logged_in") as string;
   return fetch("/fetch_accounts", {
     method: "POST",
     headers: {
@@ -112,10 +112,65 @@ function fetchUserAccounts(): Promise<Array<Account>> {
     });
 }
 
-window.addEventListener("load", () => {
-  for (let i = 0; i < 2; i++) toggleSidebar();
-
-  fetchUserAccounts().then((accounts) => {
-    buildAccountTable(accounts);
+function showDialog(message: string): void {
+  const dialog = document.querySelector("dialog") as HTMLDialogElement;
+  const closeDialog = document.querySelector("#close") as HTMLButtonElement;
+  dialog.show();
+  closeDialog.addEventListener("click", () => {
+    dialog.close();
   });
-});
+}
+
+export function addPassword(): void {
+  // Get the input values
+  const website = document.getElementById("website") as HTMLInputElement;
+  const username = document.getElementById("username") as HTMLInputElement;
+  const password = document.getElementById("password") as HTMLInputElement;
+
+  // Validate and process the input values
+  if (website.value && username.value && password.value) {
+    const user_id = getCookie("user_id") as string;
+
+    console.log(user_id);
+
+    fetch("/add_password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: user_id,
+        website: website.value,
+        username: username.value,
+        password: password.value,
+      }),
+    })
+      .then((response) => {
+        console.log(response);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        if (data.status === "success") {
+          showDialog("Password added successfully");
+        } else {
+          showDialog("Failed to add password");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        showDialog("Failed to add password");
+      });
+
+    // Clear the input fields
+    website.value = "";
+    username.value = "";
+    password.value = "";
+  } else {
+    showDialog("Please enter all the values");
+  }
+}
+

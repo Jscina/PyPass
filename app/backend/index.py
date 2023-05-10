@@ -38,14 +38,11 @@ async def fetch_accounts(logged_in: bool, user_id: int, db: Database = Depends(g
     accounts = [{account.id: {"website": account.website, "username": account.account_name, "password": account.account_password}} for account in accounts]
     return JSONResponse(accounts)
 
-@router.post("/add_account")
-async def add_account(account_data: dict, db: Database = Depends(get_database)) -> Response:
+@router.post("/add_password")
+async def add_password(account_data: dict, db: Database = Depends(get_database)) -> Response:
     if not db:
         logger.error("No database found in request context")
         return JSONResponse({"status": "error", "message": "Internal server error"}, status_code=500)
-    website = account_data["website"]
-    username = account_data["username"]
-    password = account_data["password"]
-    await db.add_account(website, username, password)
-    del website, username, password
+    await db.add_account(account_data)
+    del account_data
     return RedirectResponse("/home")

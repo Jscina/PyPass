@@ -21,7 +21,7 @@ header h1 {
 }
 
 header h1.shifted {
-  margin-left: 200px;
+  margin-left: 210px;
 }
 
 .link {
@@ -122,6 +122,12 @@ header h1.shifted {
   transform: translate(-50%, -50%);
 }
 
+.form-container menu {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
 .form-label {
   font-weight: bold;
   display: block;
@@ -136,7 +142,7 @@ header h1.shifted {
   border: 1px solid #666;
   border-radius: 1em;
   background-color: #333;
-  color: #fff;
+  color: white;
 }
 
 .form-submit {
@@ -144,7 +150,7 @@ header h1.shifted {
   background-color: #4caf50;
   font-size: large;
   color: white;
-  padding: 14px 20px;
+  padding: 7px 10px;
   margin-top: 5px;
   border: none;
   border-radius: 1em;
@@ -155,9 +161,34 @@ header h1.shifted {
   background-color: #45a049;
 }
 
+/* Add password form */
+
+.add-password-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-password-form-input {
+  box-sizing: inline;
+  border: 1px solid #666;
+  background-color: #333;
+  color: white;
+}
+
+/* Error Message */
 .error-msg {
   color: red;
   text-align: center;
+}
+/* Dialog */
+dialog {
+  width: 300px;
+  margin: 0 auto;
+  background-color: #555;
+  padding: 10px;
+  border: 1px solid #666;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px #666;
 }
 
 /* Table */

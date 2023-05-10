@@ -72,22 +72,22 @@ class Database:
             return f"Error creating user: {e}"
 
     async def add_account(
-        self, request: Request, website: str, username: str, password: str
+        self, account_data: dict[str, str]
     ) -> bool | str:
         """Add a new account for storing user's credentials to other sites/applications"""
         key = await self.cipher.generate_key()
         protected_password, protected_key = await self.cipher.encrypt(
-            password, key, encrypt_key=True
+            account_data["password"], key, encrypt_key=True
         )
-        user_id = request.cookies.get("user_id")
+        user_id = account_data["user_id"]
 
         if user_id is not None:
             user_id = int(user_id)
 
         account = Account(
-            website=website,
-            account_name=username,
-            account_username=username,
+            website=account_data["website"],
+            account_name=account_data["account_name"],
+            account_username=account_data["account_username"],
             account_password=protected_password,
             encryption_key=protected_key,
         )

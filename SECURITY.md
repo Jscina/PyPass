@@ -9,6 +9,6 @@
 
 ## Reporting a Vulnerability
 
-If you encounter an issue with the application, kindly create an issue on the issues page.
+If you encounter an issue with the application, please open an issue on the GitHub repository. Or, if you are able to fix the issue, please open a pull request.
 
-I will review the issue, and work on it when I get the time.
+I will try to respond to issues as quickly as possible, but please be patient as I am a full-time student and may not be able to respond immediately.

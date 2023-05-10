@@ -2,57 +2,64 @@
 <html lang="en">
 
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PyPass Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyPass Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}" />
 </head>
 
-<body data-new-gr-c-s-check-loaded="8.905.0" data-gr-ext-installed="">
-    <header>
-        <span id="navmenu" class="navmenu" onclick="toggleSidebar()" style="display: block;">☰</span>
-        <h1 id="header-title">PyPass Dashboard</h1>
-    </header>
-    <div class="wrapper">
-        <nav id="sidebar" class="sidebar" style="width: 0px;">
-            <a href="javascript:void(0)" id="closebtn" class="closebtn" onclick="toggleSidebar()">×</a>
-            <a href="#">Add a Password</a>
-            <a href="#">Link 2</a>
-            <a href="#">Link 3</a>
-            <a href="http://0.0.0.0:8000/logout">Logout</a>
-        </nav>
-        <div class="content-container">
-            <main id="content" class="main-content">
-                <h2>My Passwords</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Website/Service</th>
-                            <th>Username</th>
-                            <th>Password</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dashboard_passwords">
-                    </tbody>
-                </table>
-                <a href="javascript:void(0)" class="link">View Passwords</a>
-                <div class="form-container hide">
-                    <form action="" method="POST">
-                        <label for="website" class="form-label">Website/Service:</label>
-                        <input type="text" id="website" name="website" class="form-input" required=""><br>
-                        <label for="username" class="form-label">Username:</label>
-                        <input type="text" id="username" name="username" class="form-input" required=""><br>
-                        <label for="password" class="form-label">Password:</label>
-                        <input type="password" id="password" name="password" class="form-input" required=""><br>
-                        <input type="submit" value="Add Password" class="form-submit">
-                    </form>
-                </div>
-            </main>
-        </div>
+<body>
+  <header>
+    <span id="navmenu" class="navmenu" style="display: block">☰</span>
+    <h1 id="header-title">PyPass Dashboard</h1>
+  </header>
+  <div class="wrapper">
+    <nav id="sidebar" class="sidebar" style="width: 0px">
+      <a href="javascript:void(0)" id="closebtn" class="closebtn">×</a>
+      <a href="http://0.0.0.0:8000/logout">Logout</a>
+    </nav>
+    <div class="content-container">
+      <main id="content" class="main-content">
+        <h2>My Passwords</h2>
+        <table>
+          <thead>
+            <tr>
+              <th class="website">Website/Service</th>
+              <th class="username">Username</th>
+              <th class="password">Password</th>
+              <th class="actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard_passwords">
+            <tr class="add-password">
+              <td>
+                <input class="add-password-form-input" type="text" name="website" id="website"
+                  placeholder="Website/Service" />
+              </td>
+              <td>
+                <input class="add-password-form-input" type="text" name="username" id="username"
+                  placeholder="Username" />
+              </td>
+              <td>
+                <input class="add-password-form-input" type="text" name="password" id="password"
+                  placeholder="Password" />
+              </td>
+              <td>
+                <a href="javascript:void(0)" class="link">+</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <a href="javascript:void(0)" class="link">View Passwords</a>
+        <dialog id="dialog-box">
+          <p id="error-msg"></p>
+          <button id="cancel">OK</button>
+        </dialog>
+      </main>
     </div>
-    <script src="{{ url_for('static', path='js/index.js') }}"></script>
-
+  </div>
+  <script src="{{ url_for('static', path='js/main.js') }}"></script>
 </body>
 
 </html>

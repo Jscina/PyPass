@@ -142,6 +142,8 @@ dmypy.json
 # TypeScript
 *.js.map
 
+# Node
+node_modules
 
 # Added by cargo
 

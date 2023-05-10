@@ -1,23 +1,24 @@
 {
     "compilerOptions": {
-        "target": "ES6",
-        "module": "commonjs",
-        "sourceMap": true,
-        "lib": [
-            "DOM",
-            "DOM.Iterable",
-            "ESNext"
-        ],
-        "outDir": "app/static/js"
+      "target": "ESNext",
+      "module": "CommonJS",
+      "sourceMap": true,
+      "noImplicitAny": true,
+      "moduleResolution": "node",
+      "jsx": "react",
+      "lib": [
+        "DOM",
+        "DOM.Iterable",
+        "ESNext"
+      ],
+      "allowJs": true,
+      "outDir": "./dist",
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "noFallthroughCasesInSwitch": true
     },
-    "allowJs": true,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "include": ["app/**/*"],
+    "include": ["src/**/*"],
     "exclude": ["node_modules", ".build"]
-}
+  }
+  

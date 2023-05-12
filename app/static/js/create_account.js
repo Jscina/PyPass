@@ -1,3 +1,4 @@
+"use strict";
 function submitCreateAccountForm(event) {
     event.preventDefault();
     const createAccountData = getCreateAccountFormData();

@@ -12,7 +12,7 @@
         "ESNext"
       ],
       "allowJs": true,
-      "outDir": "./dist",
+      "outDir": "./app/static/js",
       "allowSyntheticDefaultImports": true,
       "strict": true,
       "forceConsistentCasingInFileNames": true,

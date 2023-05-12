@@ -2,13 +2,12 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 from authorization import verify_username, verify_password
+from fastapi.exceptions import HTTPException
 from cipher import Cipher, Cipher_User
-from fastapi.requests import Request
 from models import Account, Base, Master_Key, User
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func, update
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker, Session
-from collections import namedtuple
 
 
 @dataclass(unsafe_hash=True)
@@ -31,12 +30,12 @@ class Database:
     async def fetch_master_key(self, user: User) -> bytes:
         """Get the master key from the database."""
         try:
-            key = (
+            key:str = (
                 self.session.query(Master_Key)
                 .filter(Master_Key.user_id == user.id)
                 .one()
-            )
-            return key
+            ).master_key
+            return key.encode("utf-8")
         except NoResultFound:
             logging.warning("No result's from query, creating new key...")
         self.cipher.master_key = await self.add_master_key(user=user)
@@ -83,11 +82,13 @@ class Database:
 
         if user_id is not None:
             user_id = int(user_id)
-
+        else:
+            return "Error: User is invalid"
+        max_order = self.session.query(func.max(Account.account_order)).scalar() or 0
         account = Account(
-            website=account_data["website"],
-            account_name=account_data["account_name"],
-            account_username=account_data["account_username"],
+            account_order=max_order + 1,
+            service=account_data["service"],
+            account_username=account_data["username"],
             account_password=protected_password,
             encryption_key=protected_key,
         )
@@ -109,25 +110,56 @@ class Database:
         elif email is not None:
             users = self.session.query(User).filter(User.email == email).all()
         else:
-            return []
+            raise HTTPException(404, "No user found")
         return [user for user in users]
+    
+    async def fetch_user_by_id(self, is_authorized:bool, user_id:int) -> User:
+        if not is_authorized:
+            raise HTTPException(401, "Not Authorized")
+        if isinstance(user_id, str):
+            user_id = int(user_id)
+        user = self.session.query(User).filter(User.id == user_id).one()
+        return user
 
-    async def fetch_accounts(self, is_authorized: bool, user_id: str) -> list[Account]:
+
+    async def fetch_accounts(self, is_authorized: bool, user_id: int) -> list[Account]:
         """Fetches all accounts from the database"""
-        if is_authorized:
-            accounts = (
-                self.session.query(Account).filter(Account.user_id == user_id).all()
-            )
-            for account in accounts:
-                account.account_password = self.cipher.decrypt(
-                    account.account_password, account.encryption_key, encrypt_key=True
-                )
-            return accounts
-        # Default account for when user has no accounts
-        account = namedtuple("account", ["website", "account_name", "account_username", "account_password"])
+        if not is_authorized:
+            raise HTTPException(401, "Not Authorized")
+        if isinstance(user_id, str):
+            user_id = int(user_id)
         
-        return [account("None", "None", "None", "None")]
-
+        accounts = (
+            self.session.query(Account).filter(Account.user_id == user_id).all()
+        )
+        for account in accounts:
+            account.account_password = await self.cipher.decrypt(
+                protected=account.account_password,
+                key=account.encryption_key,
+                encrypted_key=True
+            )
+        if len(accounts) != 0:
+            return accounts
+        raise HTTPException(404, "No accounts found")
+    
+    async def remove_account(self, is_authorized:bool, order:int, user_id:int) -> None:
+        if not is_authorized:
+            raise HTTPException(401, "Not Authorized")
+        try:
+            self.session.delete(
+                self.session.query(Account).filter(
+                    Account.account_order == order and Account.user_id == user_id
+                ).one()
+            )
+            self.session.execute(
+                update(Account) 
+                .where(Account.account_order > order)
+                .values(account_order=Account.account_order - 1)
+            )
+            self.session.commit()
+        except NoResultFound:
+            logging.warning(f"No result found for id: {order} user_id: {user_id}")
+        
     async def login(
         self, password: str, email: Optional[str] = None, username: Optional[str] = None
     ) -> tuple[bool, User] | bool:
@@ -152,4 +184,3 @@ def get_database() -> Database:
 
 def close_db(database: Database) -> None:
     database.close()
-    

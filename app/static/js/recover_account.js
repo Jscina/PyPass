@@ -1,3 +1,4 @@
+"use strict";
 function submitRecoverAccountForm(event) {
     event.preventDefault();
     const recoverAccountData = getRecoverAccountFormData();

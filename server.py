@@ -24,6 +24,7 @@ class UnknownOSError(Exception):
         super().__init__("Operating System could not be determined or is unsupported")
 
 class IProcess(Protocol):
+    """Interface for Processes since the Multiprocess library doesn't define theirs properly"""
     def start(self) -> None:
         """Start child process"""
         ...

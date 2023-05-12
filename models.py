@@ -24,8 +24,8 @@ class Account(Base):
     __tablename__ = "accounts"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    website = Column(String, nullable=False)
-    account_name = Column(String, nullable=False)
+    account_order = Column(Integer, nullable=False)
+    service = Column(String, nullable=False)
     account_username = Column(String, nullable=False)
     account_password = Column(String, nullable=False)
     encryption_key = Column(String, nullable=False)
@@ -34,7 +34,7 @@ class Account(Base):
     user = relationship("User", back_populates="accounts")
 
     def __repr__(self):
-        return f"<Account(website='{self.website}', account_name='{self.account_name}', account_username='{self.account_username}')>"
+        return f"<Account(service='{self.service}', account_username='{self.account_username}', account_password='{self.account_password}')>"
 
 
 class Master_Key(Base):

@@ -1,6 +1,8 @@
 import logging
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.exceptions import HTTPException
 from fastapi.templating import Jinja2Templates
 from database import Database, get_database
 
@@ -30,19 +32,41 @@ async def home(request: Request):
     return RedirectResponse("/")
 
 @router.post('/fetch_accounts')
-async def fetch_accounts(logged_in: bool, user_id: int, db: Database = Depends(get_database)) -> Response:
+async def fetch_accounts(request:Request, db: Database = Depends(get_database)) -> Response:
     if not db:
         logger.error("No database found in request context")
         return JSONResponse({"status": "error", "message": "Internal server error"}, status_code=500)
-    accounts = await db.fetch_accounts(logged_in, user_id)
-    accounts = [{account.id: {"website": account.website, "username": account.account_name, "password": account.account_password}} for account in accounts]
+    logged_in = bool(request.cookies.get("logged_in"))
+    user_id = int(request.cookies.get("user_id"))
+    user = await db.fetch_user_by_id(logged_in, user_id)
+    db.cipher.master_key = await db.fetch_master_key(user)
+    try:
+        accounts = await db.fetch_accounts(logged_in, user_id)
+    except HTTPException as e:
+        return await http_exception_handler(request, e)
+    accounts = [{"service": account.service, "username": account.account_username, "password": account.account_password} for account in accounts]
     return JSONResponse(accounts)
 
-@router.post("/add_password")
-async def add_password(account_data: dict, db: Database = Depends(get_database)) -> Response:
+@router.post("/add_account")
+async def add_account(request: Request, account_data: dict, db: Database = Depends(get_database)) -> Response:
     if not db:
         logger.error("No database found in request context")
         return JSONResponse({"status": "error", "message": "Internal server error"}, status_code=500)
+    account_data["user_id"] = int(request.cookies.get("user_id"))
+    logged_in = bool(request.cookies.get("logged_in"))
+    user = await db.fetch_user_by_id(logged_in, account_data["user_id"])
+    db.cipher.master_key = await db.fetch_master_key(user)
     await db.add_account(account_data)
     del account_data
-    return RedirectResponse("/home")
+    return JSONResponse(content={"status": "success"})
+
+@router.post("/delete_account")
+async def delete_account(request:Request, data:dict, db: Database = Depends(get_database)) -> Response:
+    user_id = int(request.cookies.get("user_id"))
+    logged_in = bool(request.cookies.get("logged_in"))
+    order = int(data["order"])
+    try:
+        await db.remove_account(logged_in, order, user_id)
+    except HTTPException as e:
+        return await http_exception_handler(request, e)
+    return JSONResponse(content={"status":"success"})

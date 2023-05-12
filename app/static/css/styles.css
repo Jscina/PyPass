@@ -28,6 +28,7 @@ header h1.shifted {
   display: inline-block;
   margin-left: 10px;
   text-decoration: none;
+  cursor: pointer;
   color: white;
 }
 
@@ -191,6 +192,10 @@ dialog {
   box-shadow: 2px 2px 5px #666;
 }
 
+dialog p {
+  color: #fff
+}
+
 /* Table */
 table {
   border-collapse: collapse;
@@ -202,18 +207,6 @@ td {
   text-align: left;
   padding: 8px;
   border-bottom: 1px solid #ddd;
-}
-
-td:first-child {
-  font-weight: bold;
-}
-
-td:nth-child(2) {
-  font-style: italic;
-}
-
-td:nth-child(3) {
-  font-family: monospace;
 }
 
 /* Utility classes */

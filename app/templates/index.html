@@ -25,16 +25,16 @@
         <table>
           <thead>
             <tr>
-              <th class="website">Website/Service</th>
-              <th class="username">Username</th>
-              <th class="password">Password</th>
-              <th class="actions">Actions</th>
+              <th>Website/Service</th>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="dashboard_passwords">
             <tr class="add-password">
               <td>
-                <input class="add-password-form-input" type="text" name="website" id="website"
+                <input class="add-password-form-input" type="text" name="service" id="service"
                   placeholder="Website/Service" />
               </td>
               <td>
@@ -46,12 +46,12 @@
                   placeholder="Password" />
               </td>
               <td>
-                <a href="javascript:void(0)" class="link">+</a>
+                <a href="javascript:void(0)" class="link">Add</a>
               </td>
             </tr>
           </tbody>
         </table>
-        <a href="javascript:void(0)" class="link">View Passwords</a>
+        <a id="view-passwords" href="javascript:void(0)" class="link">View Passwords</a>
         <dialog id="dialog-box">
           <p id="error-msg"></p>
           <button id="cancel">OK</button>
@@ -59,7 +59,7 @@
       </main>
     </div>
   </div>
-  <script src="{{ url_for('static', path='js/main.js') }}"></script>
+  <script src="{{ url_for('static', path='js/index.js') }}"></script>
 </body>
 
 </html>

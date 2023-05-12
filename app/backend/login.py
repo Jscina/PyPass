@@ -26,8 +26,8 @@ async def login(login_data: LoginData, request: Request, db: Database = Depends(
         request.session["logged_in"] = True
         response = JSONResponse({"status": "success"})
         response.set_cookie("user_id", str(user.id),
-                            secure=True, samesite="Strict", httponly=True)
-        response.set_cookie("logged_in", "True", secure=True,
+                            secure=False, samesite="Strict", httponly=True)
+        response.set_cookie("logged_in", "True", secure=False,
                             samesite="Strict", httponly=True)
         return response
 

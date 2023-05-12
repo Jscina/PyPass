@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Optional, Protocol
+from dataclasses import dataclass, field
+from typing import Protocol
 
 import bcrypt
 from cryptography.fernet import Fernet
@@ -12,6 +12,7 @@ class Cipher(Protocol):
     @property
     def master_key(self) -> bytes:
         ...
+
 
     @master_key.setter
     def master_key(self, key: bytes) -> None:
@@ -38,15 +39,15 @@ class Cipher(Protocol):
 @dataclass(unsafe_hash=True)
 class Cipher_User:
     """The Encryption class handles encryption/decrytpion//hashing of sensitive data"""
-    _master_key: Optional[bytes] = None
+    __master_key: bytes = field(init=False, default=None)
 
     @property
     def master_key(self) -> bytes:
-        return self._master_key
+        return self.__master_key
 
     @master_key.setter
     def master_key(self, key: bytes) -> None:
-        self.master_key = key
+        self.__master_key = key
 
     async def hash_password(self, password: str) -> str:
         """Returns the hashed version of the password and the salt"""
@@ -64,14 +65,14 @@ class Cipher_User:
         fernet = Fernet(key=key, backend=backends.default_backend())
         protected_str = fernet.encrypt(unprotected.encode('utf-8'))
         if encrypt_key:
-            protected_key = self.encrypt(key.decode("utf-8"), self.master_key)
+            protected_key = await self.encrypt(key.decode("utf-8"), self.master_key)
             return (protected_str.decode('utf-8'), protected_key.encode("utf-8"))
         return protected_str.decode('utf-8')
 
     async def decrypt(self, protected: str, key: bytes, encrypted_key: bool = False) -> str:
         """Decrypt a string or bytes"""
         if encrypted_key:
-            key = self.decrypt(key.decode("utf-8"), self.master_key)
+            key = await self.decrypt(key.decode("utf-8"), self.master_key)
         fernet = Fernet(key=key, backend=backends.default_backend())
         unprotected_str = fernet.decrypt(protected.encode('utf-8'))
         return unprotected_str.decode('utf-8')

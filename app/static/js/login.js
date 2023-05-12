@@ -1,3 +1,4 @@
+"use strict";
 function redirectToHomePage() {
     window.location.href = "/home";
 }

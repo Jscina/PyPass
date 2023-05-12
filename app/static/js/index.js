@@ -185,11 +185,11 @@ function addPasswordListener() {
         const row = table.rows[i];
         const passwordCell = row.cells[2];
         // If the password is currently hidden, show it; otherwise, hide it
-        if (passwordCell.textContent === "***") {
+        if (passwordCell.textContent === "******") {
             passwordCell.textContent = passwordCell.getAttribute("data-password");
         }
         else {
-            passwordCell.textContent = "***";
+            passwordCell.textContent = "******";
         }
     }
 }

@@ -217,12 +217,20 @@ function addPasswordListener(): void {
     const passwordCell = row.cells[2];
 
     // If the password is currently hidden, show it; otherwise, hide it
-    if (passwordCell.textContent === "***") {
+    if (passwordCell.textContent === "******") {
       passwordCell.textContent = passwordCell.getAttribute("data-password");
     } else {
-      passwordCell.textContent = "***";
+      passwordCell.textContent = "******";
     }
   }
+}
+
+function genPass(): void {
+  // Do something
+}
+
+function showProfile(): void {
+  // Do something
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -234,7 +242,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewPasswords = document.querySelector(
     "#view-passwords"
   ) as HTMLAnchorElement;
-
+  const generatePassword = document.querySelector("#gen-pass") as HTMLAnchorElement;
+  const profile = document.querySelector("#edit-profile") as HTMLAnchorElement;
+  
+  profile.addEventListener("click", showProfile);
+  generatePassword.addEventListener("click", genPass);
   addNewPassword.addEventListener("click", addNewAccount);
   menu.addEventListener("click", toggleSidebar);
   closeMenu.addEventListener("click", toggleSidebar);

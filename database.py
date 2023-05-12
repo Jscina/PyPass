@@ -145,20 +145,23 @@ class Database:
     async def remove_account(self, is_authorized:bool, order:int, user_id:int) -> None:
         if not is_authorized:
             raise HTTPException(401, "Not Authorized")
+        
+        accounts = self.session.query(Account).filter(
+            Account.user_id == user_id
+        ).order_by(Account.account_order).all()
         try:
-            self.session.delete(
-                self.session.query(Account).filter(
-                    Account.account_order == order and Account.user_id == user_id
-                ).one()
-            )
-            self.session.execute(
-                update(Account) 
-                .where(Account.account_order > order)
-                .values(account_order=Account.account_order - 1)
-            )
+            account_to_delete = accounts[order - 1]
+            self.session.delete(account_to_delete)
             self.session.commit()
+            await self.reindex_all_accounts()
         except NoResultFound:
             logging.warning(f"No result found for id: {order} user_id: {user_id}")
+        
+    async def reindex_all_accounts(self):
+        accounts = self.session.query(Account).order_by(Account.user_id, Account.account_order).all()
+        for i, account in enumerate(accounts, start=1):
+            account.account_order = i
+        self.session.commit()
         
     async def login(
         self, password: str, email: Optional[str] = None, username: Optional[str] = None

@@ -10,20 +10,27 @@
 <body>
 	<div class="form-container">
 		<h2>Account Recovery</h2>
-		<form class="form-container bg-gray" id="recover_account" method="POST">
+		<form class="form-container bg-gray" id="recover_account">
 			<label for="email" class="form-label">Email:</label>
 			<input type="email" name="email" id="email" class="form-input" required>
-			<label for="password" class="form-label">New Password:</label>
-			<input type="password" name="password" id="password" class="form-input" required>
-			<label for="confirm_password" class="form-label">Confirm Password:</label>
-			<input type="password" name="confirm_password" id="confirm_password" class="form-input" required>
 			<input type="submit" value="Submit" class="form-submit">
 			<br>
 			<br>
 			<div class="center">
 				<a href="{{ url_for('home') }}" class="link">Back to login</a>
 			</div>
-			
+		</form>
+		<form class="form-container bg-gray" id="enter_code">
+			<label class="form-label" for="security_code">Code:</label>
+			<input class="form-input" type="text" placeholder="000000" name="security_code" required>
+			<input type="submit" value="Submit" class="form-submit">
+		</form>
+		<form class="form-container bg-gray" id="change_password">
+			<label for="password" class="form-label">New Password:</label>
+			<input type="password" name="password" id="password" class="form-input" required>
+			<label for="confirm_password" class="form-label">Confirm Password:</label>
+			<input type="password" name="confirm_password" id="confirm_password" class="form-input" required>
+			<input type="submit" value="Submit" class="form-submit">
 		</form>
 		<div class="error-msg hide"></div>
 	</div>

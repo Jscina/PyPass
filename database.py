@@ -1,12 +1,12 @@
 import logging
 from dataclasses import dataclass
 from typing import Optional
-from authorization import verify_username, verify_password
+from authorization import verify_values, verify_password
 from fastapi.exceptions import HTTPException
 from cipher import Cipher, Cipher_User
 from models import Account, Base, Master_Key, User
 from sqlalchemy import create_engine, func, update
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, Session
 
 
@@ -49,9 +49,9 @@ class Database:
         try:
             self.session.add(master_key)
             self.session.commit()
-        except Exception as e:
+        except SQLAlchemyError:
             self.session.rollback()
-            logging.error(f"Error creating master key: {e}")
+            logging.error(f"Error creating master key")
         return key
 
     async def add_user(self, email: str, username: str, password: str) -> str | None:
@@ -66,9 +66,9 @@ class Database:
             for transaction in transactions:
                 self.session.add(transaction)
             self.session.commit()
-        except Exception as e:
+        except SQLAlchemyError:
             self.session.rollback()
-            return f"Error creating user: {e}"
+            logging.warning("Error creating user")
 
     async def add_account(
         self, account_data: dict[str, str]
@@ -80,10 +80,10 @@ class Database:
         )
         user_id = account_data["user_id"]
 
-        if user_id is not None:
-            user_id = int(user_id)
-        else:
+        if user_id is None:
             return "Error: User is invalid"
+        
+        user_id = int(user_id)
         max_order = self.session.query(func.max(Account.account_order)).scalar() or 0
         account = Account(
             account_order=max_order + 1,
@@ -96,22 +96,22 @@ class Database:
         try:
             self.session.add(account)
             self.session.commit()
-        except Exception as e:
+        except SQLAlchemyError:
             self.session.rollback()
-            return f"Error creating account: {e}"
+            logging.warning("Error adding account")
         return True
 
-    async def fetch_user(self, email: Optional[str], username: Optional[str]) -> list[User]:
+    async def fetch_user(self, email: Optional[str] = None, username: Optional[str] = None) -> User:
         """Collects the possible accounts that match the username or email"""
-        if username is not None and email is not None:
+        if username is None and email is None:
             raise ValueError("Email or username must be provided")
         if username is not None:
-            users = self.session.query(User).filter(User.username == username).all()
+            user = self.session.query(User).filter(User.username == username).one()
         elif email is not None:
-            users = self.session.query(User).filter(User.email == email).all()
+            user = self.session.query(User).filter(User.email == email).one()
         else:
             raise HTTPException(404, "No user found")
-        return [user for user in users]
+        return user
     
     async def fetch_user_by_id(self, is_authorized:bool, user_id:int) -> User:
         if not is_authorized:
@@ -120,6 +120,27 @@ class Database:
             user_id = int(user_id)
         user = self.session.query(User).filter(User.id == user_id).one()
         return user
+    
+    async def update_user(self, is_authorized: bool, user: User) -> bool:
+        if not is_authorized:
+            raise HTTPException(401, "Not Authorized")
+        
+        query = (
+            update(User)
+            .where(User.id == user.id)
+            .values(
+                username=user.username,
+                password=await self.cipher.hash_password(user.password),
+                email = user.email
+            )
+        )
+        try:
+            self.session.execute(query)
+            self.session.commit()
+            return True
+        except SQLAlchemyError as e:
+            logging.error(f"Failed to update user: {e}")
+            raise HTTPException(400, "Update failed") from e
 
 
     async def fetch_accounts(self, is_authorized: bool, user_id: int) -> list[Account]:
@@ -170,13 +191,12 @@ class Database:
         if email is None and username is None:
             raise ValueError("Email or username must be provided")
 
-        users = await self.fetch_user(email, username)
-        for user in users:
-            password_verified = verify_password(password, user.password)
-            verify_account = email or username
-            account_verified = verify_username(verify_account, user.username)
-            if account_verified and password_verified:
-                return (True, user)
+        user = await self.fetch_user(email, username)
+        password_verified = verify_password(password, user.password)
+        verify_account = email or username
+        account_verified = verify_values(verify_account, user.username)
+        if account_verified and password_verified:
+            return (True, user)
         return False
 
     def close(self):

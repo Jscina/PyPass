@@ -5,6 +5,7 @@ from fastapi.exception_handlers import http_exception_handler
 from fastapi.exceptions import HTTPException
 from fastapi.templating import Jinja2Templates
 from database import Database, get_database
+from collections import namedtuple
 
 logging.basicConfig(
     level=logging.INFO,
@@ -70,3 +71,28 @@ async def delete_account(request:Request, data:dict, db: Database = Depends(get_
     except HTTPException as e:
         return await http_exception_handler(request, e)
     return JSONResponse(content={"status":"success"})
+
+@router.post("/get_current_user")
+async def get_current_user(request: Request, db: Database = Depends(get_database)) -> Response:
+    user_id = int(request.cookies.get("user_id"))
+    logged_in = bool(request.cookies.get("logged_in"))
+    user = await db.fetch_user_by_id(logged_in, user_id)
+    return JSONResponse(content={
+        "username":user.username,
+        "password":bytes(user.password).decode("utf-8"),
+        "email": user.email
+    })
+
+@router.post("/update_account")
+async def update_account(request: Request, data:dict, db:Database = Depends(get_database)) -> Response:
+    user_id = int(request.cookies.get("user_id"))
+    logged_in = bool(request.cookies.get("logged_in"))
+    User = namedtuple("User", ["id", "username", "email", "password"])
+    data["id"] = user_id
+    user = User(**data)
+    if await db.update_user(logged_in, user):
+        return JSONResponse(content={"status":"success"})
+    else:
+        return JSONResponse(content={"status":"failed"}, status_code=400)
+    
+      

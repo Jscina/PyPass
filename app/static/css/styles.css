@@ -209,6 +209,88 @@ td {
   border-bottom: 1px solid #ddd;
 }
 
+/* Error Dialog */
+#dialog-box {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+#dialog-box p {
+  text-align: center;
+  color: #ff0000;
+}
+
+dialog button {
+  padding: 10px;
+  border: none;
+  border-radius: 1em;
+  cursor: pointer;
+  font-size: large;
+  background-color: #4caf50;
+  color: white;
+  width: 90%;
+  margin-top: 0.5rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+dialog button:hover {
+  background-color: #45a049;
+}
+
+dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+}
+
+
+/* User Profile Modal */
+#user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+#user-info input {
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #666;
+  border-radius: 1em;
+  background-color: #333;
+  color: white;
+}
+
+#user-info label {
+  color: white;
+  text-align: left;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+#user-info button {
+  width: 90%;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 1em;
+  cursor: pointer;
+  font-size: large;
+  text-align: center;
+}
+
+#user-info button:hover {
+  background-color: #45a049;
+}
+
+
 /* Utility classes */
 .center {
   display: flex;

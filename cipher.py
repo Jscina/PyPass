@@ -12,8 +12,7 @@ class Cipher(Protocol):
     @property
     def master_key(self) -> bytes:
         ...
-
-
+        
     @master_key.setter
     def master_key(self, key: bytes) -> None:
         ...

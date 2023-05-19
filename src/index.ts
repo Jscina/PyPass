@@ -4,10 +4,24 @@ interface Account {
   password: string;
 }
 
+interface Profile {
+  username: string;
+  email: string;
+  password: string;
+}
+
 class UserAccount implements Account {
   constructor(
     public service: string,
     public username: string,
+    public password: string
+  ) {}
+}
+
+class UserProfile implements Profile {
+  constructor(
+    public username: string,
+    public email: string,
     public password: string
   ) {}
 }
@@ -19,8 +33,8 @@ function setSidebarVisibility(isVisible: boolean): void {
   const navmenu = document.getElementById("navmenu") as HTMLElement;
 
   sidebar.style.width = isVisible ? "250px" : "0";
-  headerTitle.classList[isVisible ? 'add' : 'remove']("shifted");
-  mainContent.classList[isVisible ? 'add' : 'remove']("shifted");
+  headerTitle.classList[isVisible ? "add" : "remove"]("shifted");
+  mainContent.classList[isVisible ? "add" : "remove"]("shifted");
   navmenu.style.display = isVisible ? "hidden" : "block";
 }
 
@@ -91,14 +105,19 @@ function fetchUserAccounts(): Promise<Array<Account>> {
 }
 
 function showDialog(message: string): void {
-  const dialog = document.querySelector("dialog") as HTMLDialogElement;
+  const dialog = document.querySelector("#dialog-box") as HTMLDialogElement;
   const errorMsg = document.querySelector("#error-msg") as HTMLElement;
-  const closeDialog = document.querySelector("#cancel") as HTMLButtonElement;
+  dialog.style.display = "block";
   errorMsg.innerText = message;
-  dialog.show();
-  closeDialog.addEventListener("click", () => {
-    dialog.close();
-  });
+  dialog.show(); // dialog visible now
+}
+
+function closeDialog(): boolean {
+  const dialog = document.querySelector("#dialog-box") as HTMLDialogElement;
+  const errorMsg = document.querySelector("#error-msg") as HTMLElement;
+  dialog.style.display = "none";
+  errorMsg.innerText = "";
+  return true;
 }
 
 function handleDeleteRequest(serverRowIndex: number): void {
@@ -229,8 +248,109 @@ function genPass(): void {
   // Do something
 }
 
+function getUserInfo(): Promise<UserProfile> {
+  return fetch("/get_current_user", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return;
+      }
+      return response.json();
+    })
+    .then((data: Profile) => {
+      return new UserProfile(data.username, data.email, data.password);
+    })
+    .catch((error) => {
+      console.error(error);
+      throw error;
+    });
+}
+
+function updateProfile(profile: Profile): void {
+  fetch("/update_account", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: profile.username,
+      password: profile.password,
+      email: profile.email,
+    }),
+  })
+    .then((response) => {
+      if (response.ok) return;
+      else showDialog("Failed to update password");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
 function showProfile(): void {
-  // Do something
+  const profileModal = document.querySelector(
+    "#profile-settings"
+  ) as HTMLDialogElement;
+  const modalContents = document.querySelector("#user-info") as HTMLDivElement;
+
+  getUserInfo()
+    .then((profile) => {
+      // Clear the modal contents
+      modalContents.innerHTML = "";
+
+      // Create fields for user's profile
+      const fields = [
+        { type: "text", value: profile.username, placeholder: "Username" },
+        { type: "email", value: profile.email, placeholder: "Email" },
+        { type: "password", placeholder: "New password" },
+        { type: "password", placeholder: "Confirm new password" },
+      ];
+
+      fields.forEach((field) => {
+        const label = document.createElement("label");
+        label.textContent = field.placeholder;
+
+        const input = document.createElement("input");
+        input.type = field.type;
+        input.value = field.value || "";
+        input.placeholder = field.placeholder;
+
+        modalContents.appendChild(label);
+        modalContents.appendChild(input);
+      });
+
+      // Create save changes button
+      const saveChangesBtn = document.createElement("button");
+      saveChangesBtn.textContent = "Save Changes";
+      saveChangesBtn.addEventListener("click", () => {
+        profileModal.close();
+        const [username, email, password, confirmPassword] =
+          modalContents.querySelectorAll("input");
+
+        // Verify the passwords match
+        if (password.value === confirmPassword.value) {
+          // Save new data
+          profile.username = username.value;
+          profile.email = email.value;
+          profile.password = password.value;
+
+          updateProfile(profile);
+
+          profileModal.close();
+        }
+        else showDialog("Passwords don't match!");
+      });
+      modalContents.appendChild(saveChangesBtn);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  profileModal.showModal();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -242,9 +362,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewPasswords = document.querySelector(
     "#view-passwords"
   ) as HTMLAnchorElement;
-  const generatePassword = document.querySelector("#gen-pass") as HTMLAnchorElement;
+  const generatePassword = document.querySelector(
+    "#gen-pass"
+  ) as HTMLAnchorElement;
   const profile = document.querySelector("#edit-profile") as HTMLAnchorElement;
-  
+
   profile.addEventListener("click", showProfile);
   generatePassword.addEventListener("click", genPass);
   addNewPassword.addEventListener("click", addNewAccount);
@@ -253,7 +375,6 @@ document.addEventListener("DOMContentLoaded", () => {
   for (let i = 0; i < 2; i++) toggleSidebar();
 
   viewPasswords.addEventListener("click", addPasswordListener);
-
   fetchUserAccounts().then((accounts) => {
     buildAccountTable(accounts);
   });

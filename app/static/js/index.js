@@ -9,14 +9,24 @@ class UserAccount {
         this.password = password;
     }
 }
+class UserProfile {
+    username;
+    email;
+    password;
+    constructor(username, email, password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+}
 function setSidebarVisibility(isVisible) {
     const sidebar = document.getElementById("sidebar");
     const headerTitle = document.getElementById("header-title");
     const mainContent = document.getElementById("content");
     const navmenu = document.getElementById("navmenu");
     sidebar.style.width = isVisible ? "250px" : "0";
-    headerTitle.classList[isVisible ? 'add' : 'remove']("shifted");
-    mainContent.classList[isVisible ? 'add' : 'remove']("shifted");
+    headerTitle.classList[isVisible ? "add" : "remove"]("shifted");
+    mainContent.classList[isVisible ? "add" : "remove"]("shifted");
     navmenu.style.display = isVisible ? "hidden" : "block";
 }
 function toggleSidebar() {
@@ -74,14 +84,18 @@ function fetchUserAccounts() {
     });
 }
 function showDialog(message) {
-    const dialog = document.querySelector("dialog");
+    const dialog = document.querySelector("#dialog-box");
     const errorMsg = document.querySelector("#error-msg");
-    const closeDialog = document.querySelector("#cancel");
+    dialog.style.display = "block";
     errorMsg.innerText = message;
-    dialog.show();
-    closeDialog.addEventListener("click", () => {
-        dialog.close();
-    });
+    dialog.show(); // dialog visible now
+}
+function closeDialog() {
+    const dialog = document.querySelector("#dialog-box");
+    const errorMsg = document.querySelector("#error-msg");
+    dialog.style.display = "none";
+    errorMsg.innerText = "";
+    return true;
 }
 function handleDeleteRequest(serverRowIndex) {
     fetch("/delete_account", {
@@ -193,11 +207,110 @@ function addPasswordListener() {
         }
     }
 }
+function genPass() {
+    // Do something
+}
+function getUserInfo() {
+    return fetch("/get_current_user", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then((response) => {
+        if (!response.ok) {
+            return;
+        }
+        return response.json();
+    })
+        .then((data) => {
+        return new UserProfile(data.username, data.email, data.password);
+    })
+        .catch((error) => {
+        console.error(error);
+        throw error;
+    });
+}
+function updateProfile(profile) {
+    fetch("/update_account", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            username: profile.username,
+            password: profile.password,
+            email: profile.email,
+        }),
+    })
+        .then((response) => {
+        if (response.ok)
+            return;
+        else
+            showDialog("Failed to update password");
+    })
+        .catch((error) => {
+        console.log(error);
+    });
+}
+function showProfile() {
+    const profileModal = document.querySelector("#profile-settings");
+    const modalContents = document.querySelector("#user-info");
+    getUserInfo()
+        .then((profile) => {
+        // Clear the modal contents
+        modalContents.innerHTML = "";
+        // Create fields for user's profile
+        const fields = [
+            { type: "text", value: profile.username, placeholder: "Username" },
+            { type: "email", value: profile.email, placeholder: "Email" },
+            { type: "password", placeholder: "New password" },
+            { type: "password", placeholder: "Confirm new password" },
+        ];
+        fields.forEach((field) => {
+            const label = document.createElement("label");
+            label.textContent = field.placeholder;
+            const input = document.createElement("input");
+            input.type = field.type;
+            input.value = field.value || "";
+            input.placeholder = field.placeholder;
+            modalContents.appendChild(label);
+            modalContents.appendChild(input);
+        });
+        // Create save changes button
+        const saveChangesBtn = document.createElement("button");
+        saveChangesBtn.textContent = "Save Changes";
+        saveChangesBtn.addEventListener("click", () => {
+            profileModal.close();
+            const [username, email, password, confirmPassword] = modalContents.querySelectorAll("input");
+            // Verify the passwords match
+            if (password.value === confirmPassword.value) {
+                // Save new data
+                profile.username = username.value;
+                profile.email = email.value;
+                profile.password = password.value;
+                updateProfile(profile);
+                profileModal.close();
+            }
+            else
+                showDialog("Passwords don't match!");
+        });
+        modalContents.appendChild(saveChangesBtn);
+    })
+        .catch((error) => {
+        console.error(error);
+    });
+    profileModal.showModal();
+}
 document.addEventListener("DOMContentLoaded", () => {
     const menu = document.querySelector("#navmenu");
     const closeMenu = document.querySelector("#closebtn");
     const addNewPassword = document.querySelector(".add-password .link");
     const viewPasswords = document.querySelector("#view-passwords");
+    const generatePassword = document.querySelector("#gen-pass");
+    const profile = document.querySelector("#edit-profile");
+    profile.addEventListener("click", showProfile);
+    generatePassword.addEventListener("click", genPass);
     addNewPassword.addEventListener("click", addNewAccount);
     menu.addEventListener("click", toggleSidebar);
     closeMenu.addEventListener("click", toggleSidebar);

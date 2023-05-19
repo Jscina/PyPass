@@ -17,7 +17,7 @@
   <div class="wrapper">
     <nav id="sidebar" class="sidebar" style="width: 0px">
       <a href="javascript:void(0)" id="closebtn" class="closebtn">×</a>
-      <a href="javascript:void(0)" id="edit-profile">Profile</a>
+      <a href="javascript:void(0)" id="edit-profile">Edit Profile</a>
       <a href="javascript:void(0)" id="gen-pass">Generate Password</a>
       <a href="/logout">Logout</a>
     </nav>
@@ -56,7 +56,15 @@
         <a id="view-passwords" href="javascript:void(0)" class="link">View Passwords</a>
         <dialog id="dialog-box">
           <p id="error-msg"></p>
-          <button id="cancel">OK</button>
+          <form method="dialog">
+            <button onclick="closeDialog();">Close</button>
+          </form>
+        </dialog>
+        <dialog id="profile-settings">
+            <div id="user-info"></div>
+            <form method="dialog">
+              <button>Cancel</button>
+            </form>
         </dialog>
       </main>
     </div>

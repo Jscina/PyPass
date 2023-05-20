@@ -20,7 +20,7 @@ function resetForms(): void {
   changePasswordForm.classList.add("hide");
 }
 
-function sendRecoverEmail(email: string): void {
+function sendRecoverEmail(email: string, resend:boolean = false): void {
   localStorage.setItem("recover_email", email);
   fetch("/send_recovery_email", {
     method: "POST",
@@ -36,13 +36,18 @@ function sendRecoverEmail(email: string): void {
       return response.json();
     })
     .then(() => {
+      if (resend) return;
       const recoverAccountForm = document.getElementById(
         "recover_account"
       ) as HTMLFormElement;
+      const resendCode = document.getElementById(
+        "resend-code"
+      ) as HTMLButtonElement;
       const securityCodeForm = document.getElementById(
         "enter_code"
       ) as HTMLFormElement;
       recoverAccountForm.classList.add("hide");
+      resendCode.classList.remove("hide");
       securityCodeForm.classList.remove("hide");
     })
     .catch((error: string) => {
@@ -71,8 +76,13 @@ function verifyCode(securityCode: number): void {
       const changePasswordForm = document.getElementById(
         "change_password"
       ) as HTMLFormElement;
+      const resendCode = document.getElementById(
+        "resend-code"
+      ) as HTMLButtonElement;
       changePasswordForm.classList.remove("hide");
+      resendCode.classList.add("hide");
       securityCodeForm.classList.add("hide");
+
       localStorage.setItem("verified", "True");
     })
     .catch((error: string) => {
@@ -90,7 +100,7 @@ function changePassword(password: string, confirm_password: string): void {
       password: password,
       confirm_password: confirm_password,
       verified: localStorage.getItem("verified"),
-      email: localStorage.getItem("recovery_email")
+      email: localStorage.getItem("recover_email"),
     }),
   })
     .then((response) => {
@@ -114,11 +124,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const securityCodeForm = document.getElementById(
     "enter_code"
   ) as HTMLFormElement;
+
+  const resendCode = document.getElementById(
+    "resend-code"
+  ) as HTMLButtonElement;
+
   const changePasswordForm = document.getElementById(
     "change_password"
   ) as HTMLFormElement;
 
   securityCodeForm.classList.add("hide");
+  resendCode.classList.add("hide");
   changePasswordForm.classList.add("hide");
 
   recoverAccountForm.addEventListener("submit", (event) => {
@@ -136,6 +152,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const code = parseInt(securityCode.value);
     if (isNaN(code)) showError("Enter numeric values only");
     verifyCode(code);
+  });
+
+  resendCode.addEventListener("click", (event) => {
+    event.preventDefault();
+    const email = localStorage.getItem("recover_email") as string;
+    sendRecoverEmail(email, true);
   });
 
   changePasswordForm.addEventListener("submit", (event) => {

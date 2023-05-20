@@ -36,6 +36,12 @@ async def login(login_data: LoginData, request: Request, db: Database = Depends(
 
 
 @router.get("/logout")
-async def logout(request: Request):
-    request.session.pop("logged_in", None)
-    return RedirectResponse("/")
+async def logout() -> Response:
+    response = RedirectResponse("/")
+    response.delete_cookie(
+        key="logged_in",
+        secure=False,
+        samesite="Strict", 
+        httponly=True
+        )
+    return response

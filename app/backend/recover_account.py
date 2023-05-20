@@ -42,7 +42,7 @@ async def change_password(data: dict[str, str], db: Database = Depends(get_datab
         }
         return JSONResponse(response, status_code=400)
     user = await db.fetch_user(data["email"])
-    user.password = db.cipher.hash_password(data["password"])
+    user.password = data["password"]
     if await db.update_user(bool(data["verified"]), user):
         response = JSONResponse(content={"status": "success"})
         response.set_cookie(
@@ -59,7 +59,7 @@ async def change_password(data: dict[str, str], db: Database = Depends(get_datab
 async def send_recovery_email(data: dict[str, str], confirm_code: str = Depends(generate_code)) -> Response:
     sender = "no_reply@pypass.com"
     recipient = data["recovery_email"]
-    msg = MIMEText(f'Here is the code to recover your account: {confirm_code}')
+    msg = MIMEText(f'Here is the code to recover your account: {confirm_code}\n It will be valid for the next 10 minutes')
     msg['Subject'] = 'Recover PyPass Account'
     msg['From'] = sender
     msg['To'] = recipient

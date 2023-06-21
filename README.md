@@ -6,4 +6,4 @@ The user account recovery mechanism is functional, however, it is not connected 
 
 ## Installation
 
-Install the binary from [releases](v0.1.0) page. For your operating system, download the binary and run it. You can also build the binary from source.
+Install the binary from [releases](v6.1) page. For your operating system, download the binary and run it. You can also build the binary from source.
